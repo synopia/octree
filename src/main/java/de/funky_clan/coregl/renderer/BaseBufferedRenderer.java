@@ -14,84 +14,6 @@ import java.util.ArrayList;
  * @author synopia
  */
 public abstract class BaseBufferedRenderer {
-    public class VBOBuffer {
-        private ByteBuffer byteBuffer;
-        private int vboId;
-        private int vertices;
-
-        public VBOBuffer() {
-            this.byteBuffer = createBuffer();
-            GL15.glGenBuffers(vboIds);
-            this.vboId = vboIds.get(0);
-        }
-
-        public ByteBuffer getByteBuffer() {
-            return byteBuffer;
-        }
-
-        public int getVboId() {
-            return vboId;
-        }
-
-        public int getVertices() {
-            return vertices;
-        }
-
-        public void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz) {
-            ensureSpace(1);
-            vertices ++;
-
-            byteBuffer.putFloat(x*scale[0] + translation[0]);
-            byteBuffer.putFloat(y*scale[1] + translation[1]);
-            byteBuffer.putFloat(z*scale[2] + translation[2]);
-            if( texCoordFormat!=0 ) {
-                byteBuffer.putFloat(tx);
-                byteBuffer.putFloat(ty);
-            }
-            if( colorFormat!=0 ) {
-                byteBuffer.putInt(color);
-            }
-            if( normalFormat!=0 ) {
-                byteBuffer.putFloat(nx);
-                byteBuffer.putFloat(ny);
-                byteBuffer.putFloat(nz);
-            }
-        }
-
-        public void ensureSpace(int vertices) {
-            if( byteBuffer.remaining()<vertices*strideSize ) {
-                onBufferFull();
-            }
-        }
-
-        public void upload() {
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-            setupPointers();
-            byteBuffer.flip();
-            GL15.glBufferData( GL15.GL_ARRAY_BUFFER, byteBuffer, GL15.GL_STREAM_DRAW );
-        }
-
-        public void render() {
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-            setupPointers();
-            GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, vertices);
-        }
-
-        public void clear() {
-            byteBuffer.clear();
-            vertices = 0;
-        }
-
-        public void resize() {
-            int size = byteBuffer.capacity()*2;
-            ByteBuffer newByteBuffer = BufferUtils.createByteBuffer(size);
-            byteBuffer.rewind();
-            newByteBuffer.put(byteBuffer);
-            newByteBuffer.position(vertices*strideSize);
-
-            byteBuffer = newByteBuffer;
-        }
-    }
 
     private IntBuffer vboIds;
 
@@ -133,6 +55,11 @@ public abstract class BaseBufferedRenderer {
 
     protected ByteBuffer createBuffer() {
         return BufferUtils.createByteBuffer(bufferSize);
+    }
+
+    protected int genVBOId() {
+        GL15.glGenBuffers(vboIds);
+        return vboIds.get(0);
     }
 
     public abstract void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz);
@@ -211,8 +138,39 @@ public abstract class BaseBufferedRenderer {
 
     public ArrayList<String> getDebugInfos() {
         ArrayList<String> result = new ArrayList<String>();
-        result.add( String.format("Triangles: %d", trianglesTotal ) );
+        result.add(String.format("Triangles: %d", trianglesTotal));
         return result;
     }
 
+    public float[] getTranslation() {
+        return translation;
+    }
+
+    public float[] getScale() {
+        return scale;
+    }
+
+    public int getTexCoordFormat() {
+        return texCoordFormat;
+    }
+
+    public int getColorFormat() {
+        return colorFormat;
+    }
+
+    public int getNormalFormat() {
+        return normalFormat;
+    }
+
+    public int getTexCoordOffset() {
+        return texCoordOffset;
+    }
+
+    public int getColorOffset() {
+        return colorOffset;
+    }
+
+    public int getNormalOffset() {
+        return normalOffset;
+    }
 }

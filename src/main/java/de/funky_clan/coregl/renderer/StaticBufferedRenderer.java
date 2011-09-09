@@ -1,9 +1,5 @@
 package de.funky_clan.coregl.renderer;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL15;
-
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -40,7 +36,7 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
         boolean result = false;
         VBOBuffer buffer = null;
         if( !buffers.containsKey( key ) ) {
-            buffer = new VBOBuffer();
+            buffer = new VBOBuffer(BaseBufferedRenderer.this);
             buffers.put(key, buffer);
             result = true;
         }

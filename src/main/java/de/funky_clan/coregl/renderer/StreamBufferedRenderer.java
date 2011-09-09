@@ -1,9 +1,5 @@
 package de.funky_clan.coregl.renderer;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL15;
-
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +28,7 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
     public boolean begin(Object key, boolean force) {
         if( buffers.size()==0 ) {
             for (int i = 0; i < NUMBER_OF_BUFFERS; i++) {
-                buffers.add( new VBOBuffer());
+                buffers.add( new VBOBuffer(BaseBufferedRenderer.this));
             }
         }
 
@@ -70,7 +66,7 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
     public ArrayList<String> getDebugInfos() {
         ArrayList<String> infos = super.getDebugInfos();
         int noBuffers = buffers.size();
-        infos.add( String.format("VBOBuffers: %d", noBuffers));
+        infos.add(String.format("VBOBuffers: %d", noBuffers));
         return infos;
     }
 }
