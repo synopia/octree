@@ -29,7 +29,7 @@ public abstract class BaseEngine {
         this.window = window;
         camera = new Camera(10,10,10);
         fontRenderer     = new FontRenderer(window);
-        renderer = new StaticBufferedRenderer(0x1000, 0, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
+        renderer = new StaticBufferedRenderer(0x100, 0, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
         lighting = new Lighting();
         GL11.glEnable(GL11.GL_LIGHTING);
     }
@@ -57,20 +57,24 @@ public abstract class BaseEngine {
 
     protected void moveCamera(int delta) {
         boolean changedPosition = false;
+        float mod = 1;
+        if( Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ) {
+            mod = 10;
+        }
         if( Keyboard.isKeyDown(Keyboard.KEY_W) ) {
-            camera.moveLoc(0,0,-1,delta/100.f);
+            camera.moveLoc(0,0,-1,delta/100.f*mod);
             changedPosition = true;
         }
         if( Keyboard.isKeyDown(Keyboard.KEY_S) ) {
-            camera.moveLoc(0,0,1,delta/100.f);
+            camera.moveLoc(0,0,1,delta/100.f*mod);
             changedPosition = true;
         }
         if( Keyboard.isKeyDown(Keyboard.KEY_A) ) {
-            camera.moveLoc(-1,0,0,delta/100.f);
+            camera.moveLoc(-1,0,0,delta/100.f*mod);
             changedPosition = true;
         }
         if( Keyboard.isKeyDown(Keyboard.KEY_D) ) {
-            camera.moveLoc(1,0,0,delta/100.f);
+            camera.moveLoc(1,0,0,delta/100.f*mod);
             changedPosition = true;
         }
         if( Mouse.isButtonDown(0) ) {

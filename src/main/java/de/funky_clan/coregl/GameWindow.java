@@ -97,7 +97,7 @@ public class GameWindow {
 
         GL11.glMatrixMode( GL11.GL_PROJECTION );
         GL11.glLoadIdentity();
-        GLU.gluPerspective( 60.0f, ((float)width) / ((float)height), 0.1f, 250.f );
+        GLU.gluPerspective( 60.0f, ((float)width) / ((float)height), 0.1f, 500.f );
         GL11.glMatrixMode( GL11.GL_MODELVIEW );
         GL11.glHint( GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_FASTEST);
         GL11.glHint( GL11.GL_LINE_SMOOTH_HINT, GL11.GL_FASTEST );

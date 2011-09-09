@@ -3,6 +3,7 @@ package de.funky_clan.octree;
 import de.funky_clan.coregl.BaseEngine;
 import de.funky_clan.coregl.GameWindow;
 import de.funky_clan.coregl.State;
+import de.funky_clan.octree.minecraft.RegionFileLoader;
 import de.funky_clan.voxel.VoxelEngine;
 import de.funky_clan.voxel.data.OctreeNode;
 import de.funky_clan.voxel.renderer.OctreeRenderer;
@@ -30,14 +31,21 @@ public class TestState implements State {
         engine.setShowInfo(true);
         engine.init(window);
 
-        engine.getCamera().lookAt(0, 1, 0, 1,1,1, 0, 1, 0);
+        engine.getCamera().lookAt(0, 80, 0, 1,80,1, 0, 1, 0);
 
 //        SchematicLoader loader = new SchematicLoader();
 //        tree = loader.load("new_skull_hollow.schematic");
         SphereGenerator s = new SphereGenerator();
         OctreeNode octree = engine.getRoot();
+
+        RegionFileLoader regionFileLoader = new RegionFileLoader();
+        for (int i = 0; i < 50; i++) {
+            for (int j = 0; j < 50; j++) {
+                regionFileLoader.load(octree, i,j);
+            }
+        }
         SchematicLoader loader = new SchematicLoader();
-        loader.load(octree, "Destiny.schematic");
+//        loader.load(octree, "Destiny.schematic");
 //        octree.setPixel(128,128,128,100);
         octree.setPixel(1,1,1,100);
         octree.setPixel(2,1,1,100);
