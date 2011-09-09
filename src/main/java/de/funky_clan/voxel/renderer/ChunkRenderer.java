@@ -31,8 +31,12 @@ public class ChunkRenderer {
             return;
         }
         if( !renderer.begin(chunk) ) {
-            renderer.render();
-            return;
+            if( !chunk.isDirty() ) {
+                renderer.render();
+                return;
+            } else {
+                renderer.begin(chunk, true);
+            }
         }
 
         int size = chunk.getSize();
@@ -73,6 +77,7 @@ public class ChunkRenderer {
         renderer.end();
         renderer.render();
 
+        chunk.setDirty(false);
         chunk.setVisible(!totallyEmpty);
     }
 }

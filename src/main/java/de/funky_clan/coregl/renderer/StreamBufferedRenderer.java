@@ -29,7 +29,7 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
     }
 
     @Override
-    public boolean begin(Object key) {
+    public boolean begin(Object key, boolean force) {
         if( buffers.size()==0 ) {
             IntBuffer vboIds = BufferUtils.createIntBuffer(NUMBER_OF_BUFFERS);
             GL15.glGenBuffers(vboIds);

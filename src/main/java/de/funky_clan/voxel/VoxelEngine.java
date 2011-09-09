@@ -1,125 +1,59 @@
 package de.funky_clan.voxel;
 
-import de.funky_clan.coregl.Camera;
+import de.funky_clan.coregl.BaseEngine;
 import de.funky_clan.coregl.GameWindow;
-import de.funky_clan.coregl.Lighting;
-import de.funky_clan.coregl.renderer.BaseBufferedRenderer;
-import de.funky_clan.coregl.renderer.FontRenderer;
-import de.funky_clan.coregl.renderer.StaticBufferedRenderer;
-import de.funky_clan.coregl.renderer.StreamBufferedRenderer;
-import org.lwjgl.input.Keyboard;
+import de.funky_clan.octree.WritableRaster;
+import de.funky_clan.voxel.data.OctreeNode;
+import de.funky_clan.voxel.renderer.OctreeRenderer;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector3f;
 
 /**
  * @author synopia
  */
-public class VoxelEngine {
-    protected Camera camera;
-    protected FontRenderer fontRenderer;
-    protected BaseBufferedRenderer renderer;
-    protected Lighting lighting;
+public class VoxelEngine extends BaseEngine implements WritableRaster {
+    private OctreeNode root;
+    private OctreeRenderer octreeRenderer;
 
-    private GameWindow window;
-    private boolean fpsControl;
-    private boolean showInfo;
+    public VoxelEngine(int size) {
+        root = new OctreeNode(0,0,0,size);
+    }
 
+    @Override
     public void init(GameWindow window) {
-        this.window = window;
-        camera = new Camera(10,10,10);
-        fontRenderer     = new FontRenderer(window);
-        renderer = new StaticBufferedRenderer(0x1000, 0, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
-        lighting = new Lighting();
-        GL11.glEnable(GL11.GL_LIGHTING);
+        super.init(window);
+        octreeRenderer = new OctreeRenderer(getRenderer(), root);
     }
 
-    public void update( int delta ) {
-        if( fpsControl ) {
-            moveCamera(delta);
-        }
-        lighting.update(delta);
-    }
-
-    public void beginRender( int delta ) {
-        lighting.doLighting(camera.getPosition());
-        camera.setView();
-        renderer.prepare();
-    }
-
-    public void endRender( int delta ) {
-        if( isShowInfo() ) {
-            float fps = 1000.f / delta;
-            fontRenderer.print(window, 10, 10, String.format("FPS: %.2f", fps));
-            fontRenderer.print(window, 10, 20, String.format("Triangles: %d", renderer.getTrianglesTotal() ));
-        }
-    }
-
-    protected void moveCamera(int delta) {
-        boolean changedPosition = false;
-        if( Keyboard.isKeyDown(Keyboard.KEY_W) ) {
-            camera.moveLoc(0,0,-1,delta/100.f);
-            changedPosition = true;
-        }
-        if( Keyboard.isKeyDown(Keyboard.KEY_S) ) {
-            camera.moveLoc(0,0,1,delta/100.f);
-            changedPosition = true;
-        }
-        if( Keyboard.isKeyDown(Keyboard.KEY_A) ) {
-            camera.moveLoc(-1,0,0,delta/100.f);
-            changedPosition = true;
-        }
-        if( Keyboard.isKeyDown(Keyboard.KEY_D) ) {
-            camera.moveLoc(1,0,0,delta/100.f);
-            changedPosition = true;
-        }
+    @Override
+    public void update(int delta) {
         if( Mouse.isButtonDown(0) ) {
+            int x = (int) camera.getPosition().getX();
+            int y = (int) camera.getPosition().getY();
+            int z = (int) camera.getPosition().getZ();
+            if( x>0 && y>0 && z>0 ) {
+                setPixel(x, y, z, 1);
+            }
         }
-        if( Mouse.isButtonDown(1) ) {
-        }
-        int mouseDx = Mouse.getDX();
-        int mouseDy = Mouse.getDY();
-        if( mouseDx!=0 ) {
-            camera.rotateGlob( -mouseDx/10.f,0,1,0 );
-        }
-        if( mouseDy!=0 ) {
-            camera.rotateLoc( mouseDy/10.f,1,0,0 );
-        }
-        if( changedPosition ) {
-            Vector3f position = camera.getPosition();
-            System.out.format("%f, %f, %f\n",position.getX(), position.getY(), position.getZ());
-        }
+        super.update(delta);
     }
 
-    public boolean isFpsControl() {
-        return fpsControl;
+    public void render( int delta ) {
+        beginRender(delta);
+        octreeRenderer.render(root, getCamera());
+        endRender(delta);
     }
 
-    public void setFpsControl(boolean fpsControl) {
-        this.fpsControl = fpsControl;
+    @Override
+    public void setPixel(int x, int y, int z, int color) {
+        root.setPixel(x, y, z, color);
     }
 
-    public boolean isShowInfo() {
-        return showInfo;
+    @Override
+    public int getPixel(int x, int y, int z) {
+        return root.getPixel(x, y, z);
     }
 
-    public void setShowInfo(boolean showInfo) {
-        this.showInfo = showInfo;
-    }
-
-    public Camera getCamera() {
-        return camera;
-    }
-
-    public FontRenderer getFontRenderer() {
-        return fontRenderer;
-    }
-
-    public BaseBufferedRenderer getRenderer() {
-        return renderer;
-    }
-
-    public Lighting getLighting() {
-        return lighting;
+    public OctreeNode getRoot() {
+        return root;
     }
 }

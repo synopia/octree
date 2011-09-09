@@ -28,17 +28,21 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
     }
 
     @Override
-    public boolean begin(Object key) {
+    public boolean begin(Object key, boolean force) {
         boolean result = false;
+        Buffer buffer = null;
         if( !buffers.containsKey( key ) ) {
             IntBuffer vboIds = BufferUtils.createIntBuffer(1);
             GL15.glGenBuffers(vboIds);
-            Buffer buffer = new Buffer( createBuffer(), vboIds.get(0));
+            buffer = new Buffer( createBuffer(), vboIds.get(0));
             buffers.put(key, buffer);
             result = true;
         }
         currentKey = key;
-
+        if( force ) {
+            buffer = buffers.get(key);
+            buffer.clear();
+        }
         return result;
     }
 

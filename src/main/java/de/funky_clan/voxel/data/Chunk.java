@@ -5,6 +5,7 @@ package de.funky_clan.voxel.data;
  */
 public class Chunk extends OctreeNode {
     private int[] map;
+    private boolean dirty;
 
     public Chunk(int x, int y, int z, int size) {
         super(x, y, z, size);
@@ -20,6 +21,7 @@ public class Chunk extends OctreeNode {
         int relZ = z-this.z;
         map[relX + ( relY*size+relZ ) * size] = color;
         visible = true;
+        dirty   = true;
     }
 
     @Override
@@ -33,5 +35,13 @@ public class Chunk extends OctreeNode {
     @Override
     public boolean isLeaf() {
         return true;
+    }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 }

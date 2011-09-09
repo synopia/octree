@@ -129,7 +129,10 @@ public abstract class BaseBufferedRenderer {
     }
 
     public abstract void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz);
-    public abstract boolean begin(Object key);
+    public boolean begin(Object key) {
+        return begin(key, false);
+    }
+    public abstract boolean begin(Object key, boolean force);
     public abstract void end();
     public abstract void onBufferFull();
     public abstract void render();
