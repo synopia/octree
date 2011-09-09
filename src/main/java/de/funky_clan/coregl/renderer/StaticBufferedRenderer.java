@@ -4,14 +4,16 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * @author synopia
  */
 public class StaticBufferedRenderer extends BaseBufferedRenderer {
-    private HashMap<Object, Buffer> buffers = new HashMap<Object, Buffer>();
+    private HashMap<Object, VBOBuffer> buffers = new HashMap<Object, VBOBuffer>();
     private Object currentKey;
+    private long totalVBOBytes = 0;
 
     public StaticBufferedRenderer(int size) {
         super(size);
@@ -23,18 +25,22 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
 
     @Override
     public void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz) {
-        Buffer buffer = buffers.get(currentKey);
+        VBOBuffer buffer = buffers.get(currentKey);
         buffer.addVertex(x, y, z, tx, ty, color, nx, ny, nz);
+    }
+
+    @Override
+    public void prepare() {
+        super.prepare();
+        totalVBOBytes = 0;
     }
 
     @Override
     public boolean begin(Object key, boolean force) {
         boolean result = false;
-        Buffer buffer = null;
+        VBOBuffer buffer = null;
         if( !buffers.containsKey( key ) ) {
-            IntBuffer vboIds = BufferUtils.createIntBuffer(1);
-            GL15.glGenBuffers(vboIds);
-            buffer = new Buffer( createBuffer(), vboIds.get(0));
+            buffer = new VBOBuffer();
             buffers.put(key, buffer);
             result = true;
         }
@@ -48,27 +54,37 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
 
     @Override
     public void onBufferFull() {
-        Buffer buffer = buffers.get(currentKey);
+        VBOBuffer buffer = buffers.get(currentKey);
         buffer.resize();
     }
 
     @Override
     public void render() {
-        Buffer buffer = buffers.get(currentKey);
+        VBOBuffer buffer = buffers.get(currentKey);
         buffer.render();
         trianglesTotal += buffer.getVertices()/3;
+        totalVBOBytes += buffer.getByteBuffer().capacity();
     }
 
     @Override
     public void end() {
-        Buffer buffer = buffers.get(currentKey);
+        VBOBuffer buffer = buffers.get(currentKey);
         buffer.upload();
 
     }
 
     @Override
     public void ensureSpace(int vertices) {
-        Buffer buffer = buffers.get(currentKey);
+        VBOBuffer buffer = buffers.get(currentKey);
         buffer.ensureSpace(vertices);
     }
+
+    @Override
+    public ArrayList<String> getDebugInfos() {
+        ArrayList<String> infos = super.getDebugInfos();
+        int noBuffers = buffers.size();
+        infos.add( String.format("VBOBuffers: %d VBOSize: %d kB Waste: %d kB", noBuffers, (totalVBOBytes/1024), (totalVBOBytes-trianglesTotal*3*getStrideSize())/1024));
+        return infos;
+    }
+
 }

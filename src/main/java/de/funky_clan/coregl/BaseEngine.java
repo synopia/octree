@@ -12,6 +12,8 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.util.ArrayList;
+
 /**
  * @author synopia
  */
@@ -51,7 +53,12 @@ public abstract class BaseEngine {
         if( isShowInfo() ) {
             float fps = 1000.f / delta;
             fontRenderer.print(window, 10, 10, String.format("FPS: %.2f", fps));
-            fontRenderer.print(window, 10, 20, String.format("Triangles: %d", renderer.getTrianglesTotal() ));
+            ArrayList<String> infos = renderer.getDebugInfos();
+            int y = 20;
+            for (String info : infos) {
+                fontRenderer.print(window, 10, y, info );
+                y += 10;
+            }
         }
     }
 

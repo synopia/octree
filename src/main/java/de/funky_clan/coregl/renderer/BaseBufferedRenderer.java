@@ -4,29 +4,33 @@ import de.funky_clan.coregl.geom.Vertex;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import sun.net.idn.StringPrep;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 /**
  * @author synopia
  */
 public abstract class BaseBufferedRenderer {
-    public class Buffer {
+    public class VBOBuffer {
         private ByteBuffer byteBuffer;
-        private int buffer;
+        private int vboId;
         private int vertices;
 
-        public Buffer(ByteBuffer byteBuffer, int buffer) {
-            this.byteBuffer = byteBuffer;
-            this.buffer = buffer;
+        public VBOBuffer() {
+            this.byteBuffer = createBuffer();
+            GL15.glGenBuffers(vboIds);
+            this.vboId = vboIds.get(0);
         }
 
         public ByteBuffer getByteBuffer() {
             return byteBuffer;
         }
 
-        public int getBuffer() {
-            return buffer;
+        public int getVboId() {
+            return vboId;
         }
 
         public int getVertices() {
@@ -61,14 +65,14 @@ public abstract class BaseBufferedRenderer {
         }
 
         public void upload() {
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, buffer );
+            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
             setupPointers();
             byteBuffer.flip();
             GL15.glBufferData( GL15.GL_ARRAY_BUFFER, byteBuffer, GL15.GL_STREAM_DRAW );
         }
 
         public void render() {
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, buffer );
+            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
             setupPointers();
             GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, vertices);
         }
@@ -88,6 +92,8 @@ public abstract class BaseBufferedRenderer {
             byteBuffer = newByteBuffer;
         }
     }
+
+    private IntBuffer vboIds;
 
     private float[]     translation = new float[]{0,0,0};
     private float[]     scale = new float[]{1,1,1};
@@ -109,6 +115,7 @@ public abstract class BaseBufferedRenderer {
     }
 
     public BaseBufferedRenderer( int size, int texCoordFormat, int colorFormat, int normalFormat ) {
+        vboIds = BufferUtils.createIntBuffer(1);
         this.bufferSize = size;
         this.texCoordFormat = texCoordFormat;
         this.colorFormat    = colorFormat;
@@ -202,5 +209,10 @@ public abstract class BaseBufferedRenderer {
         addVertex(position[0], position[1], position[2], texCoord[0], texCoord[1], color, normal[0], normal[1], normal[2]);
     }
 
+    public ArrayList<String> getDebugInfos() {
+        ArrayList<String> result = new ArrayList<String>();
+        result.add( String.format("Triangles: %d", trianglesTotal ) );
+        return result;
+    }
 
 }

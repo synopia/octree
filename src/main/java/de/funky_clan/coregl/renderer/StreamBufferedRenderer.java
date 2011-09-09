@@ -13,7 +13,7 @@ import java.util.List;
 public class StreamBufferedRenderer extends BaseBufferedRenderer {
     public static final int NUMBER_OF_BUFFERS = 8;
 
-    protected List<Buffer> buffers = new ArrayList<Buffer>();
+    protected List<VBOBuffer> buffers = new ArrayList<VBOBuffer>();
     protected int bufferIndex = 0;
 
     public StreamBufferedRenderer(int size) {
@@ -31,10 +31,8 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
     @Override
     public boolean begin(Object key, boolean force) {
         if( buffers.size()==0 ) {
-            IntBuffer vboIds = BufferUtils.createIntBuffer(NUMBER_OF_BUFFERS);
-            GL15.glGenBuffers(vboIds);
             for (int i = 0; i < NUMBER_OF_BUFFERS; i++) {
-                buffers.add( new Buffer(createBuffer(), vboIds.get(i)));
+                buffers.add( new VBOBuffer());
             }
         }
 
@@ -47,7 +45,7 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
 
     @Override
     public void onBufferFull() {
-        Buffer buffer = buffers.get(bufferIndex);
+        VBOBuffer buffer = buffers.get(bufferIndex);
         if( buffer.getVertices()==0 ) {
             return;
         }
@@ -64,7 +62,15 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
 
     @Override
     public void ensureSpace(int vertices) {
-        Buffer buffer = buffers.get(bufferIndex);
+        VBOBuffer buffer = buffers.get(bufferIndex);
         buffer.ensureSpace(vertices);
+    }
+
+    @Override
+    public ArrayList<String> getDebugInfos() {
+        ArrayList<String> infos = super.getDebugInfos();
+        int noBuffers = buffers.size();
+        infos.add( String.format("VBOBuffers: %d", noBuffers));
+        return infos;
     }
 }
