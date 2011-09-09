@@ -28,7 +28,7 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
     public boolean begin(Object key, boolean force) {
         if( buffers.size()==0 ) {
             for (int i = 0; i < NUMBER_OF_BUFFERS; i++) {
-                buffers.add( new VBOBuffer(BaseBufferedRenderer.this));
+                buffers.add( createVBOBuffer() );
             }
         }
 

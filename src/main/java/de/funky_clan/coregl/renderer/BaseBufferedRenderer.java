@@ -62,6 +62,10 @@ public abstract class BaseBufferedRenderer {
         return vboIds.get(0);
     }
 
+    protected VBOBuffer createVBOBuffer() {
+        return new VBOBuffer(this);
+    }
+
     public abstract void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz);
     public boolean begin(Object key) {
         return begin(key, false);

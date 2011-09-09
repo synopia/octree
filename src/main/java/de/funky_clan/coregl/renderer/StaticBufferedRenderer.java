@@ -36,7 +36,7 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
         boolean result = false;
         VBOBuffer buffer = null;
         if( !buffers.containsKey( key ) ) {
-            buffer = new VBOBuffer(BaseBufferedRenderer.this);
+            buffer = createVBOBuffer();
             buffers.put(key, buffer);
             result = true;
         }
