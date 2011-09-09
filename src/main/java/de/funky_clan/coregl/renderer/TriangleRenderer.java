@@ -6,9 +6,9 @@ import de.funky_clan.coregl.geom.Triangle;
  * @author synopia
  */
 public class TriangleRenderer {
-    private VBORenderer renderer;
+    private BaseBufferedRenderer renderer;
 
-    public TriangleRenderer(VBORenderer renderer) {
+    public TriangleRenderer(BaseBufferedRenderer renderer) {
         this.renderer = renderer;
     }
 

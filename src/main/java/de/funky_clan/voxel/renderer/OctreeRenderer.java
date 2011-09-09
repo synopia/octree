@@ -2,7 +2,6 @@ package de.funky_clan.voxel.renderer;
 
 import de.funky_clan.coregl.Camera;
 import de.funky_clan.coregl.renderer.BaseBufferedRenderer;
-import de.funky_clan.coregl.renderer.VBORenderer;
 import de.funky_clan.voxel.data.Chunk;
 import de.funky_clan.voxel.data.OctreeNode;
 

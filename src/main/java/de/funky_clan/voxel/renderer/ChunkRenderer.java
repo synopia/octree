@@ -2,7 +2,6 @@ package de.funky_clan.voxel.renderer;
 
 import de.funky_clan.coregl.renderer.BaseBufferedRenderer;
 import de.funky_clan.coregl.renderer.CubeRenderer;
-import de.funky_clan.coregl.renderer.VBORenderer;
 import de.funky_clan.voxel.data.Chunk;
 import de.funky_clan.voxel.data.OctreeNode;
 import org.lwjgl.opengl.GL11;
@@ -16,7 +15,6 @@ public class ChunkRenderer {
     private BaseBufferedRenderer renderer;
     private CubeRenderer cubeRenderer;
     private OctreeNode root;
-    private HashMap<Chunk, VBORenderer> renderers = new HashMap<Chunk, VBORenderer>();
 
     private int[][] neighbors = new int[][]{
         {0,0,1}, {0,0,-1}, {0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}
