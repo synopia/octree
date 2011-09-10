@@ -29,6 +29,9 @@ public class Chunk extends OctreeNode {
         int relX = x-this.x;
         int relY = y-this.y;
         int relZ = z-this.z;
+        if( relX<0 || relY<0 || relZ<0 || relX>=size || relY>=size || relZ>=size ) {
+            return parent.getPixel(x, y, z);
+        }
         return map[relX + ( relY*size+relZ ) * size];
     }
 

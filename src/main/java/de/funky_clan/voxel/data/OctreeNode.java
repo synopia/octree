@@ -17,7 +17,8 @@ public class OctreeNode implements WritableRaster {
     protected int z;
     protected int size;
     protected boolean visible;
-    private OctreeNode[] children = new OctreeNode[8];
+    protected OctreeNode[] children = new OctreeNode[8];
+    protected OctreeNode parent;
 
     private Sphere boundingSphere;
     private Cube   boundingBox;
@@ -48,10 +49,12 @@ public class OctreeNode implements WritableRaster {
         if( newSize>16 ) {
             if( children[code]==null ) {
                 children[code] = new OctreeNode( this.x+OFFSETS[code][0]*newSize, this.y+OFFSETS[code][1]*newSize, this.z+OFFSETS[code][2]*newSize, newSize);
+                children[code].setParent(this);
             }
         } else {
             if( children[code]==null ) {
                 children[code] = new Chunk(this.x+OFFSETS[code][0]*newSize, this.y+OFFSETS[code][1]*newSize, this.z+OFFSETS[code][2]*newSize, newSize);
+                children[code].setParent(this);
             }
         }
         children[code].setPixel(x, y, z, color);
@@ -63,6 +66,9 @@ public class OctreeNode implements WritableRaster {
         int relX = x-this.x;
         int relY = y-this.y;
         int relZ = z-this.z;
+        if( relX<0 || relY<0 || relZ<0 || relX>=size || relY>=size || relZ>=size ) {
+            return parent.getPixel(x, y, z);
+        }
         int code = 0;
         int newSize = size/2;
         if( relX>=newSize ) code |= 1;
@@ -119,5 +125,13 @@ public class OctreeNode implements WritableRaster {
     @Override
     public String toString() {
         return x+", "+y+", "+z+" size="+size;
+    }
+
+    public OctreeNode getParent() {
+        return parent;
+    }
+
+    public void setParent(OctreeNode parent) {
+        this.parent = parent;
     }
 }

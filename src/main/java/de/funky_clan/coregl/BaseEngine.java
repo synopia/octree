@@ -31,7 +31,7 @@ public abstract class BaseEngine {
         this.window = window;
         camera = new Camera(10,10,10);
         fontRenderer     = new FontRenderer(window);
-        renderer = new StreamBufferedRenderer(0x20000, 0, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
+        renderer = new StaticBufferedRenderer(0x1000, 0, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
         lighting = new Lighting();
         GL11.glEnable(GL11.GL_LIGHTING);
     }

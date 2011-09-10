@@ -50,17 +50,10 @@ public class ChunkRenderer {
                             int nz = z + neighbors[i][2];
 
                             boolean empty;
-                            if( nx>=0 && ny>=0 && nz>=0 && nx<size && ny<size && nz<size ) {
-                                nx += chunk.getX();
-                                ny += chunk.getY();
-                                nz += chunk.getZ();
-                                empty = chunk.getPixel(nx, ny, nz) == 0;
-                            } else {
-                                nx += chunk.getX();
-                                ny += chunk.getY();
-                                nz += chunk.getZ();
-                                empty = root.getPixel(nx,ny,nz) == 0;
-                            }
+                            nx += chunk.getX();
+                            ny += chunk.getY();
+                            nz += chunk.getZ();
+                            empty = chunk.getPixel(nx, ny, nz) == 0;
                             if(empty) {
                                 totallyEmpty = false;
                                 cubeRenderer.renderCubeFace(x + chunk.getX(), y + chunk.getY(), z + chunk.getZ(), 1, color, i);

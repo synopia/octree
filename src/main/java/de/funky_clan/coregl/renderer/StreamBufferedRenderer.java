@@ -50,6 +50,10 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
         buffer.render();
         trianglesTotal += buffer.getVertices()/3;
         buffer.clear();
+        bufferIndex ++;
+        if( bufferIndex>=buffers.size() ) {
+            bufferIndex = 0;
+        }
     }
 
     @Override
