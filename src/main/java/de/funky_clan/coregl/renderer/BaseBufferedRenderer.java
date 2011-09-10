@@ -82,7 +82,11 @@ public abstract class BaseBufferedRenderer {
     public abstract void end();
     public abstract void onBufferFull();
     public abstract void render();
-    public abstract void ensureSpace( int vertices );
+
+    public void ensureSpace(int vertices) {
+        VBOBuffer buffer = getCurrentBuffer();
+        buffer.ensureSpace(vertices);
+    }
 
     private static int sizeOfFormat( int format ) {
         switch( format ) {

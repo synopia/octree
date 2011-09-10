@@ -58,12 +58,6 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
     }
 
     @Override
-    public void ensureSpace(int vertices) {
-        VBOBuffer buffer = buffers.get(bufferIndex);
-        buffer.ensureSpace(vertices);
-    }
-
-    @Override
     public ArrayList<String> getDebugInfos() {
         ArrayList<String> infos = super.getDebugInfos();
         int noBuffers = buffers.size();

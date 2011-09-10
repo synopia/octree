@@ -8,8 +8,9 @@ import java.util.HashMap;
  */
 public class StaticBufferedRenderer extends BaseBufferedRenderer {
     private HashMap<Object, VBOBuffer> buffers = new HashMap<Object, VBOBuffer>();
-    private Object currentKey;
     private long totalVBOBytes = 0;
+    private Object currentKey;
+    private VBOBuffer currentBuffer;
 
     public StaticBufferedRenderer(int size) {
         super(size);
@@ -21,7 +22,7 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
 
     @Override
     protected VBOBuffer getCurrentBuffer() {
-        return buffers.get(currentKey);
+        return currentBuffer;
     }
 
     @Override
@@ -33,45 +34,37 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
     @Override
     public boolean begin(Object key, boolean force) {
         boolean result = false;
-        VBOBuffer buffer = null;
         if( !buffers.containsKey( key ) ) {
-            buffer = createVBOBuffer();
-            buffers.put(key, buffer);
+            currentBuffer = createVBOBuffer();
+            buffers.put(key, currentBuffer);
             result = true;
+        } else {
+            currentBuffer = buffers.get(currentKey);
         }
-        currentKey = key;
+        currentKey    = key;
+        currentBuffer = buffers.get(currentKey);
+
         if( force ) {
-            buffer = buffers.get(key);
-            buffer.clear();
+            currentBuffer.clear();
         }
         return result;
     }
 
     @Override
     public void onBufferFull() {
-        VBOBuffer buffer = buffers.get(currentKey);
-        buffer.resize();
+        currentBuffer.resize();
     }
 
     @Override
     public void render() {
-        VBOBuffer buffer = buffers.get(currentKey);
-        buffer.render();
-        trianglesTotal += buffer.getVertices()/3;
-        totalVBOBytes += buffer.getByteBuffer().capacity();
+        currentBuffer.render();
+        trianglesTotal += currentBuffer.getVertices()/3;
+        totalVBOBytes += currentBuffer.getByteBuffer().capacity();
     }
 
     @Override
     public void end() {
-        VBOBuffer buffer = buffers.get(currentKey);
-        buffer.upload();
-
-    }
-
-    @Override
-    public void ensureSpace(int vertices) {
-        VBOBuffer buffer = buffers.get(currentKey);
-        buffer.ensureSpace(vertices);
+        currentBuffer.upload();
     }
 
     @Override
