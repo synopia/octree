@@ -66,10 +66,18 @@ public abstract class BaseBufferedRenderer {
         return new VBOBuffer(this);
     }
 
-    public abstract void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz);
+    public void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz) {
+        getCurrentBuffer().addVertex(
+            x * scale[0] + translation[0],
+            y * scale[1] + translation[1],
+            z * scale[2] + translation[2],
+            tx, ty, color, nx, ny, nz);
+    }
+
     public boolean begin(Object key) {
         return begin(key, false);
     }
+    protected abstract VBOBuffer getCurrentBuffer();
     public abstract boolean begin(Object key, boolean force);
     public abstract void end();
     public abstract void onBufferFull();
@@ -146,14 +154,6 @@ public abstract class BaseBufferedRenderer {
         return result;
     }
 
-    public float[] getTranslation() {
-        return translation;
-    }
-
-    public float[] getScale() {
-        return scale;
-    }
-
     public int getTexCoordFormat() {
         return texCoordFormat;
     }
@@ -166,15 +166,4 @@ public abstract class BaseBufferedRenderer {
         return normalFormat;
     }
 
-    public int getTexCoordOffset() {
-        return texCoordOffset;
-    }
-
-    public int getColorOffset() {
-        return colorOffset;
-    }
-
-    public int getNormalOffset() {
-        return normalOffset;
-    }
 }

@@ -37,9 +37,9 @@ public class VBOBuffer {
         ensureSpace(1);
         vertices ++;
 
-        byteBuffer.putFloat(x* renderer.getScale()[0] + renderer.getTranslation()[0]);
-        byteBuffer.putFloat(y* renderer.getScale()[1] + renderer.getTranslation()[1]);
-        byteBuffer.putFloat(z* renderer.getScale()[2] + renderer.getTranslation()[2]);
+        byteBuffer.putFloat(x);
+        byteBuffer.putFloat(y);
+        byteBuffer.putFloat(z);
         if( renderer.getTexCoordFormat()!=0 ) {
             byteBuffer.putFloat(tx);
             byteBuffer.putFloat(ty);

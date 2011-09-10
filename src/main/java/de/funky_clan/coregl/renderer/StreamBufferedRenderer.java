@@ -20,8 +20,9 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
         super(size, texCoordFormat, colorFormat, normalFormat);
     }
 
-    public void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz) {
-        buffers.get(bufferIndex).addVertex(x, y, z, tx, ty, color, nx, ny, nz);
+    @Override
+    protected VBOBuffer getCurrentBuffer() {
+        return buffers.get(bufferIndex);
     }
 
     @Override
