@@ -26,17 +26,17 @@ public class CubeRenderer {
         quadRenderer = new QuadRenderer(renderer);
     }
 
-    public void addCube( float x, float y, float z, float size, int color) {
+    public void renderCube(float x, float y, float z, float size, int color) {
         renderer.setTranslation(x, y, z);
         renderer.setScale(size, size, size);
         for (float[][][] FACE : FACES) {
-            quadRenderer.addQuad(FACE[0], FACE[1], color, FACE[2][0]);
+            quadRenderer.renderQuad(FACE[0], FACE[1], color, FACE[2][0]);
         }
 
     }
-    public void addCubeFace( float x, float y, float z, float size, int color, int faceId ) {
+    public void renderCubeFace(float x, float y, float z, float size, int color, int faceId) {
         renderer.setTranslation(x, y, z);
-        quadRenderer.addQuad(FACES[faceId][0], FACES[faceId][1], color, FACES[faceId][2][0] );
+        quadRenderer.renderQuad(FACES[faceId][0], FACES[faceId][1], color, FACES[faceId][2][0]);
     }
 
 }

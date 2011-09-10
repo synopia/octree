@@ -23,7 +23,7 @@ public class ChunkRenderer {
         this.root = root;
     }
 
-    public void addChunk( Chunk chunk ) {
+    public void renderChunk(Chunk chunk) {
         if( !chunk.isVisible() ) {
             return;
         }
@@ -63,7 +63,7 @@ public class ChunkRenderer {
                             }
                             if(empty) {
                                 totallyEmpty = false;
-                                cubeRenderer.addCubeFace(x+chunk.getX(), y+chunk.getY(), z+chunk.getZ(), 1, color, i);
+                                cubeRenderer.renderCubeFace(x + chunk.getX(), y + chunk.getY(), z + chunk.getZ(), 1, color, i);
                             }
                         }
                     }

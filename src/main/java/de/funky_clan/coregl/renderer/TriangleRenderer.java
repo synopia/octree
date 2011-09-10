@@ -12,14 +12,14 @@ public class TriangleRenderer {
         this.renderer = renderer;
     }
 
-    public void addTriangle( Triangle tri ) {
+    public void renderTriangle(Triangle tri) {
         renderer.ensureSpace(3);
         renderer.addVertex(tri.getA());
         renderer.addVertex(tri.getB());
         renderer.addVertex(tri.getC());
     }
 
-    public void addTriangle( float[][] positions, float[][] texCoords, int color, float[] normal ) {
+    public void renderTriangle(float[][] positions, float[][] texCoords, int color, float[] normal) {
         renderer.ensureSpace(3);
         renderer.addVertex(positions[0], texCoords[0], color, normal);
         renderer.addVertex(positions[1], texCoords[1], color, normal);

@@ -53,7 +53,7 @@ public class OctreeRenderer {
                 continue;
             }
             if (child.isLeaf()) {
-                chunkRenderer.addChunk((Chunk) child);
+                chunkRenderer.renderChunk((Chunk) child);
             } else {
                 render(child, camera, testChildren);
             }

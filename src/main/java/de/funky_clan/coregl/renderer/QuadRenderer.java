@@ -12,7 +12,7 @@ public class QuadRenderer {
         this.renderer = renderer;
     }
 
-    public void addQuad( Quad quad ) {
+    public void renderQuad(Quad quad) {
         renderer.ensureSpace(6);
         renderer.addVertex(quad.getA());
         renderer.addVertex(quad.getB());
@@ -22,7 +22,7 @@ public class QuadRenderer {
         renderer.addVertex(quad.getD());
     }
 
-    public void addQuad( float[][] positions, float[][] texCoords, int color , float[] normal ) {
+    public void renderQuad(float[][] positions, float[][] texCoords, int color, float[] normal) {
         renderer.ensureSpace(6);
         renderer.addVertex(positions[0], texCoords[0], color, normal);
         renderer.addVertex(positions[1], texCoords[1], color, normal);
