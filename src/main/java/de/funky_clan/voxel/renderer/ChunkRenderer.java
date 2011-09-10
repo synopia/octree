@@ -4,9 +4,6 @@ import de.funky_clan.coregl.renderer.BaseBufferedRenderer;
 import de.funky_clan.coregl.renderer.CubeRenderer;
 import de.funky_clan.voxel.data.Chunk;
 import de.funky_clan.voxel.data.OctreeNode;
-import org.lwjgl.opengl.GL11;
-
-import java.util.HashMap;
 
 /**
  * @author synopia
@@ -35,7 +32,7 @@ public class ChunkRenderer {
                 renderer.render();
                 return;
             } else {
-                renderer.begin(chunk, true);
+                renderer.clear();
             }
         }
 

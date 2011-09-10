@@ -32,7 +32,7 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
     }
 
     @Override
-    public boolean begin(Object key, boolean force) {
+    public boolean begin(Object key) {
         boolean result = false;
         if( !buffers.containsKey( key ) ) {
             currentBuffer = createVBOBuffer();
@@ -44,9 +44,6 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
         currentKey    = key;
         currentBuffer = buffers.get(currentKey);
 
-        if( force ) {
-            currentBuffer.clear();
-        }
         return result;
     }
 
@@ -65,6 +62,11 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
     @Override
     public void end() {
         currentBuffer.upload();
+    }
+
+    @Override
+    public void clear() {
+        currentBuffer.clear();
     }
 
     @Override

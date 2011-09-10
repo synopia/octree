@@ -4,7 +4,6 @@ import de.funky_clan.coregl.geom.Vertex;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import sun.net.idn.StringPrep;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -74,14 +73,12 @@ public abstract class BaseBufferedRenderer {
             tx, ty, color, nx, ny, nz);
     }
 
-    public boolean begin(Object key) {
-        return begin(key, false);
-    }
     protected abstract VBOBuffer getCurrentBuffer();
-    public abstract boolean begin(Object key, boolean force);
+    public abstract boolean begin(Object key);
     public abstract void end();
     public abstract void onBufferFull();
     public abstract void render();
+    public abstract void clear();
 
     public void ensureSpace(int vertices) {
         VBOBuffer buffer = getCurrentBuffer();
