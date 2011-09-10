@@ -5,95 +5,97 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.Arrays;
 
 /**
 * @author synopia
 */
-public class VBOBuffer implements VBO {
+public class VBOBuffer2 implements VBO{
     private ByteBuffer byteBuffer;
+    private IntBuffer intBuffer;
     private int vboId;
     private int vertices;
     private BaseBufferedRenderer renderer;
+    private int[] rawBuffer;
+    private int pos;
 
-    public VBOBuffer(BaseBufferedRenderer renderer) {
+    public VBOBuffer2(BaseBufferedRenderer renderer) {
         this.renderer = renderer;
         this.byteBuffer = renderer.createBuffer();
+        this.intBuffer  = byteBuffer.asIntBuffer();
         this.vboId = renderer.genVBOId();
+        rawBuffer = new int[byteBuffer.capacity()>>2];
     }
 
-    @Override
     public ByteBuffer getByteBuffer() {
         return byteBuffer;
     }
 
-    @Override
     public int getVboId() {
         return vboId;
     }
 
-    @Override
     public int getVertices() {
         return vertices;
     }
 
-    @Override
     public void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz) {
         ensureSpace(1);
         vertices ++;
 
-        byteBuffer.putFloat(x);
-        byteBuffer.putFloat(y);
-        byteBuffer.putFloat(z);
+        rawBuffer[pos] = Float.floatToRawIntBits(x); pos++;
+        rawBuffer[pos] = Float.floatToRawIntBits(y); pos++;
+        rawBuffer[pos] = Float.floatToRawIntBits(z); pos++;
         if( renderer.getTexCoordFormat()!=0 ) {
-            byteBuffer.putFloat(tx);
-            byteBuffer.putFloat(ty);
+            rawBuffer[pos] = Float.floatToRawIntBits(tx); pos++;
+            rawBuffer[pos] = Float.floatToRawIntBits(ty); pos++;
         }
         if( renderer.getColorFormat()!=0 ) {
-            byteBuffer.putInt(color);
+            rawBuffer[pos] = color; pos++;
         }
         if( renderer.getNormalFormat()!=0 ) {
-            byteBuffer.putFloat(nx);
-            byteBuffer.putFloat(ny);
-            byteBuffer.putFloat(nz);
+            rawBuffer[pos] = Float.floatToRawIntBits(nx); pos++;
+            rawBuffer[pos] = Float.floatToRawIntBits(ny); pos++;
+            rawBuffer[pos] = Float.floatToRawIntBits(nz); pos++;
         }
     }
 
-    @Override
     public void ensureSpace(int vertices) {
-        if( byteBuffer.remaining()<vertices* renderer.getStrideSize() ) {
+        if( (rawBuffer.length-pos)<<2<vertices* renderer.getStrideSize() ) {
             renderer.onBufferFull();
         }
     }
 
-    @Override
     public void upload() {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
         renderer.setupPointers();
-        byteBuffer.flip();
-        GL15.glBufferData( GL15.GL_ARRAY_BUFFER, byteBuffer, GL15.GL_STREAM_DRAW );
+        intBuffer.rewind();
+        intBuffer.put(rawBuffer);
+        byteBuffer.rewind();
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, byteBuffer, GL15.GL_STREAM_DRAW);
     }
 
-    @Override
     public void render() {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
         renderer.setupPointers();
         GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, vertices);
     }
 
-    @Override
     public void clear() {
         byteBuffer.clear();
+        pos = 0;
         vertices = 0;
     }
 
-    @Override
     public void resize() {
         int size = byteBuffer.capacity()*2;
-        ByteBuffer newByteBuffer = BufferUtils.createByteBuffer(size);
-        byteBuffer.rewind();
-        newByteBuffer.put(byteBuffer);
-        newByteBuffer.position(vertices * renderer.getStrideSize());
+        byteBuffer = BufferUtils.createByteBuffer(size);
+        intBuffer = byteBuffer.asIntBuffer();
 
-        byteBuffer = newByteBuffer;
+        int[] newBuffer = new int[size>>2];
+        System.arraycopy(rawBuffer, 0, newBuffer, 0, pos);
+
+        rawBuffer = newBuffer;
     }
 }

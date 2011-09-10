@@ -7,10 +7,10 @@ import java.util.HashMap;
  * @author synopia
  */
 public class StaticBufferedRenderer extends BaseBufferedRenderer {
-    private HashMap<Object, VBOBuffer> buffers = new HashMap<Object, VBOBuffer>();
+    private HashMap<Object, VBO> buffers = new HashMap<Object, VBO>();
     private long totalVBOBytes = 0;
     private Object currentKey;
-    private VBOBuffer currentBuffer;
+    private VBO currentBuffer;
 
     public StaticBufferedRenderer(int size) {
         super(size);
@@ -21,7 +21,7 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
     }
 
     @Override
-    protected VBOBuffer getCurrentBuffer() {
+    protected VBO getCurrentBuffer() {
         return currentBuffer;
     }
 

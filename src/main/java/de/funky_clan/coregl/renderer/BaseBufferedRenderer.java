@@ -61,7 +61,7 @@ public abstract class BaseBufferedRenderer {
         return vboIds.get(0);
     }
 
-    protected VBOBuffer createVBOBuffer() {
+    protected VBO createVBOBuffer() {
         return new VBOBuffer(this);
     }
 
@@ -73,7 +73,7 @@ public abstract class BaseBufferedRenderer {
             tx, ty, color, nx, ny, nz);
     }
 
-    protected abstract VBOBuffer getCurrentBuffer();
+    protected abstract VBO getCurrentBuffer();
     public abstract boolean begin(Object key);
     public abstract void end();
     public abstract void onBufferFull();
@@ -81,7 +81,7 @@ public abstract class BaseBufferedRenderer {
     public abstract void clear();
 
     public void ensureSpace(int vertices) {
-        VBOBuffer buffer = getCurrentBuffer();
+        VBO buffer = getCurrentBuffer();
         buffer.ensureSpace(vertices);
     }
 

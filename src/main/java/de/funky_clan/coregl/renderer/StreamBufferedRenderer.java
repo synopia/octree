@@ -9,7 +9,7 @@ import java.util.List;
 public class StreamBufferedRenderer extends BaseBufferedRenderer {
     public static final int NUMBER_OF_BUFFERS = 8;
 
-    protected List<VBOBuffer> buffers = new ArrayList<VBOBuffer>();
+    protected List<VBO> buffers = new ArrayList<VBO>();
     protected int bufferIndex = 0;
 
     public StreamBufferedRenderer(int size) {
@@ -21,7 +21,7 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
     }
 
     @Override
-    protected VBOBuffer getCurrentBuffer() {
+    protected VBO getCurrentBuffer() {
         return buffers.get(bufferIndex);
     }
 
@@ -42,7 +42,7 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
 
     @Override
     public void onBufferFull() {
-        VBOBuffer buffer = buffers.get(bufferIndex);
+        VBO buffer = buffers.get(bufferIndex);
         if( buffer.getVertices()==0 ) {
             return;
         }

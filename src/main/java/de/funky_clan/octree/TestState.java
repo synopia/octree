@@ -38,12 +38,12 @@ public class TestState implements State {
         SphereGenerator s = new SphereGenerator();
         OctreeNode octree = engine.getRoot();
 
-        RegionFileLoader regionFileLoader = new RegionFileLoader();
-        for (int i = 0; i < 50; i++) {
-            for (int j = 0; j < 50; j++) {
-                regionFileLoader.load(octree, i,j);
-            }
-        }
+//        RegionFileLoader regionFileLoader = new RegionFileLoader();
+//        for (int i = 0; i < 50; i++) {
+//            for (int j = 0; j < 50; j++) {
+//                regionFileLoader.load(octree, i,j);
+//            }
+//        }
         SchematicLoader loader = new SchematicLoader();
 //        loader.load(octree, "Destiny.schematic");
 //        octree.setPixel(128,128,128,100);
@@ -51,7 +51,7 @@ public class TestState implements State {
         octree.setPixel(2,1,1,100);
         octree.setPixel(1,2,1,100);
         octree.setPixel(1,1,2,100);
-//        s.generate(octree, 128, 128, 128, 110);
+        s.generate(octree, 128, 128, 128, 110);
 //        s.generate(octree, 256, 128, 128, 110);
 //        s.generate(octree, 256, 256, 128, 110);
 //        s.generate(octree, 256, 256, 256, 110);
@@ -88,7 +88,7 @@ public class TestState implements State {
         float x = (float) Math.cos( angle ) * 128*2;
         float z = (float) Math.sin( angle ) * 128*2;
 
-//        engine.getCamera().lookAt(x+128, 128, z+128, 128,128,128,0,1,0);
+        engine.getCamera().lookAt(x+128, 128, z+128, 128,128,128,0,1,0);
     }
 
     public void render(GameWindow window, int delta) {
