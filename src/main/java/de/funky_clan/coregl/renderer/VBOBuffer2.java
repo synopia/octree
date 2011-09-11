@@ -98,4 +98,9 @@ public class VBOBuffer2 implements VBO{
 
         rawBuffer = newBuffer;
     }
+
+    @Override
+    public void free() {
+        clear();
+    }
 }

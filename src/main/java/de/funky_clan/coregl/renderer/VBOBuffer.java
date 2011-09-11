@@ -88,12 +88,17 @@ public class VBOBuffer implements VBO {
 
     @Override
     public void resize() {
-        int size = byteBuffer.capacity()*2;
+        int size = byteBuffer.capacity()+0x1000;
         ByteBuffer newByteBuffer = BufferUtils.createByteBuffer(size);
         byteBuffer.rewind();
         newByteBuffer.put(byteBuffer);
         newByteBuffer.position(vertices * renderer.getStrideSize());
 
         byteBuffer = newByteBuffer;
+    }
+
+    @Override
+    public void free() {
+        clear();
     }
 }

@@ -23,4 +23,6 @@ public interface VBO {
     void clear();
 
     void resize();
+
+    void free();
 }
