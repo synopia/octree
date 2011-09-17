@@ -1,5 +1,7 @@
 package de.funky_clan.coregl.renderer;
 
+import de.funky_clan.voxel.data.Chunk;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,11 +12,7 @@ import java.util.Set;
  * @author synopia
  */
 public class StaticBufferedRenderer extends BaseBufferedRenderer {
-    private static class Entry {
-        private VBO buffer;
-        private int count;
-    }
-    private HashMap<Object, Entry> buffers = new HashMap<Object, Entry>();
+    private HashMap<Object, VBO> buffers = new HashMap<Object, VBO>();
     private long totalVBOBytes = 0;
     private Object currentKey;
     private VBO currentBuffer;
@@ -43,37 +41,29 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
     }
 
     @Override
+    public void release(Object key) {
+        VBO vbo = buffers.remove(key);
+        if( vbo!=null ) {
+            freeList.add(vbo);
+            vbo.free();
+        }
+    }
+
+    @Override
     public void prepare() {
         super.prepare();
         totalVBOBytes = 0;
-        Set<Object> keys = new HashSet<Object>(buffers.keySet());
-
-        for (Object key : keys) {
-            Entry entry = buffers.get(key);
-            if( entry.count<=0 ) {
-                buffers.remove(key);
-                freeList.add(entry.buffer);
-                entry.buffer.free();
-            } else {
-                entry.count --;
-            }
-        }
     }
 
     @Override
     public boolean begin(Object key) {
         boolean result = false;
         if( !buffers.containsKey( key ) ) {
-            Entry entry = new Entry();
             currentBuffer = createVBOBuffer();
-            entry.buffer = currentBuffer;
-            entry.count  = 100;
-            buffers.put(key, entry);
+            buffers.put(key, currentBuffer);
             result = true;
         } else {
-            Entry entry = buffers.get(currentKey);
-            entry.count = 100;
-            currentBuffer = entry.buffer;
+            currentBuffer = buffers.get(currentKey);
         }
         currentKey    = key;
 

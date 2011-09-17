@@ -26,6 +26,11 @@ public class StreamBufferedRenderer extends BaseBufferedRenderer {
     }
 
     @Override
+    public void release(Object key) {
+
+    }
+
+    @Override
     public boolean begin(Object key) {
         if( buffers.size()==0 ) {
             for (int i = 0; i < NUMBER_OF_BUFFERS; i++) {

@@ -70,7 +70,7 @@ public class VBOBuffer implements VBO {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
         renderer.setupPointers();
         byteBuffer.flip();
-        GL15.glBufferData( GL15.GL_ARRAY_BUFFER, byteBuffer, GL15.GL_STREAM_DRAW );
+        GL15.glBufferData( GL15.GL_ARRAY_BUFFER, byteBuffer, GL15.GL_STATIC_DRAW );
     }
 
     @Override
@@ -88,12 +88,11 @@ public class VBOBuffer implements VBO {
 
     @Override
     public void resize() {
-        int size = byteBuffer.capacity()+0x1000;
+        int size = byteBuffer.capacity()*2;
         ByteBuffer newByteBuffer = BufferUtils.createByteBuffer(size);
         byteBuffer.rewind();
         newByteBuffer.put(byteBuffer);
         newByteBuffer.position(vertices * renderer.getStrideSize());
-
         byteBuffer = newByteBuffer;
     }
 

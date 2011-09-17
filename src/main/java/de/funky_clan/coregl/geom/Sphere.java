@@ -41,4 +41,21 @@ public class Sphere {
     public String toString() {
         return position + ", r=" + radius;
     }
+
+    public Halfspace sphereInSphere(Sphere other) {
+        Vector3f diff = new Vector3f();
+        Vector3f.sub(position, other.getPosition(), diff);
+        float radiusSq = (radius + other.getRadius())*(radius + other.getRadius());
+        float distSq = diff.lengthSquared();
+        if( distSq >radiusSq ) {
+            return Halfspace.OUTSIDE;
+        }
+        if( distSq <radiusSq ) {
+            float minRadiusSq = (radius - other.getRadius())*(radius - other.getRadius());
+            if( distSq<minRadiusSq ) {
+                return Halfspace.INSIDE;
+            }
+        }
+        return Halfspace.INTERSECT;
+    }
 }

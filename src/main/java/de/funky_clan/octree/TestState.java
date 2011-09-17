@@ -45,7 +45,7 @@ public class TestState implements State {
             }
         }
         SchematicLoader loader = new SchematicLoader();
-//        loader.load(octree, "Destiny.schematic");
+//        loader.load(octree, "turm1.schematic");
 //        octree.setPixel(128,128,128,100);
         octree.setPixel(1,1,1,100);
         octree.setPixel(2,1,1,100);

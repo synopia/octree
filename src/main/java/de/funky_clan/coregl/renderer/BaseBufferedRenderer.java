@@ -167,4 +167,5 @@ public abstract class BaseBufferedRenderer {
         return normalFormat;
     }
 
+    public abstract void release(Object key);
 }
