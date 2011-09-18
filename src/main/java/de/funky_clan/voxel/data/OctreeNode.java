@@ -46,7 +46,7 @@ public class OctreeNode implements WritableRaster {
         if( relY>=newSize ) code |= 2;
         if( relZ>=newSize ) code |= 4;
 
-        if( newSize>8 ) {
+        if( newSize>16 ) {
             if( children[code]==null ) {
                 children[code] = new OctreeNode( this.x+OFFSETS[code][0]*newSize, this.y+OFFSETS[code][1]*newSize, this.z+OFFSETS[code][2]*newSize, newSize);
                 children[code].setParent(this);

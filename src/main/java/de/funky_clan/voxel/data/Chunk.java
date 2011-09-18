@@ -6,6 +6,7 @@ package de.funky_clan.voxel.data;
 public class Chunk extends OctreeNode {
     private int[] map;
     private boolean dirty;
+    private int state;
 
     public Chunk(int x, int y, int z, int size) {
         super(x, y, z, size);
@@ -46,5 +47,13 @@ public class Chunk extends OctreeNode {
 
     public void setDirty(boolean dirty) {
         this.dirty = dirty;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }

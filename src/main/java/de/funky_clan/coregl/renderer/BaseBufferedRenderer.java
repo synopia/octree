@@ -98,22 +98,22 @@ public abstract class BaseBufferedRenderer {
     }
 
     public void setupPointers() {
-        GL11.glVertexPointer( 3, GL11.GL_FLOAT, strideSize, 0);
         GL11.glEnableClientState( GL11.GL_VERTEX_ARRAY );
+        GL11.glVertexPointer( 3, GL11.GL_FLOAT, strideSize, 0);
 
         if( texCoordFormat!=0 ) {
-            GL11.glTexCoordPointer( 2, texCoordFormat, strideSize, texCoordOffset );
             GL11.glEnableClientState( GL11.GL_TEXTURE_COORD_ARRAY );
+            GL11.glTexCoordPointer( 2, texCoordFormat, strideSize, texCoordOffset );
         }
 
         if( colorFormat!=0 ) {
-            GL11.glColorPointer( 4, colorFormat, strideSize, colorOffset );
             GL11.glEnableClientState( GL11.GL_COLOR_ARRAY );
+            GL11.glColorPointer( 4, colorFormat, strideSize, colorOffset );
         }
 
         if( normalFormat!=0 ) {
-            GL11.glNormalPointer( normalFormat, strideSize, normalOffset );
             GL11.glEnableClientState( GL11.GL_NORMAL_ARRAY );
+            GL11.glNormalPointer( normalFormat, strideSize, normalOffset );
         }
     }
 

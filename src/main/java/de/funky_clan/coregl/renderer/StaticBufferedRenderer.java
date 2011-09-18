@@ -5,6 +5,7 @@ import de.funky_clan.voxel.data.Chunk;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -12,11 +13,12 @@ import java.util.Set;
  * @author synopia
  */
 public class StaticBufferedRenderer extends BaseBufferedRenderer {
+    public static final int MAX_VBO_BUFFERS = 0x500;
     private HashMap<Object, VBO> buffers = new HashMap<Object, VBO>();
     private long totalVBOBytes = 0;
     private Object currentKey;
     private VBO currentBuffer;
-    private List<VBO> freeList = new ArrayList<VBO>();
+    private List<Object> releaseList = new ArrayList<Object>();
 
     public StaticBufferedRenderer(int size) {
         super(size);
@@ -33,20 +35,21 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
 
     @Override
     protected VBO createVBOBuffer() {
-        if( !freeList.isEmpty() ) {
-            return freeList.remove(0);
-        } else {
-            return super.createVBOBuffer();
-        }
-    }
+        int bufferCount = buffers.size();
+        if( bufferCount>=MAX_VBO_BUFFERS ) {
+            VBO vbo;
+            do {
+                Object key = releaseList.remove( 0 );
+                vbo = buffers.remove(key);
+            } while (vbo==null && !buffers.isEmpty());
 
-    @Override
-    public void release(Object key) {
-        VBO vbo = buffers.remove(key);
-        if( vbo!=null ) {
-            freeList.add(vbo);
-            vbo.free();
+            if( vbo!=null ) {
+                vbo.clear();
+                return vbo;
+            }
         }
+
+        return super.createVBOBuffer();
     }
 
     @Override
@@ -59,6 +62,7 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
     public boolean begin(Object key) {
         boolean result = false;
         if( !buffers.containsKey( key ) ) {
+            releaseList.remove(key);
             currentBuffer = createVBOBuffer();
             buffers.put(key, currentBuffer);
             result = true;
@@ -68,6 +72,13 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
         currentKey    = key;
 
         return result;
+    }
+
+    @Override
+    public void release(Object key) {
+        if( !releaseList.contains(key) ) {
+            releaseList.add(key);
+        }
     }
 
     @Override
@@ -96,7 +107,7 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
     public ArrayList<String> getDebugInfos() {
         ArrayList<String> infos = super.getDebugInfos();
         int noBuffers = buffers.size();
-        infos.add( String.format("VBOBuffers: %d VBOSize: %d kB Waste: %d kB Free VBO: %d", noBuffers, (totalVBOBytes / 1024), (totalVBOBytes - trianglesTotal * 3 * getStrideSize()) / 1024, freeList.size()));
+        infos.add( String.format("VBOBuffers: %d VBOSize: %d kB Waste: %d kB Free VBO: %d", noBuffers, (totalVBOBytes / 1024), (totalVBOBytes - trianglesTotal * 3 * getStrideSize()) / 1024, releaseList.size()));
         return infos;
     }
 
