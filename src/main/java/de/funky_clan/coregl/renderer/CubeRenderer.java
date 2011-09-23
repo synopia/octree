@@ -19,9 +19,9 @@ public class CubeRenderer {
             { { { 0, 0, 0}, { 0, 0, 1}, { 0, 1, 1}, { 0, 1, 0} }, { {0,0}, {1,0}, {1,1}, {0,1} }, { {-1, 0, 0} } },
     };
     private QuadRenderer quadRenderer;
-    private BaseBufferedRenderer renderer;
+    private BufferedRenderer renderer;
 
-    public CubeRenderer(BaseBufferedRenderer renderer) {
+    public CubeRenderer(BufferedRenderer renderer) {
         this.renderer = renderer;
         quadRenderer = new QuadRenderer(renderer);
     }

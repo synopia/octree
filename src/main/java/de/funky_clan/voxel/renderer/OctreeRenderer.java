@@ -2,12 +2,10 @@ package de.funky_clan.voxel.renderer;
 
 import de.funky_clan.coregl.Camera;
 import de.funky_clan.coregl.geom.Sphere;
-import de.funky_clan.coregl.renderer.BaseBufferedRenderer;
+import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.voxel.data.Chunk;
 import de.funky_clan.voxel.data.OctreeNode;
-import org.lwjgl.util.vector.Vector3f;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,30 +15,15 @@ import java.util.List;
  */
 public class OctreeRenderer {
     private ChunkRenderer chunkRenderer;
-    private List<Chunk> activeChunks = new LinkedList<Chunk>();
-    private BaseBufferedRenderer renderer;
-    private int currentState = 0;
-    private List<Chunk> old = new LinkedList<Chunk>();
+    private BufferedRenderer renderer;
 
-    public OctreeRenderer(BaseBufferedRenderer renderer, OctreeNode root) {
+    public OctreeRenderer(BufferedRenderer renderer, OctreeNode root) {
         this.renderer = renderer;
         chunkRenderer = new ChunkRenderer(renderer, root);
     }
 
     public void render( OctreeNode node, Camera camera ) {
-        old.addAll(activeChunks);
-        activeChunks.clear();
-        currentState ++;
         render(node, camera, true);
-
-        Iterator<Chunk> it = old.iterator();
-        while (it.hasNext()) {
-            Chunk next = it.next();
-            if( next.getState()!=currentState ) {
-                renderer.release(next);
-            }
-        }
-        old.clear();
     }
 
     protected void findChunks( OctreeNode node, Sphere boundingSphere, boolean testChildren ) {
@@ -61,7 +44,6 @@ public class OctreeRenderer {
                 continue;
             }
             if (child.isLeaf()) {
-                activeChunks.add((Chunk) child);
             } else {
                 findChunks(child, boundingSphere, testChildren);
             }
@@ -92,8 +74,6 @@ public class OctreeRenderer {
             }
             if (child.isLeaf()) {
                 Chunk chunk = (Chunk) child;
-                activeChunks.add(chunk);
-                chunk.setState(currentState);
                 chunkRenderer.renderChunk(chunk);
             } else {
                 render(child, camera, testChildren);

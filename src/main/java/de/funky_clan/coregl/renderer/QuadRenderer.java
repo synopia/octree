@@ -6,9 +6,9 @@ import de.funky_clan.coregl.geom.Quad;
  * @author synopia
  */
 public class QuadRenderer {
-    private BaseBufferedRenderer renderer;
+    private BufferedRenderer renderer;
 
-    public QuadRenderer(BaseBufferedRenderer renderer) {
+    public QuadRenderer(BufferedRenderer renderer) {
         this.renderer = renderer;
     }
 

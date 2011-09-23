@@ -8,11 +8,16 @@ import org.lwjgl.opengl.GL15;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author synopia
  */
-public abstract class BaseBufferedRenderer {
+public class BufferedRenderer {
+    public static final int NUMBER_OF_BUFFERS = 8;
+
+    protected List<VBO> buffers = new ArrayList<VBO>();
+    protected int bufferIndex = 0;
 
     private IntBuffer vboIds;
 
@@ -32,11 +37,11 @@ public abstract class BaseBufferedRenderer {
 
     private int bufferSize;
 
-    public BaseBufferedRenderer( int size ) {
+    public BufferedRenderer(int size) {
         this( size, GL11.GL_FLOAT, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT );
     }
 
-    public BaseBufferedRenderer( int size, int texCoordFormat, int colorFormat, int normalFormat ) {
+    public BufferedRenderer(int size, int texCoordFormat, int colorFormat, int normalFormat) {
         vboIds = BufferUtils.createIntBuffer(1);
         this.bufferSize = size;
         this.texCoordFormat = texCoordFormat;
@@ -76,12 +81,37 @@ public abstract class BaseBufferedRenderer {
             color, nx, ny, nz);
     }
 
-    protected abstract VBO getCurrentBuffer();
-    public abstract boolean begin(Object key);
-    public abstract void end();
-    public abstract void onBufferFull();
-    public abstract void render();
-    public abstract void clear();
+    protected VBO getCurrentBuffer() {
+        return buffers.get(bufferIndex);
+    }
+    public boolean begin() {
+        if( buffers.size()==0 ) {
+            for (int i = 0; i < NUMBER_OF_BUFFERS; i++) {
+                buffers.add( createVBOBuffer() );
+            }
+        }
+
+        return true;
+    }
+
+    public void onBufferFull() {
+        VBO buffer = buffers.get(bufferIndex);
+        if( buffer.getVertices()==0 ) {
+            return;
+        }
+        buffer.upload();
+        buffer.render();
+        trianglesTotal += buffer.getVertices()/3;
+        buffer.clear();
+        bufferIndex ++;
+        if( bufferIndex>=buffers.size() ) {
+            bufferIndex = 0;
+        }
+
+    }
+    public void render() {
+        onBufferFull();
+    }
 
     public void ensureSpace(int vertices) {
         VBO buffer = getCurrentBuffer();
@@ -154,7 +184,12 @@ public abstract class BaseBufferedRenderer {
 
     public ArrayList<String> getDebugInfos() {
         ArrayList<String> result = new ArrayList<String>();
+        int noBuffers = buffers.size();
         result.add(String.format("Triangles: %d", trianglesTotal));
+        result.add(String.format("VBOBuffers: %d", noBuffers));
+        result.add( String.format("Mem: %d/%d kB",
+            (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024, Runtime.getRuntime().totalMemory()/1024
+            ));
         return result;
     }
 
@@ -169,8 +204,6 @@ public abstract class BaseBufferedRenderer {
     public int getNormalFormat() {
         return normalFormat;
     }
-
-    public abstract void release(Object key);
 
     public void setTextureCoords(float tx, float ty) {
         textureCoords[0] = tx;

@@ -1,6 +1,6 @@
 package de.funky_clan.voxel.renderer;
 
-import de.funky_clan.coregl.renderer.BaseBufferedRenderer;
+import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.coregl.renderer.CubeRenderer;
 import de.funky_clan.voxel.data.Chunk;
 import de.funky_clan.voxel.data.OctreeNode;
@@ -9,7 +9,7 @@ import de.funky_clan.voxel.data.OctreeNode;
  * @author synopia
  */
 public class ChunkRenderer {
-    private BaseBufferedRenderer renderer;
+    private BufferedRenderer renderer;
     private CubeRenderer cubeRenderer;
     private OctreeNode root;
 
@@ -17,7 +17,7 @@ public class ChunkRenderer {
         {0,0,1}, {0,0,-1}, {0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}
     };
 
-    public ChunkRenderer(BaseBufferedRenderer renderer, OctreeNode root) {
+    public ChunkRenderer(BufferedRenderer renderer, OctreeNode root) {
         this.renderer = renderer;
         cubeRenderer = new CubeRenderer(renderer);
         this.root = root;
@@ -27,14 +27,7 @@ public class ChunkRenderer {
         if( !chunk.isVisible() ) {
             return;
         }
-        if( !renderer.begin(chunk) ) {
-            if( !chunk.isDirty() ) {
-                renderer.render();
-                return;
-            } else {
-                renderer.clear();
-            }
-        }
+        renderer.begin();
 
         int size = chunk.getSize();
         boolean totallyEmpty = true;
@@ -64,7 +57,6 @@ public class ChunkRenderer {
             }
         }
 
-        renderer.end();
         renderer.render();
 
         chunk.setDirty(false);

@@ -13,9 +13,9 @@ public class VBOBuffer implements VBO {
     private ByteBuffer byteBuffer;
     private int vboId;
     private int vertices;
-    private BaseBufferedRenderer renderer;
+    private BufferedRenderer renderer;
 
-    public VBOBuffer(BaseBufferedRenderer renderer) {
+    public VBOBuffer(BufferedRenderer renderer) {
         this.renderer = renderer;
         this.byteBuffer = renderer.createBuffer();
         this.vboId = renderer.genVBOId();

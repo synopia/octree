@@ -1,12 +1,7 @@
 package de.funky_clan.coregl;
 
-import de.funky_clan.coregl.Camera;
-import de.funky_clan.coregl.GameWindow;
-import de.funky_clan.coregl.Lighting;
-import de.funky_clan.coregl.renderer.BaseBufferedRenderer;
+import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.coregl.renderer.FontRenderer;
-import de.funky_clan.coregl.renderer.StaticBufferedRenderer;
-import de.funky_clan.coregl.renderer.StreamBufferedRenderer;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -20,7 +15,7 @@ import java.util.ArrayList;
 public abstract class BaseEngine {
     protected Camera camera;
     protected FontRenderer fontRenderer;
-    protected BaseBufferedRenderer renderer;
+    protected BufferedRenderer renderer;
     protected Lighting lighting;
 
     private GameWindow window;
@@ -31,7 +26,7 @@ public abstract class BaseEngine {
         this.window = window;
         camera = new Camera(10,10,10);
         fontRenderer     = new FontRenderer(window);
-        renderer = new StaticBufferedRenderer(0x4000, GL11.GL_FLOAT, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
+        renderer = new BufferedRenderer(0x4000, GL11.GL_FLOAT, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
         lighting = new Lighting();
         GL11.glEnable(GL11.GL_LIGHTING);
     }
@@ -126,7 +121,7 @@ public abstract class BaseEngine {
         return fontRenderer;
     }
 
-    public BaseBufferedRenderer getRenderer() {
+    public BufferedRenderer getRenderer() {
         return renderer;
     }
 
