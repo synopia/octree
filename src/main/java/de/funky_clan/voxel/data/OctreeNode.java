@@ -83,6 +83,7 @@ public class OctreeNode implements WritableRaster {
     }
 
     public OctreeNode[] getChildren() {
+/*
         int newSize = size/2;
         for (int i = 0; i < children.length; i++) {
             if( children[i] == null ) {
@@ -96,6 +97,7 @@ public class OctreeNode implements WritableRaster {
             }
 
         }
+*/
         return children;
     }
 

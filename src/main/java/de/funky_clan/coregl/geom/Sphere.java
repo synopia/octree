@@ -50,12 +50,7 @@ public class Sphere {
         if( distSq >radiusSq ) {
             return Halfspace.OUTSIDE;
         }
-        if( distSq <radiusSq ) {
-            float minRadiusSq = (radius - other.getRadius())*(radius - other.getRadius());
-            if( distSq<minRadiusSq ) {
-                return Halfspace.INSIDE;
-            }
-        }
-        return Halfspace.INTERSECT;
+
+        return Halfspace.INSIDE;
     }
 }

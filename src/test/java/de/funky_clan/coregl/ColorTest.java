@@ -1,4 +1,4 @@
-package de.funky_clan.coregl.engine;
+package de.funky_clan.coregl;
 
 import de.funky_clan.coregl.Color;
 import static junit.framework.Assert.assertEquals;

@@ -6,10 +6,6 @@ import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.voxel.data.Chunk;
 import de.funky_clan.voxel.data.OctreeNode;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * @author synopia
  */
@@ -23,10 +19,13 @@ public class OctreeRenderer {
     }
 
     public void render( OctreeNode node, Camera camera ) {
+        chunkRenderer.begin();
         render(node, camera, true);
+//        Sphere sphere = new Sphere(camera.getPosition(), 200);
+//        render(node, sphere, true);
     }
 
-    protected void findChunks( OctreeNode node, Sphere boundingSphere, boolean testChildren ) {
+    protected void render(OctreeNode node, Sphere boundingSphere, boolean testChildren) {
         if( !node.isVisible() ) {
             return;
         }
@@ -44,8 +43,10 @@ public class OctreeRenderer {
                 continue;
             }
             if (child.isLeaf()) {
+                Chunk chunk = (Chunk) child;
+                chunkRenderer.renderChunk(chunk);
             } else {
-                findChunks(child, boundingSphere, testChildren);
+                render(child, boundingSphere, true);
             }
         }
     }
