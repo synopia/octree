@@ -12,7 +12,8 @@ public class Chunk extends OctreeNode {
         super(x, y, z, size);
 
         map = new int[size*size*size];
-        visible = false;
+        visible = true;
+        dirty   = true;
     }
 
     @Override

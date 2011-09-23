@@ -83,6 +83,19 @@ public class OctreeNode implements WritableRaster {
     }
 
     public OctreeNode[] getChildren() {
+        int newSize = size/2;
+        for (int i = 0; i < children.length; i++) {
+            if( children[i] == null ) {
+                if( newSize>16 ) {
+                    children[i] = new OctreeNode( this.x+OFFSETS[i][0]*newSize, this.y+OFFSETS[i][1]*newSize, this.z+OFFSETS[i][2]*newSize, newSize);
+                    children[i].setParent(this);
+                } else {
+                    children[i] = new Chunk(this.x+OFFSETS[i][0]*newSize, this.y+OFFSETS[i][1]*newSize, this.z+OFFSETS[i][2]*newSize, newSize);
+                    children[i].setParent(this);
+                }
+            }
+
+        }
         return children;
     }
 

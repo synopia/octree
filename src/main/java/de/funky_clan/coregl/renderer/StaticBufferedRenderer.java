@@ -13,9 +13,10 @@ import java.util.Set;
  * @author synopia
  */
 public class StaticBufferedRenderer extends BaseBufferedRenderer {
-    public static final int MAX_VBO_BUFFERS = 0x700;
+    public static final int MAX_VBO_BUFFERS = 0x2000;
     private HashMap<Object, VBO> buffers = new HashMap<Object, VBO>();
     private long totalVBOBytes = 0;
+    private int totalBuffersUsed = 0;
     private Object currentKey;
     private VBO currentBuffer;
     private List<Object> releaseList = new ArrayList<Object>();
@@ -56,6 +57,7 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
     public void prepare() {
         super.prepare();
         totalVBOBytes = 0;
+        totalBuffersUsed = 0;
     }
 
     @Override
@@ -91,6 +93,7 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
         currentBuffer.render();
         trianglesTotal += currentBuffer.getVertices()/3;
         totalVBOBytes += currentBuffer.getByteBuffer().capacity();
+        totalBuffersUsed ++;
     }
 
     @Override
@@ -107,7 +110,12 @@ public class StaticBufferedRenderer extends BaseBufferedRenderer {
     public ArrayList<String> getDebugInfos() {
         ArrayList<String> infos = super.getDebugInfos();
         int noBuffers = buffers.size();
-        infos.add( String.format("VBOBuffers: %d VBOSize: %d kB Waste: %d kB Free VBO: %d", noBuffers, (totalVBOBytes / 1024), (totalVBOBytes - trianglesTotal * 3 * getStrideSize()) / 1024, releaseList.size()));
+
+        infos.add( String.format("VBOBuffers: %d/%d VBO Mem: %d/%d kB Mem: %d/%d kB",
+            totalBuffersUsed, noBuffers,
+            (trianglesTotal * 3 * getStrideSize()) / 1024, (totalVBOBytes / 1024),
+            (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024, Runtime.getRuntime().totalMemory()/1024
+            ));
         return infos;
     }
 

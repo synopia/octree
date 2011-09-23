@@ -20,6 +20,7 @@ public class OctreeRenderer {
     private List<Chunk> activeChunks = new LinkedList<Chunk>();
     private BaseBufferedRenderer renderer;
     private int currentState = 0;
+    private List<Chunk> old = new LinkedList<Chunk>();
 
     public OctreeRenderer(BaseBufferedRenderer renderer, OctreeNode root) {
         this.renderer = renderer;
@@ -27,7 +28,7 @@ public class OctreeRenderer {
     }
 
     public void render( OctreeNode node, Camera camera ) {
-        List<Chunk> old = new LinkedList<Chunk>(activeChunks);
+        old.addAll(activeChunks);
         activeChunks.clear();
         currentState ++;
         render(node, camera, true);
@@ -39,6 +40,7 @@ public class OctreeRenderer {
                 renderer.release(next);
             }
         }
+        old.clear();
     }
 
     protected void findChunks( OctreeNode node, Sphere boundingSphere, boolean testChildren ) {
