@@ -3,6 +3,7 @@ package de.funky_clan.octree;
 import de.funky_clan.coregl.BaseEngine;
 import de.funky_clan.coregl.GameWindow;
 import de.funky_clan.coregl.State;
+import de.funky_clan.coregl.Texture;
 import de.funky_clan.octree.minecraft.RegionFileLoader;
 import de.funky_clan.voxel.VoxelEngine;
 import de.funky_clan.voxel.data.OctreeNode;
@@ -24,6 +25,7 @@ public class TestState implements State {
     private VoxelEngine engine;
 
     private float angle;
+    private Texture texture;
 
     public void init(GameWindow window) throws IOException {
         engine = new VoxelEngine(1<<30);
@@ -32,6 +34,7 @@ public class TestState implements State {
         engine.init(window);
 
         engine.getCamera().lookAt(0, 80, 0, 1,80,1, 0, 1, 0);
+        texture = window.getTexture("minecraft/terrain.png");
 
 //        SchematicLoader loader = new SchematicLoader();
 //        tree = loader.load("new_skull_hollow.schematic");
@@ -47,10 +50,10 @@ public class TestState implements State {
         SchematicLoader loader = new SchematicLoader();
 //        loader.load(octree, "turm1.schematic");
 //        octree.setPixel(128,128,128,100);
-        octree.setPixel(1,1,1,100);
-        octree.setPixel(2,1,1,100);
-        octree.setPixel(1,2,1,100);
-        octree.setPixel(1,1,2,100);
+        octree.setPixel(1,80,1,100);
+        octree.setPixel(2,80,1,100);
+        octree.setPixel(1,81,1,100);
+        octree.setPixel(1,80,2,100);
 //        s.generate(octree, 128, 128, 128, 110);
 //        s.generate(octree, 256, 128, 128, 110);
 //        s.generate(octree, 256, 256, 128, 110);
@@ -92,7 +95,9 @@ public class TestState implements State {
     }
 
     public void render(GameWindow window, int delta) {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST );
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST );
+        texture.bind();
         engine.render(delta);
     }
 }

@@ -34,7 +34,8 @@ public class CubeRenderer {
         }
 
     }
-    public void renderCubeFace(float x, float y, float z, float size, int color, int faceId) {
+    public void renderCubeFace(float x, float y, float z, float tx, float ty, int color, int faceId) {
+        renderer.setTextureCoords( tx, ty );
         renderer.setTranslation(x, y, z);
         quadRenderer.renderQuad(FACES[faceId][0], FACES[faceId][1], color, FACES[faceId][2][0]);
     }

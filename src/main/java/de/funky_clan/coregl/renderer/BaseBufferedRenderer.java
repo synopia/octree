@@ -18,6 +18,7 @@ public abstract class BaseBufferedRenderer {
 
     private float[]     translation = new float[]{0,0,0};
     private float[]     scale = new float[]{1,1,1};
+    private float[]     textureCoords = new float[]{ 0,0, 1/16.f, 1/16.f };
 
     private int texCoordFormat;
     private int colorFormat;
@@ -70,7 +71,9 @@ public abstract class BaseBufferedRenderer {
             x * scale[0] + translation[0],
             y * scale[1] + translation[1],
             z * scale[2] + translation[2],
-            tx, ty, color, nx, ny, nz);
+            textureCoords[0] + textureCoords[2]*tx,
+            textureCoords[1] + textureCoords[3]*ty,
+            color, nx, ny, nz);
     }
 
     protected abstract VBO getCurrentBuffer();
@@ -168,4 +171,9 @@ public abstract class BaseBufferedRenderer {
     }
 
     public abstract void release(Object key);
+
+    public void setTextureCoords(float tx, float ty) {
+        textureCoords[0] = tx;
+        textureCoords[1] = ty;
+    }
 }

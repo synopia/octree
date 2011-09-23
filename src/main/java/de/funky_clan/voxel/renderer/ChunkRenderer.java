@@ -56,7 +56,7 @@ public class ChunkRenderer {
                             empty = chunk.getPixel(nx, ny, nz) == 0;
                             if(empty) {
                                 totallyEmpty = false;
-                                cubeRenderer.renderCubeFace(x + chunk.getX(), y + chunk.getY(), z + chunk.getZ(), 1, color, i);
+                                cubeRenderer.renderCubeFace(x + chunk.getX(), y + chunk.getY(), z + chunk.getZ(), 1/16.f, 0, color, i);
                             }
                         }
                     }

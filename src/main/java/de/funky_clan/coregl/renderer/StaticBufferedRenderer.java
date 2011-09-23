@@ -13,7 +13,7 @@ import java.util.Set;
  * @author synopia
  */
 public class StaticBufferedRenderer extends BaseBufferedRenderer {
-    public static final int MAX_VBO_BUFFERS = 0x500;
+    public static final int MAX_VBO_BUFFERS = 0x700;
     private HashMap<Object, VBO> buffers = new HashMap<Object, VBO>();
     private long totalVBOBytes = 0;
     private Object currentKey;
