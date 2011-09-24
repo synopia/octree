@@ -31,8 +31,8 @@ public class OctreeNode implements WritableRaster {
         visible = true;
 
         float hsize = size / 2;
-        boundingSphere = new Sphere(new Vector3f(x+ hsize, y+ hsize, z+ hsize), (float) Math.sqrt(hsize*hsize*3));
-        boundingBox    = new Cube(new Vector3f(x+ hsize, y+ hsize, z+ hsize), hsize);
+        boundingSphere = new Sphere(x+ hsize, y+ hsize, z+ hsize, (float) Math.sqrt(hsize*hsize*3));
+        boundingBox    = new Cube(x+ hsize, y+ hsize, z+ hsize, hsize);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class OctreeNode implements WritableRaster {
         if( relY>=newSize ) code |= 2;
         if( relZ>=newSize ) code |= 4;
 
-        if( newSize>16 ) {
+        if( newSize>32 ) {
             if( children[code]==null ) {
                 children[code] = new OctreeNode( this.x+OFFSETS[code][0]*newSize, this.y+OFFSETS[code][1]*newSize, this.z+OFFSETS[code][2]*newSize, newSize);
                 children[code].setParent(this);

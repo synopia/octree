@@ -74,10 +74,10 @@ public class LightSource implements Comparable<LightSource> {
         pos[3] = 1.f;
     }
 
-    public void doLighting( Vector3f objPos ) {
-        float dx = pos[0] - objPos.getX();
-        float dy = pos[1] - objPos.getY();
-        float dz = pos[2] - objPos.getZ();
+    public void doLighting( float x, float y, float z) {
+        float dx = pos[0] - x;
+        float dy = pos[1] - y;
+        float dz = pos[2] - z;
 
         float quadraticAttenuation = dx*dx + dy*dy + dz*dz;
         float nx = 0;

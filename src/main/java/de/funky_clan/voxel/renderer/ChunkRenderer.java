@@ -23,25 +23,30 @@ public class ChunkRenderer implements Comparable<ChunkRenderer>{
         {0,0,1}, {0,0,-1}, {0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}
     };
 
-    public ChunkRenderer(BufferedRenderer renderer, Chunk chunk) {
+    public ChunkRenderer(BufferedRenderer renderer) {
         this.renderer = renderer;
         cubeRenderer = new CubeRenderer(renderer);
-        this.chunk = chunk;
         glListId = GL11.glGenLists(1);
         dirty    = true;
     }
 
-    public void render() {
+    public boolean render(boolean rebuildIfRequired) {
+        boolean rebuild = false;
         lastRender = Sys.getTime();
         if( !chunk.isVisible() ) {
-            return;
+            return rebuild;
         }
 
-        if( chunk.isDirty() || dirty ) {
-            updateList();
+        if( (chunk.isDirty() || dirty) ) {
+            if( rebuildIfRequired ) {
+                updateList();
+            }
+            rebuild = true;
         }
 
         GL11.glCallList(glListId);
+
+        return rebuild;
     }
 
     private void updateList() {

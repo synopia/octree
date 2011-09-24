@@ -29,9 +29,9 @@ public class VoxelEngine extends BaseEngine implements WritableRaster {
     @Override
     public void update(int delta) {
         if( Mouse.isButtonDown(0) ) {
-            int x = (int) camera.getPosition().getX();
-            int y = (int) camera.getPosition().getY();
-            int z = (int) camera.getPosition().getZ();
+            int x = (int) camera.getX();
+            int y = (int) camera.getY();
+            int z = (int) camera.getZ();
             if( x>0 && y>0 && z>0 ) {
                 setPixel(x, y, z, 1);
             }

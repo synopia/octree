@@ -50,9 +50,9 @@ public class Lighting {
         }
     }
 
-    public void doLighting( Vector3f pos) {
+    public void doLighting( float x, float y, float z) {
         for (LightSource source : lightSources) {
-            source.doLighting(pos);
+            source.doLighting(x, y, z);
         }
         Collections.sort( lightSources );
         GL11.glMatrixMode(GL11.GL_MODELVIEW);

@@ -10,6 +10,7 @@ import de.funky_clan.voxel.data.OctreeNode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -20,13 +21,14 @@ public class OctreeRenderer {
     public static final int MAX_CHUNK_RENDERERS = 5000;
 
     private HashMap<Chunk, ChunkRenderer> chunkRenderers = new HashMap<Chunk, ChunkRenderer>();
-    private SortedSet<ChunkRenderer> freeRenderes = new TreeSet<ChunkRenderer>();
+    private List<ChunkRenderer> freeRenderes = new ArrayList<ChunkRenderer>();
 
     private List<ChunkRenderer> renderers = new ArrayList<ChunkRenderer>();
     private List<Chunk> chunksInSphere = new ArrayList<Chunk>();
     private List<Chunk> chunksInFrustum = new ArrayList<Chunk>();
     private List<Chunk> chunks = new ArrayList<Chunk>();
-
+    private HashMap<Chunk, Integer> chunkStates = new HashMap<Chunk, Integer>();
+    private int currentState = 0;
     private BufferedRenderer renderer;
     private OctreeNode root;
 
@@ -36,16 +38,52 @@ public class OctreeRenderer {
     public OctreeRenderer(BufferedRenderer renderer, OctreeNode root) {
         this.root = root;
         this.renderer = renderer;
+        for (int i = 0; i < MAX_CHUNK_RENDERERS; i++) {
+              freeRenderes.add(new ChunkRenderer(renderer));
+        }
     }
 
     public void render( OctreeNode node, Camera camera ) {
-        boundingSphere = new Sphere(camera.getPosition(), 200);
+        currentState ++;
+        boundingSphere = new Sphere(camera.getX(), camera.getY(), camera.getZ(), 200);
         this.camera    = camera;
+
+        List<Chunk> oldChunks = new ArrayList<Chunk>();
 
         chunksInSphere.clear();
         chunksInFrustum.clear();
         chunks.clear();
         render(node, true);
+
+        boolean rebuild = true;
+        int     rebuildNo = 5;
+        for (Map.Entry<Chunk, Integer> entry : chunkStates.entrySet()) {
+            Chunk chunk = entry.getKey();
+            if( entry.getValue()!=currentState ) {
+                oldChunks.add(chunk);
+            } else {
+                ChunkRenderer renderer;
+                if( chunkRenderers.containsKey(chunk) ) {
+                    renderer = chunkRenderers.get(chunk);
+                } else {
+                    renderer = findFreeChunkRenderer();
+                    renderer.setChunk(chunk);
+                    chunkRenderers.put(chunk, renderer);
+                }
+                if( renderer.render(rebuild) ) {
+                    rebuildNo--;
+                    if( rebuildNo==0 ) {
+                        rebuild = false;
+                    }
+                }
+            }
+        }
+
+        for (Chunk chunk : oldChunks) {
+            chunkStates.remove(chunk);
+            ChunkRenderer renderer = chunkRenderers.remove(chunk);
+            freeRenderes.add(renderer);
+        }
 
 /*
         freeRenderes.clear();
@@ -82,6 +120,7 @@ public class OctreeRenderer {
             if (child.isLeaf()) {
                 Chunk chunk = (Chunk) child;
                 chunks.add(chunk);
+                chunkStates.put(chunk, currentState);
                 if( camera.getFrustum().sphereInFrustum(chunk.getBoundingSphere())!= Halfspace.OUTSIDE ) {
                     chunksInFrustum.add(chunk);
                 } else {
@@ -140,8 +179,7 @@ public class OctreeRenderer {
 */
 
     private ChunkRenderer findFreeChunkRenderer() {
-        ChunkRenderer oldest = freeRenderes.first();
-        freeRenderes.remove(oldest);
+        ChunkRenderer oldest = freeRenderes.remove(0);
         return oldest;
     }
 

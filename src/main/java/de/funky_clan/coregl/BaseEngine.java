@@ -39,7 +39,7 @@ public abstract class BaseEngine {
     }
 
     public void beginRender( int delta ) {
-        lighting.doLighting(camera.getPosition());
+        lighting.doLighting(camera.getX(), camera.getY(), camera.getZ());
         camera.setView();
         renderer.prepare();
     }
@@ -62,26 +62,21 @@ public abstract class BaseEngine {
     }
 
     protected void moveCamera(int delta) {
-        boolean changedPosition = false;
         float mod = 1;
         if( Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ) {
             mod = 10;
         }
         if( Keyboard.isKeyDown(Keyboard.KEY_W) ) {
             camera.moveLoc(0,0,-1,delta/100.f*mod);
-            changedPosition = true;
         }
         if( Keyboard.isKeyDown(Keyboard.KEY_S) ) {
             camera.moveLoc(0,0,1,delta/100.f*mod);
-            changedPosition = true;
         }
         if( Keyboard.isKeyDown(Keyboard.KEY_A) ) {
             camera.moveLoc(-1,0,0,delta/100.f*mod);
-            changedPosition = true;
         }
         if( Keyboard.isKeyDown(Keyboard.KEY_D) ) {
             camera.moveLoc(1,0,0,delta/100.f*mod);
-            changedPosition = true;
         }
         if( Mouse.isButtonDown(0) ) {
         }
@@ -94,10 +89,6 @@ public abstract class BaseEngine {
         }
         if( mouseDy!=0 ) {
             camera.rotateLoc( mouseDy/10.f,1,0,0 );
-        }
-        if( changedPosition ) {
-            Vector3f position = camera.getPosition();
-            System.out.format("%f, %f, %f\n",position.getX(), position.getY(), position.getZ());
         }
     }
 

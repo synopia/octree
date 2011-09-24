@@ -5,7 +5,7 @@ import org.lwjgl.util.vector.Vector3f;
 /**
  * @author synopia
  */
-public class Plane {
+public final class Plane {
   private float a;
   private float b;
   private float c;
@@ -29,16 +29,13 @@ public class Plane {
     d /= mag;
   }
 
-    public Vector3f getNormal() {
-        return new Vector3f(a, b, c);
-    }
 
-  public float distanceToPoint( Vector3f pt ) {
-    return a*pt.getX() + b*pt.getY() + c*pt.getZ() + d;
+  public float distanceToPoint( float x, float y, float z) {
+    return a*x + b*y + c*z + d;
   }
 
-  public Halfspace sideOfPoint( Vector3f pt ) {
-    float d = distanceToPoint(pt);
+  public Halfspace sideOfPoint( float x, float y, float z ) {
+    float d = distanceToPoint(x, y, z);
 
     if( d<0 ) return Halfspace.OUTSIDE;
     if( d>0 ) return Halfspace.INSIDE;

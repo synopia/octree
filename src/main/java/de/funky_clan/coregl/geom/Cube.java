@@ -5,15 +5,20 @@ import org.lwjgl.util.vector.Vector3f;
 /**
  * @author synopia
  */
-public class Cube {
-    private Vector3f position;
+public final class Cube {
+    private float x;
+    private float y;
+    private float z;
     private float halfSide;
 
-    public Cube(Vector3f position, float halfSide) {
-        this.position = position;
+    public Cube(float x, float y, float z, float halfSide) {
+        this.x      = x;
+        this.y      = y;
+        this.z      = z;
         this.halfSide = halfSide;
     }
 
+/*
     public void getVertices( Vector3f[] corners ) {
         if( corners==null || corners.length<8 ) {
             throw new IllegalArgumentException("corners[] must not be null or short then 8!");
@@ -27,7 +32,9 @@ public class Cube {
         corners[6].set( position.getX() - halfSide, position.getY() + halfSide, position.getZ() + halfSide );
         corners[7].set( position.getX() + halfSide, position.getY() + halfSide, position.getZ() + halfSide );
     }
+*/
 
+/*
     public Vector3f getVertexP(Vector3f normal) {
         float nx = position.getX()-halfSide;
         float ny = position.getY()-halfSide;
@@ -59,13 +66,24 @@ public class Cube {
         }
         return new Vector3f(nx, ny, nz);
     }
+*/
 
-    public Vector3f getPosition() {
-        return position;
+    public void setPosition(float x, float y, float z) {
+        this.x      = x;
+        this.y      = y;
+        this.z      = z;
     }
 
-    public void setPosition(Vector3f position) {
-        this.position = position;
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getZ() {
+        return z;
     }
 
     public float getHalfSide() {
@@ -76,10 +94,10 @@ public class Cube {
         this.halfSide = halfSide;
     }
 
-    public Halfspace containsPoint( Vector3f pt ) {
+    public Halfspace containsPoint( float x, float y, float z) {
         Halfspace result = Halfspace.OUTSIDE;
-        if( position.x-halfSide<=pt.getX() && position.y-halfSide<=pt.getY() && position.z-halfSide<=pt.z &&
-            position.x+halfSide>=pt.getX() && position.y+halfSide>=pt.getY() && position.z+halfSide>=pt.z ) {
+        if( this.x-halfSide<=x && this.y-halfSide<=y && this.z-halfSide<=z &&
+            this.x+halfSide>=x && this.y+halfSide>=y && this.z+halfSide>=z ) {
             result = Halfspace.INSIDE;
         }
         return result;

@@ -10,7 +10,7 @@ import org.lwjgl.util.vector.Vector3f;
 /**
 
  */
-public class Camera {
+public final class Camera {
     private FloatBuffer transformMatrix;
     private float[] transform;
     private float[] transformRot;
@@ -36,8 +36,14 @@ public class Camera {
         frustum         = new Frustum();
     }
 
-    public Vector3f getPosition() {
-        return new Vector3f(transform[12], transform[13], transform[14]);
+    public float getX() {
+        return transform[12];
+    }
+    public float getY() {
+        return transform[13];
+    }
+    public float getZ() {
+        return transform[14];
     }
 
     public void setView() {

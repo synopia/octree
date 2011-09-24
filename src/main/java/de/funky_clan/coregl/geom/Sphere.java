@@ -5,24 +5,26 @@ import org.lwjgl.util.vector.Vector3f;
 /**
  * @author synopia
  */
-public class Sphere {
-    private Vector3f position;
+public final class Sphere {
+    private float x;
+    private float y;
+    private float z;
     private float radius;
 
     public Sphere() {
     }
 
-    public Sphere(Vector3f position, float radius) {
-        this.position = position;
+    public Sphere(float x, float y, float z, float radius) {
+        this.x      = x;
+        this.y      = y;
+        this.z      = z;
         this.radius = radius;
     }
 
-    public Vector3f getPosition() {
-        return position;
-    }
-
-    public void setPosition(Vector3f position) {
-        this.position = position;
+    public void setPosition(float x, float y, float z) {
+        this.x      = x;
+        this.y      = y;
+        this.z      = z;
     }
 
     public float getRadius() {
@@ -33,20 +35,18 @@ public class Sphere {
         this.radius = radius;
     }
 
-    public boolean containsPoint( Vector3f pt ) {
-        float dist = (pt.getX()-position.getX())*(pt.getX()-position.getX()) + (pt.getY()-position.getY())*(pt.getY()-position.getY()) +(pt.getZ()-position.getZ())*(pt.getZ()-position.getZ());
+    public boolean containsPoint( float x, float y, float z) {
+        float dist = (x-this.x)*(x-this.x) + (y-this.y)*(y-this.y) +(z-this.z)*(z-this.z);
         return dist < radius*radius;
     }
     @Override
     public String toString() {
-        return position + ", r=" + radius;
+        return "["+x+", "+y+", "+z + "], r=" + radius;
     }
 
     public Halfspace sphereInSphere(Sphere other) {
-        Vector3f diff = new Vector3f();
-        Vector3f.sub(position, other.getPosition(), diff);
+        float distSq = (other.x-this.x)*(other.x-this.x) + (other.y-this.y)*(other.y-this.y) +(other.z-this.z)*(other.z-this.z);
         float radiusSq = (radius + other.getRadius())*(radius + other.getRadius());
-        float distSq = diff.lengthSquared();
         if( distSq > radiusSq ) {
             return Halfspace.OUTSIDE;
         }
@@ -58,5 +58,17 @@ public class Sphere {
         }
 
         return Halfspace.INTERSECT;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getZ() {
+        return z;
     }
 }

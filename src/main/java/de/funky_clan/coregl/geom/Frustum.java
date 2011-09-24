@@ -8,7 +8,7 @@ import java.nio.FloatBuffer;
 /**
  * @author synopia
  */
-public class Frustum {
+public final class Frustum {
     private Plane planes[] = new Plane[6];
     private FloatBuffer modelViewMatrix;
     private FloatBuffer projectionMatrix;
@@ -29,7 +29,7 @@ public class Frustum {
         Halfspace result = Halfspace.INSIDE;
         for (int i = 0, planesLength = planes.length; i < planesLength; i++) {
             Plane plane = planes[i];
-            distance = plane.distanceToPoint(sphere.getPosition());
+            distance = plane.distanceToPoint(sphere.getX(), sphere.getY(), sphere.getZ());
             if (distance <= -sphere.getRadius()) {
                 return Halfspace.OUTSIDE;
             } else if (distance < sphere.getRadius()) {
@@ -39,6 +39,7 @@ public class Frustum {
         return result;
     }
 
+/*
     public Halfspace boxInFrustum( Cube cube) {
         Halfspace result = Halfspace.INSIDE;
         for (Plane plane : planes) {
@@ -50,6 +51,7 @@ public class Frustum {
         }
         return result;
     }
+*/
 
     public void extract(FloatBuffer modelViewMatrix) {
         extractViewMatrix(modelViewMatrix);
