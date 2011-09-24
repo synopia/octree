@@ -47,10 +47,16 @@ public class Sphere {
         Vector3f.sub(position, other.getPosition(), diff);
         float radiusSq = (radius + other.getRadius())*(radius + other.getRadius());
         float distSq = diff.lengthSquared();
-        if( distSq >radiusSq ) {
+        if( distSq > radiusSq ) {
             return Halfspace.OUTSIDE;
         }
+        if( radius>=other.radius ) {
+            radiusSq = (radius-other.radius)*(radius-other.radius);
+            if( distSq<=radiusSq ) {
+                return Halfspace.INSIDE;
+            }
+        }
 
-        return Halfspace.INSIDE;
+        return Halfspace.INTERSECT;
     }
 }

@@ -60,6 +60,7 @@ public class FontRenderer {
         GL11.glBlendFunc( GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA );
         fontTexture.bind();
         GL11.glTranslatef(x, y, 0);
+        GL11.glColor4f(1,1,1,1);
         for( int i=0; i<text.length(); i++ ) {
             GL11.glCallList( fontListBase + (text.charAt(i)-32));
         }

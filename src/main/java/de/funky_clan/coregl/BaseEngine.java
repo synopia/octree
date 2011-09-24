@@ -48,13 +48,17 @@ public abstract class BaseEngine {
         if( isShowInfo() ) {
             float fps = 1000.f / delta;
             fontRenderer.print(window, 10, 10, String.format("FPS: %.2f", fps));
-            ArrayList<String> infos = renderer.getDebugInfos();
+            ArrayList<String> infos = getDebugInfo();
             int y = 20;
             for (String info : infos) {
                 fontRenderer.print(window, 10, y, info );
                 y += 10;
             }
         }
+    }
+
+    protected ArrayList<String> getDebugInfo() {
+        return renderer.getDebugInfos();
     }
 
     protected void moveCamera(int delta) {

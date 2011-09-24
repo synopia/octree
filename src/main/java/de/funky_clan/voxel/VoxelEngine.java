@@ -7,6 +7,8 @@ import de.funky_clan.voxel.data.OctreeNode;
 import de.funky_clan.voxel.renderer.OctreeRenderer;
 import org.lwjgl.input.Mouse;
 
+import java.util.ArrayList;
+
 /**
  * @author synopia
  */
@@ -55,5 +57,12 @@ public class VoxelEngine extends BaseEngine implements WritableRaster {
 
     public OctreeNode getRoot() {
         return root;
+    }
+
+    @Override
+    protected ArrayList<String> getDebugInfo() {
+        ArrayList<String> info = super.getDebugInfo();
+        info.addAll( octreeRenderer.getDebugInfo() );
+        return info;
     }
 }
