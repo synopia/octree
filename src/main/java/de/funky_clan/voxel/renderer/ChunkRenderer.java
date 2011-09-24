@@ -16,8 +16,7 @@ public class ChunkRenderer implements Comparable<ChunkRenderer>{
     private int glListId;
     private boolean dirty;
     private Chunk chunk;
-    private long lastRender;
-    private int tick;
+    private float distanceToEye;
 
     private int[][] neighbors = new int[][]{
         {0,0,1}, {0,0,-1}, {0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}
@@ -30,26 +29,19 @@ public class ChunkRenderer implements Comparable<ChunkRenderer>{
         dirty    = true;
     }
 
-    public boolean render(boolean rebuildIfRequired) {
-        boolean rebuild = false;
-        lastRender = Sys.getTime();
-        if( !chunk.isVisible() ) {
-            return rebuild;
-        }
+    public boolean needsUpdate() {
+        return chunk.isVisible() && (chunk.isDirty() || dirty);
+    }
 
-        if( (chunk.isDirty() || dirty) ) {
-            if( rebuildIfRequired ) {
-                updateList();
-            }
-            rebuild = true;
+    public void render() {
+        if( !chunk.isVisible() ) {
+            return;
         }
 
         GL11.glCallList(glListId);
-
-        return rebuild;
     }
 
-    private void updateList() {
+    public void update() {
         GL11.glNewList(glListId, GL11.GL_COMPILE);
         renderer.begin();
 
@@ -90,15 +82,7 @@ public class ChunkRenderer implements Comparable<ChunkRenderer>{
 
     @Override
     public int compareTo(ChunkRenderer o) {
-        return ( this.lastRender>o.lastRender ? 1 : (this.lastRender < o.lastRender ? -1 : 0 ));
-    }
-
-    public int getTick() {
-        return tick;
-    }
-
-    public void setTick(int tick) {
-        this.tick = tick;
+        return distanceToEye<o.distanceToEye ? -1 : (distanceToEye>o.distanceToEye ? 1 : 0);
     }
 
     public void setChunk(Chunk chunk) {
@@ -108,5 +92,13 @@ public class ChunkRenderer implements Comparable<ChunkRenderer>{
 
     public Chunk getChunk() {
         return chunk;
+    }
+
+    public float getDistanceToEye() {
+        return distanceToEye;
+    }
+
+    public void setDistanceToEye(float distanceToEye) {
+        this.distanceToEye = distanceToEye;
     }
 }

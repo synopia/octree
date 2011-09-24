@@ -39,6 +39,18 @@ public final class Frustum {
         return result;
     }
 
+    public float sphereInFrustum2( Sphere sphere ) {
+        float distance = 0;
+        for (int i = 0, planesLength = planes.length; i < planesLength; i++) {
+            Plane plane = planes[i];
+            distance = plane.distanceToPoint(sphere.getX(), sphere.getY(), sphere.getZ());
+            if (distance <= -sphere.getRadius()) {
+                return -1;
+            }
+        }
+        return distance;
+    }
+
 /*
     public Halfspace boxInFrustum( Cube cube) {
         Halfspace result = Halfspace.INSIDE;
