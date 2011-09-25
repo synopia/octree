@@ -22,7 +22,7 @@ import java.util.TreeSet;
  * @author synopia
  */
 public class OctreeRenderer {
-    public static final int MAX_CHUNK_RENDERERS = 5000;
+    public static final int MAX_CHUNK_RENDERERS = 10000;
 
     private HashMap<Chunk, ChunkRenderer> chunkRenderers = new HashMap<Chunk, ChunkRenderer>();
     private List<ChunkRenderer> freeRenderes = new ArrayList<ChunkRenderer>();
@@ -64,10 +64,14 @@ public class OctreeRenderer {
     }
 
     private void updateNew() {
-        Collections.sort(updates);
+        int noUpdates = updates.size();
+        int maxUpdates = 8;
+        if( noUpdates<64 ) {
+            Collections.sort(updates);
+            maxUpdates = noUpdates>32 ? 2 : 1;
+        }
         Iterator<ChunkRenderer> it = updates.iterator();
-        int maxUpdates = 2;
-        while (it.hasNext() && maxUpdates>=0) {
+        while (it.hasNext() && maxUpdates>0) {
             ChunkRenderer next = it.next();
             next.update();
             next.render();

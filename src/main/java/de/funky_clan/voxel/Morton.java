@@ -4,7 +4,7 @@ package de.funky_clan.voxel;
  * @author synopia
  */
 public class Morton {
-    static long[] mortonCode(long[] xyz){
+    public static long[] mortonCode(long[] xyz){
         long[] ret = {0,0,0};
         long t;
         for(int i=0; i<3; i++){

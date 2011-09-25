@@ -68,7 +68,7 @@ public class BufferedRenderer {
     }
 
     protected VBO createVBOBuffer() {
-        return new VBOBuffer(this);
+        return new VBOBuffer2(this);
     }
 
     public void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz) {

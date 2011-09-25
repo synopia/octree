@@ -3,6 +3,7 @@ package de.funky_clan.voxel;
 import de.funky_clan.coregl.BaseEngine;
 import de.funky_clan.coregl.GameWindow;
 import de.funky_clan.octree.WritableRaster;
+import de.funky_clan.voxel.data.Octree;
 import de.funky_clan.voxel.data.OctreeNode;
 import de.funky_clan.voxel.renderer.OctreeRenderer;
 import org.lwjgl.input.Mouse;
@@ -13,13 +14,13 @@ import java.util.ArrayList;
  * @author synopia
  */
 public class VoxelEngine extends BaseEngine implements WritableRaster {
-    private OctreeNode root;
+    private Octree root;
     private OctreeRenderer octreeRenderer;
     private ChunkPopulator populator;
 
     public VoxelEngine(int size, ChunkPopulator populator) {
         this.populator = populator;
-        root = new OctreeNode(0,0,0,size);
+        root = new Octree(0,0,0,size);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class VoxelEngine extends BaseEngine implements WritableRaster {
 
     public void render( int delta ) {
         beginRender(delta);
-        octreeRenderer.render(root, getCamera());
+        octreeRenderer.render(root.getRoot(), getCamera());
         endRender(delta);
     }
 
@@ -58,7 +59,7 @@ public class VoxelEngine extends BaseEngine implements WritableRaster {
     }
 
     public OctreeNode getRoot() {
-        return root;
+        return root.getRoot();
     }
 
     @Override

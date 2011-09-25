@@ -1,5 +1,6 @@
 package de.funky_clan.voxel;
 
+import de.funky_clan.voxel.data.Octree;
 import de.funky_clan.voxel.data.OctreeNode;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,7 +15,7 @@ import java.util.Arrays;
 public class MortonTest {
     @Test
     public void test() {
-        OctreeNode root = new OctreeNode(0,0,0, 1<<21);
+        OctreeNode root = new Octree(0,0,0, 1<<21).getRoot();
         System.out.println(root.getChunk(0,0,0));
         System.out.println(root.getChunk(0,0,32));
         long[] morton = Morton.mortonCode(new long[]{1, 2, 3});

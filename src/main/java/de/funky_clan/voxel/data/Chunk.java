@@ -8,16 +8,19 @@ public class Chunk extends OctreeNode {
     private int[] map;
     private boolean dirty;
 
-    public Chunk(int x, int y, int z, int size) {
-        super(x, y, z, size);
+    public Chunk(Octree octree, int x, int y, int z, int size) {
+        super(octree, x, y, z, size);
 
-        map = new int[size*size*size];
+
         visible = true;
         dirty   = true;
     }
 
     @Override
     public void setPixel(int x, int y, int z, int color) {
+        if( map==null ) {
+            map = new int[size*size*size];
+        }
         int relX = x-this.x;
         int relY = y-this.y;
         int relZ = z-this.z;
@@ -33,6 +36,9 @@ public class Chunk extends OctreeNode {
         int relZ = z-this.z;
         if( relX<0 || relY<0 || relZ<0 || relX>=size || relY>=size || relZ>=size ) {
             return parent.getPixel(x, y, z);
+        }
+        if( map==null ) {
+            return 0;
         }
         return map[relX + ( relY*size+relZ ) * size];
     }
