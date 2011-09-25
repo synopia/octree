@@ -5,6 +5,10 @@ import de.funky_clan.coregl.geom.Cube;
 import de.funky_clan.coregl.geom.Sphere;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
+
 /**
  * @author synopia
  */
@@ -12,16 +16,16 @@ public class OctreeNode implements WritableRaster {
     private static final int[][] OFFSETS = new int[][] {
         {0,0,0}, {1,0,0}, {0,1,0}, {1,1,0}, {0,0,1}, {1,0,1}, {0,1,1}, {1,1,1}
     };
+    public static final int CHUNK_SIZE = 32;
     protected int x;
     protected int y;
     protected int z;
     protected int size;
     protected boolean visible;
-    protected OctreeNode[] children = new OctreeNode[8];
+    protected Reference<OctreeNode>[] children = new Reference[8];
     protected OctreeNode parent;
 
     private Sphere boundingSphere;
-    private Cube   boundingBox;
 
     public OctreeNode(int x, int y, int z, int size) {
         this.x = x;
@@ -32,7 +36,22 @@ public class OctreeNode implements WritableRaster {
 
         float hsize = size / 2;
         boundingSphere = new Sphere(x+ hsize, y+ hsize, z+ hsize, (float) Math.sqrt(hsize*hsize*3));
-        boundingBox    = new Cube(x+ hsize, y+ hsize, z+ hsize, hsize);
+    }
+
+    public Chunk getChunk( int x, int y, int z ) {
+        int relX = x-this.x;
+        int relY = y-this.y;
+        int relZ = z-this.z;
+        int code = 0;
+        int newSize = size/2;
+        if( relX>=newSize ) code |= 1;
+        if( relY>=newSize ) code |= 2;
+        if( relZ>=newSize ) code |= 4;
+
+        if( newSize==32 ) {
+            return (Chunk) getChild(code);
+        }
+        return getChild(code).getChunk(x, y, z);
     }
 
     @Override
@@ -46,23 +65,11 @@ public class OctreeNode implements WritableRaster {
         if( relY>=newSize ) code |= 2;
         if( relZ>=newSize ) code |= 4;
 
-        if( newSize>32 ) {
-            if( children[code]==null ) {
-                children[code] = new OctreeNode( this.x+OFFSETS[code][0]*newSize, this.y+OFFSETS[code][1]*newSize, this.z+OFFSETS[code][2]*newSize, newSize);
-                children[code].setParent(this);
-            }
-        } else {
-            if( children[code]==null ) {
-                children[code] = new Chunk(this.x+OFFSETS[code][0]*newSize, this.y+OFFSETS[code][1]*newSize, this.z+OFFSETS[code][2]*newSize, newSize);
-                children[code].setParent(this);
-            }
-        }
-        children[code].setPixel(x, y, z, color);
+        getChild(code).setPixel(x, y, z, color);
     }
 
     @Override
     public int getPixel( int x, int y, int z ) {
-        int color = 0;
         int relX = x-this.x;
         int relY = y-this.y;
         int relZ = z-this.z;
@@ -75,30 +82,41 @@ public class OctreeNode implements WritableRaster {
         if( relY>=newSize ) code |= 2;
         if( relZ>=newSize ) code |= 4;
 
-        if( children[code]!=null ) {
-            color = children[code].getPixel(x, y, z);
-        }
-
-        return color;
+        return getChild(code).getPixel(x, y, z);
     }
 
-    public OctreeNode[] getChildren() {
-/*
-        int newSize = size/2;
-        for (int i = 0; i < children.length; i++) {
-            if( children[i] == null ) {
-                if( newSize>16 ) {
-                    children[i] = new OctreeNode( this.x+OFFSETS[i][0]*newSize, this.y+OFFSETS[i][1]*newSize, this.z+OFFSETS[i][2]*newSize, newSize);
-                    children[i].setParent(this);
-                } else {
-                    children[i] = new Chunk(this.x+OFFSETS[i][0]*newSize, this.y+OFFSETS[i][1]*newSize, this.z+OFFSETS[i][2]*newSize, newSize);
-                    children[i].setParent(this);
-                }
-            }
-
+    public OctreeNode getChild( int code ) {
+        OctreeNode node;
+        if( children[code]==null ) {
+            node = createNode(code);
+            children[code] = new WeakReference<OctreeNode>(node);
+            return node;
         }
-*/
-        return children;
+
+        node = children[code].get();
+        if( node==null ) {
+            node = createNode(code);
+            children[code] = new WeakReference<OctreeNode>(node);
+        }
+
+        return node;
+    }
+
+    private OctreeNode createNode(int code) {
+        OctreeNode node;
+        int newSize = size/2;
+        int newX = this.x + OFFSETS[code][0] * newSize;
+        int newY = this.y + OFFSETS[code][1] * newSize;
+        int newZ = this.z + OFFSETS[code][2] * newSize;
+
+        if( newSize> CHUNK_SIZE) {
+            node = new OctreeNode(newX, newY, newZ, newSize);
+            node.setParent(this);
+        } else {
+            node = new Chunk(newX, newY, newZ, newSize);
+            node.setParent(this);
+        }
+        return node;
     }
 
     public int getX() {
@@ -133,9 +151,6 @@ public class OctreeNode implements WritableRaster {
         return boundingSphere;
     }
 
-    public Cube getBoundingBox() {
-        return boundingBox;
-    }
 
     @Override
     public String toString() {
@@ -149,4 +164,5 @@ public class OctreeNode implements WritableRaster {
     public void setParent(OctreeNode parent) {
         this.parent = parent;
     }
+
 }

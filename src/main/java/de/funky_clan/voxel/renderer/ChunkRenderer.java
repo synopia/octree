@@ -2,6 +2,7 @@ package de.funky_clan.voxel.renderer;
 
 import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.coregl.renderer.CubeRenderer;
+import de.funky_clan.voxel.ChunkPopulator;
 import de.funky_clan.voxel.data.Chunk;
 import de.funky_clan.voxel.data.OctreeNode;
 import org.lwjgl.Sys;
@@ -17,12 +18,14 @@ public class ChunkRenderer implements Comparable<ChunkRenderer>{
     private boolean dirty;
     private Chunk chunk;
     private float distanceToEye;
+    private ChunkPopulator populator;
 
     private int[][] neighbors = new int[][]{
         {0,0,1}, {0,0,-1}, {0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}
     };
 
-    public ChunkRenderer(BufferedRenderer renderer) {
+    public ChunkRenderer(BufferedRenderer renderer, ChunkPopulator populator) {
+        this.populator = populator;
         this.renderer = renderer;
         cubeRenderer = new CubeRenderer(renderer);
         glListId = GL11.glGenLists(1);
@@ -42,6 +45,7 @@ public class ChunkRenderer implements Comparable<ChunkRenderer>{
     }
 
     public void update() {
+        populator.populateChunk(chunk);
         GL11.glNewList(glListId, GL11.GL_COMPILE);
         renderer.begin();
 
@@ -100,5 +104,13 @@ public class ChunkRenderer implements Comparable<ChunkRenderer>{
 
     public void setDistanceToEye(float distanceToEye) {
         this.distanceToEye = distanceToEye;
+    }
+
+    public ChunkPopulator getPopulator() {
+        return populator;
+    }
+
+    public void setPopulator(ChunkPopulator populator) {
+        this.populator = populator;
     }
 }

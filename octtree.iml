@@ -24,6 +24,7 @@
     <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-native:linux32:2.6" level="project" />
     <orderEntry type="library" name="Maven: org.lwjgl:lwjgl:2.6" level="project" />
     <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-util:2.6" level="project" />
+    <orderEntry type="library" name="Maven: jdbm:jdbm:1.0" level="project" />
   </component>
 </module>
 

@@ -15,15 +15,17 @@ import java.util.ArrayList;
 public class VoxelEngine extends BaseEngine implements WritableRaster {
     private OctreeNode root;
     private OctreeRenderer octreeRenderer;
+    private ChunkPopulator populator;
 
-    public VoxelEngine(int size) {
+    public VoxelEngine(int size, ChunkPopulator populator) {
+        this.populator = populator;
         root = new OctreeNode(0,0,0,size);
     }
 
     @Override
     public void init(GameWindow window) {
         super.init(window);
-        octreeRenderer = new OctreeRenderer(getRenderer(), root);
+        octreeRenderer = new OctreeRenderer(getRenderer(), populator);
     }
 
     @Override

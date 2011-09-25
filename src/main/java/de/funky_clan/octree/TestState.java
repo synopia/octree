@@ -4,6 +4,7 @@ import de.funky_clan.coregl.BaseEngine;
 import de.funky_clan.coregl.GameWindow;
 import de.funky_clan.coregl.State;
 import de.funky_clan.coregl.Texture;
+import de.funky_clan.octree.generators.SpherePopulator;
 import de.funky_clan.octree.minecraft.RegionFileLoader;
 import de.funky_clan.voxel.VoxelEngine;
 import de.funky_clan.voxel.data.OctreeNode;
@@ -28,12 +29,12 @@ public class TestState implements State {
     private Texture texture;
 
     public void init(GameWindow window) throws IOException {
-        engine = new VoxelEngine(1<<30);
+        engine = new VoxelEngine(1<<30, new SpherePopulator(500,500,500,499));
         engine.setFpsControl(true);
         engine.setShowInfo(true);
         engine.init(window);
 
-        engine.getCamera().lookAt(0, 80, 0, 1,80,1, 0, 1, 0);
+        engine.getCamera().lookAt(500, 500, 0, 1,80,1, 0, 1, 0);
         texture = window.getTexture("minecraft/terrain.png");
 
 //        SchematicLoader loader = new SchematicLoader();
@@ -41,12 +42,12 @@ public class TestState implements State {
         SphereGenerator s = new SphereGenerator();
         OctreeNode octree = engine.getRoot();
 
-        RegionFileLoader regionFileLoader = new RegionFileLoader();
-        for (int i = 0; i < 50; i++) {
-            for (int j = 0; j < 50; j++) {
-                regionFileLoader.load(octree, i,j);
-            }
-        }
+//        RegionFileLoader regionFileLoader = new RegionFileLoader();
+//        for (int i = 0; i < 50; i++) {
+//            for (int j = 0; j < 50; j++) {
+//                regionFileLoader.load(octree, i,j);
+//            }
+//        }
         SchematicLoader loader = new SchematicLoader();
 //        loader.load(octree, "turm1.schematic");
 //        octree.setPixel(128,128,128,100);

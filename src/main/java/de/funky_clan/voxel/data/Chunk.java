@@ -4,6 +4,7 @@ package de.funky_clan.voxel.data;
  * @author synopia
  */
 public class Chunk extends OctreeNode {
+    public static int COUNT = 0;
     private int[] map;
     private boolean dirty;
 
@@ -47,5 +48,11 @@ public class Chunk extends OctreeNode {
 
     public void setDirty(boolean dirty) {
         this.dirty = dirty;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        COUNT++;
+        super.finalize();
     }
 }

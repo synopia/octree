@@ -90,6 +90,11 @@
             <artifactId>lwjgl-util</artifactId>
             <version>${lwjgl.version}</version>
         </dependency>
+        <dependency>
+            <groupId>jdbm</groupId>
+            <artifactId>jdbm</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
     <build>
 

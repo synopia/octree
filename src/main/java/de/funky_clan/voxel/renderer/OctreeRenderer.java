@@ -4,9 +4,11 @@ import de.funky_clan.coregl.Camera;
 import de.funky_clan.coregl.geom.Halfspace;
 import de.funky_clan.coregl.geom.Sphere;
 import de.funky_clan.coregl.renderer.BufferedRenderer;
+import de.funky_clan.voxel.ChunkPopulator;
 import de.funky_clan.voxel.data.Chunk;
 import de.funky_clan.voxel.data.OctreeNode;
 
+import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,15 +37,13 @@ public class OctreeRenderer {
     private int currentState = 0;
     private BufferedRenderer renderer;
 
-    private OctreeNode root;
     private Camera camera;
     private Sphere boundingSphere;
 
-    public OctreeRenderer(BufferedRenderer renderer, OctreeNode root) {
-        this.root = root;
+    public OctreeRenderer(BufferedRenderer renderer, ChunkPopulator populator) {
         this.renderer = renderer;
         for (int i = 0; i < MAX_CHUNK_RENDERERS; i++) {
-              freeRenderes.add(new ChunkRenderer(renderer));
+              freeRenderes.add(new ChunkRenderer(renderer, populator));
         }
     }
 
@@ -124,8 +124,8 @@ public class OctreeRenderer {
                     testChildren = false;
             }
         }
-        OctreeNode[] children = node.getChildren();
-        for (OctreeNode child : children) {
+        for (int i = 0; i < 8; i++) {
+            OctreeNode child = node.getChild(i);
             if( child==null ) {
                 continue;
             }
