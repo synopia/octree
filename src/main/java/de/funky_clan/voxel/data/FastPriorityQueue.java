@@ -27,8 +27,7 @@ public class FastPriorityQueue<T> {
     
     private PriorityQueue<Entry<T>> queue = new PriorityQueue<Entry<T>>();
     private OpenLongObjectHashMap entries = new OpenLongObjectHashMap();
-    private
-    
+
     public void add( long key, T object, float priority ) {
         if( !entries.containsKey(key) ) {
             Entry<T> e = new Entry<T>(key, object, priority);
