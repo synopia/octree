@@ -63,6 +63,7 @@ public class SpherePopulator implements ChunkPopulator {
                 }
             }
         }
+        chunk.setPopulated(true);
     }
 
     private float dist(int x, int y, int z) {

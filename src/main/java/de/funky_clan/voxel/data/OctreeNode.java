@@ -112,15 +112,9 @@ public class OctreeNode implements WritableRaster {
         int newY = this.y + OFFSETS[code][1] * newSize;
         int newZ = this.z + OFFSETS[code][2] * newSize;
 
-        if( newSize> CHUNK_SIZE) {
-            node = new OctreeNode(octree, newX, newY, newZ, newSize);
-            node.setParent(this);
-            octree.add(node);
-        } else {
-            node = new Chunk(octree, newX, newY, newZ, newSize);
-            node.setParent(this);
-            octree.add(node);
-        }
+        node = octree.createNode(newX, newY, newZ, newSize);
+        node.setParent(this);
+
         return node;
     }
 
@@ -175,5 +169,9 @@ public class OctreeNode implements WritableRaster {
     }
     public long toMorton() {
         return Morton.mortonCode(new long[]{x, y, z} )[0];
+    }
+
+    public Octree getOctree() {
+        return octree;
     }
 }

@@ -7,6 +7,7 @@ public class Chunk extends OctreeNode {
     public static int COUNT = 0;
     private int[] map;
     private boolean dirty;
+    private boolean populated;
 
     public Chunk(Octree octree, int x, int y, int z, int size) {
         super(octree, x, y, z, size);
@@ -54,6 +55,14 @@ public class Chunk extends OctreeNode {
 
     public void setDirty(boolean dirty) {
         this.dirty = dirty;
+    }
+
+    public boolean isPopulated() {
+        return populated;
+    }
+
+    public void setPopulated(boolean populated) {
+        this.populated = populated;
     }
 
     @Override

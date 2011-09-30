@@ -17,14 +17,12 @@ public class ChunkRenderer {
     private int glListId;
     private boolean dirty;
     private Chunk chunk;
-    private ChunkPopulator populator;
 
     private int[][] neighbors = new int[][]{
         {0,0,1}, {0,0,-1}, {0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}
     };
 
-    public ChunkRenderer(BufferedRenderer renderer, ChunkPopulator populator) {
-        this.populator = populator;
+    public ChunkRenderer(BufferedRenderer renderer) {
         this.renderer = renderer;
         cubeRenderer = new CubeRenderer(renderer);
         glListId = GL11.glGenLists(1);
@@ -44,9 +42,6 @@ public class ChunkRenderer {
     }
 
     public void update() {
-        if( populator!=null ) {
-            populator.populateChunk(chunk);
-        }
         GL11.glNewList(glListId, GL11.GL_COMPILE);
         renderer.begin();
 
@@ -96,11 +91,4 @@ public class ChunkRenderer {
         return chunk;
     }
 
-    public ChunkPopulator getPopulator() {
-        return populator;
-    }
-
-    public void setPopulator(ChunkPopulator populator) {
-        this.populator = populator;
-    }
 }

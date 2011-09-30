@@ -18,6 +18,7 @@ public abstract class BaseEngine {
     protected FontRenderer fontRenderer;
     protected BufferedRenderer renderer;
     protected Lighting lighting;
+    protected long frameStartTime;
 
     private GameWindow window;
     private boolean fpsControl;
@@ -51,9 +52,11 @@ public abstract class BaseEngine {
     }
 
     private void updateFps() {
-        if( Sys.getTime()-lastFps > 1000 ) {
+        frameStartTime = Sys.getTime();
+
+        if( frameStartTime - lastFps > 1000 ) {
             recordedFps = fps;
-            lastFps     = Sys.getTime();
+            lastFps     = frameStartTime;
             fps = 0;
         }
         fps++;

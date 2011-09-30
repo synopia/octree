@@ -1,10 +1,13 @@
 package de.funky_clan.octree;
 
+import com.yourkit.api.Controller;
+import com.yourkit.api.ProfilingModes;
 import de.funky_clan.coregl.BaseEngine;
 import de.funky_clan.coregl.GameWindow;
 import de.funky_clan.coregl.State;
 import de.funky_clan.coregl.Texture;
 import de.funky_clan.octree.generators.SpherePopulator;
+import de.funky_clan.octree.minecraft.MinecraftPopulator;
 import de.funky_clan.octree.minecraft.RegionFileLoader;
 import de.funky_clan.voxel.VoxelEngine;
 import de.funky_clan.voxel.data.OctreeNode;
@@ -27,8 +30,11 @@ public class TestState implements State {
 
     private float angle;
     private Texture texture;
+    private Controller ctrl;
+    private long frames = 0;
 
     public void init(GameWindow window) throws IOException {
+//        engine = new VoxelEngine(1<<30, new MinecraftPopulator());//SpherePopulator(500,500,500,499));
         engine = new VoxelEngine(1<<30, new SpherePopulator(500,500,500,499));
         engine.setFpsControl(true);
         engine.setShowInfo(true);
@@ -36,6 +42,7 @@ public class TestState implements State {
 
         engine.getCamera().lookAt(500, 500, 0, 1,80,1, 0, 1, 0);
 //        engine.getCamera().lookAt(0, 0, 0, 1,1,1, 0, 1, 0);
+//        engine.getCamera().lookAt(0, 80, 0, 1,80,1, 0, 1, 0);
         texture = window.getTexture("minecraft/terrain.png");
 
         SchematicLoader loader = new SchematicLoader();
@@ -74,6 +81,12 @@ public class TestState implements State {
 //        logger.info("total buffer size: {}", totalBufferSize);
         engine.getLighting().createLight(0,0,0, .4f, .4f, .4f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
         engine.getLighting().createLight(30,30,30, .9f, .9f, .9f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
+        try {
+            ctrl = new Controller();
+            ctrl.startCPUProfiling(ProfilingModes.CPU_TRACING, "");
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     public String getName() {
@@ -101,5 +114,14 @@ public class TestState implements State {
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST );
         texture.bind();
         engine.render(delta);
+        frames++;
+        if( frames==500 ) {
+            try {
+                ctrl.captureSnapshot(ProfilingModes.SNAPSHOT_WITHOUT_HEAP);
+                ctrl.stopCPUProfiling();
+            } catch (Exception e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
     }
 }

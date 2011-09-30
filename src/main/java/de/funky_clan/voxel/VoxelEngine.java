@@ -16,17 +16,16 @@ import java.util.ArrayList;
 public class VoxelEngine extends BaseEngine implements WritableRaster {
     private Octree root;
     private OctreeRenderer octreeRenderer;
-    private ChunkPopulator populator;
 
     public VoxelEngine(int size, ChunkPopulator populator) {
-        this.populator = populator;
         root = new Octree(0,0,0,size);
+        root.setPopulator(populator);
     }
 
     @Override
     public void init(GameWindow window) {
         super.init(window);
-        octreeRenderer = new OctreeRenderer(getRenderer(), populator);
+        octreeRenderer = new OctreeRenderer(getRenderer());
     }
 
     @Override
@@ -44,8 +43,10 @@ public class VoxelEngine extends BaseEngine implements WritableRaster {
 
     public void render( int delta ) {
         beginRender(delta);
-        octreeRenderer.render(root.getRoot(), getCamera());
+        octreeRenderer.render(root.getRoot(), getCamera(), frameStartTime);
         endRender(delta);
+
+        root.doPopulation();
     }
 
     @Override
