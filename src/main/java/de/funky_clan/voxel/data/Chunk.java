@@ -70,4 +70,8 @@ public class Chunk extends OctreeNode {
         COUNT++;
         super.finalize();
     }
+
+    public int[] getMap() {
+        return map;
+    }
 }

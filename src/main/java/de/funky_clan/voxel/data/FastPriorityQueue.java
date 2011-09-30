@@ -1,5 +1,6 @@
 package de.funky_clan.voxel.data;
 
+import cern.colt.list.ObjectArrayList;
 import cern.colt.map.OpenLongObjectHashMap;
 
 import java.util.PriorityQueue;
@@ -7,53 +8,38 @@ import java.util.PriorityQueue;
 /**
  * @author synopia
  */
-public class FastPriorityQueue<T> {
-    private static class Entry<T> implements Comparable<Entry> {
-        private long key;
-        private T object;
-        private float priority;
-
-        private Entry(long key, T object, float priority) {
-            this.key = key;
-            this.object = object;
-            this.priority = priority;
-        }
-
-        @Override
-        public int compareTo(Entry o) {
-            return priority<o.priority ? -1 : (priority>o.priority ? 1 : 0);
-        }
-    }
+public class FastPriorityQueue<T extends Comparable<T>> {
+    private ObjectArrayList queue2 = new ObjectArrayList();
+    private boolean dirty = true;
     
-    private PriorityQueue<Entry<T>> queue = new PriorityQueue<Entry<T>>();
-    private OpenLongObjectHashMap entries = new OpenLongObjectHashMap();
-
-    public void add( long key, T object, float priority ) {
-        if( !entries.containsKey(key) ) {
-            Entry<T> e = new Entry<T>(key, object, priority);
-            entries.put(key, e);
-            queue.add(e);
-        } else {
-            Entry<T> e = (Entry<T>) entries.get(key);
-            e.priority = priority;
+    public void add( T object ) {
+        if( !queue2.contains(object, false) ) {
+            queue2.add(object);
+            dirty = true;
         }
     }
 
     public boolean isEmpty() {
-        return queue.isEmpty();
+        return queue2.isEmpty();
     }
     
     public T poll() {
-        Entry<T> e = queue.poll();
-        entries.removeKey(e.key);
-        return e.object;
+        if( dirty ) {
+            queue2.sort();
+        }
+        T e = (T) queue2.get(0);
+        queue2.remove(0);
+        return e;
     }
     
     public T peek() {
-        return queue.peek().object;
+        if( dirty ) {
+            queue2.sort();
+        }
+        return (T) queue2.get(0);
     }
     
     public int size() {
-        return entries.size();
+        return queue2.size();
     }
 }
