@@ -17,7 +17,7 @@ public class OctreeNode implements WritableRaster {
     private static final int[][] OFFSETS = new int[][] {
         {0,0,0}, {1,0,0}, {0,1,0}, {1,1,0}, {0,0,1}, {1,0,1}, {0,1,1}, {1,1,1}
     };
-        public static final int CHUNK_SIZE = 32;
+    public static final int CHUNK_SIZE = 32;
     protected int x;
     protected int y;
     protected int z;

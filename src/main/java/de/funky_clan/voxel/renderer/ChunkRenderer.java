@@ -11,13 +11,12 @@ import org.lwjgl.opengl.GL11;
 /**
  * @author synopia
  */
-public class ChunkRenderer implements Comparable<ChunkRenderer>{
+public class ChunkRenderer {
     private BufferedRenderer renderer;
     private CubeRenderer cubeRenderer;
     private int glListId;
     private boolean dirty;
     private Chunk chunk;
-    private float distanceToEye;
     private ChunkPopulator populator;
 
     private int[][] neighbors = new int[][]{
@@ -87,10 +86,6 @@ public class ChunkRenderer implements Comparable<ChunkRenderer>{
         chunk.setVisible(!totallyEmpty);
     }
 
-    @Override
-    public int compareTo(ChunkRenderer o) {
-        return distanceToEye<o.distanceToEye ? -1 : (distanceToEye>o.distanceToEye ? 1 : 0);
-    }
 
     public void setChunk(Chunk chunk) {
         dirty = true;
@@ -99,14 +94,6 @@ public class ChunkRenderer implements Comparable<ChunkRenderer>{
 
     public Chunk getChunk() {
         return chunk;
-    }
-
-    public float getDistanceToEye() {
-        return distanceToEye;
-    }
-
-    public void setDistanceToEye(float distanceToEye) {
-        this.distanceToEye = distanceToEye;
     }
 
     public ChunkPopulator getPopulator() {

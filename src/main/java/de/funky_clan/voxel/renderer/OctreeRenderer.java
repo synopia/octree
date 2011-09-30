@@ -1,38 +1,54 @@
 package de.funky_clan.voxel.renderer;
 
+import cern.colt.function.LongObjectProcedure;
+import cern.colt.function.LongProcedure;
+import cern.colt.function.ObjectProcedure;
+import cern.colt.list.LongArrayList;
+import cern.colt.list.ObjectArrayList;
+import cern.colt.map.OpenLongObjectHashMap;
 import de.funky_clan.coregl.Camera;
-import de.funky_clan.coregl.geom.Halfspace;
 import de.funky_clan.coregl.geom.Sphere;
 import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.voxel.ChunkPopulator;
 import de.funky_clan.voxel.data.Chunk;
 import de.funky_clan.voxel.data.OctreeNode;
+import org.lwjgl.Sys;
 
-import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * @author synopia
  */
 public class OctreeRenderer {
+    private static class Entry implements Comparable<Entry> {
+        private Chunk chunk;
+        private ChunkRenderer renderer;
+        private int state;
+        private float distanceToEye;
+        private boolean inFrustum;
+
+        private Entry(Chunk chunk) {
+            this.chunk = chunk;
+        }
+        
+        @Override
+        public int compareTo(Entry entry) {
+            return distanceToEye<entry.distanceToEye ? -1 : (distanceToEye>entry.distanceToEye ? 1 : 0);
+        }        
+    }
     public static final int MAX_CHUNK_RENDERERS = 10000;
 
-    private HashMap<Chunk, ChunkRenderer> chunkRenderers = new HashMap<Chunk, ChunkRenderer>();
-    private List<ChunkRenderer> freeRenderes = new ArrayList<ChunkRenderer>();
+    private OpenLongObjectHashMap chunkEntries = new OpenLongObjectHashMap();
+    private ObjectArrayList       oldChunks = new ObjectArrayList();
+    private ObjectArrayList       visibleChunks = new ObjectArrayList();
+    private ObjectArrayList       newChunks = new ObjectArrayList();
 
-    private List<ChunkRenderer> updates = new ArrayList<ChunkRenderer>();
-    private List<Chunk> chunksInSphere = new ArrayList<Chunk>();
-    private List<Chunk> chunks = new ArrayList<Chunk>();
-    private List<Chunk> oldChunks= new ArrayList<Chunk>();
-    private HashMap<Chunk, Integer> chunkStates = new HashMap<Chunk, Integer>();
-    private HashMap<Chunk, Float> chunksInFrustum = new HashMap<Chunk, Float>();
+    private List<ChunkRenderer> freeRenderes = new ArrayList<ChunkRenderer>();
 
     private int currentState = 0;
     private BufferedRenderer renderer;
@@ -53,67 +69,85 @@ public class OctreeRenderer {
         this.camera    = camera;
 
         oldChunks.clear();
-        chunksInSphere.clear();
-        chunksInFrustum.clear();
-        chunks.clear();
-
+        visibleChunks.clear();
+        
         render(node, true);
-        renderUpdated();
+        resortEntries();
         removeOld();
         updateNew();
+        renderVisible();
+    }
+
+    private void renderVisible() {
+        visibleChunks.forEach(new ObjectProcedure() {
+            @Override
+            public boolean apply(Object o) {
+                Entry entry = (Entry) o;
+                entry.renderer.render();
+                return true;
+            }
+        });
     }
 
     private void updateNew() {
-        int noUpdates = updates.size();
-        int maxUpdates = 8;
-        if( noUpdates<64 ) {
-            Collections.sort(updates);
-            maxUpdates = noUpdates>32 ? 2 : 1;
-        }
-        Iterator<ChunkRenderer> it = updates.iterator();
-        while (it.hasNext() && maxUpdates>0) {
-            ChunkRenderer next = it.next();
-            next.update();
-            next.render();
-            it.remove();
-            maxUpdates--;
-        }
+        newChunks.sort();
+        final long time = Sys.getTime();
+        final int[] maxIndex = new int[1];
+        
+        newChunks.forEach( new ObjectProcedure() {
+            @Override
+            public boolean apply(Object o) {
+                Entry entry = (Entry) o;
+                entry.renderer.update();
+                maxIndex[0] ++;
+                return Sys.getTime() - time < (1000/60.f/2);//10;
+            }
+        });
+        
+        newChunks.removeFromTo(0, maxIndex[0]-1);
     }
 
     private void removeOld() {
-        for (Chunk chunk : oldChunks) {
-            chunkStates.remove(chunk);
-            ChunkRenderer renderer = chunkRenderers.remove(chunk);
-            freeRenderes.add(renderer);
-        }
+        oldChunks.forEach(new ObjectProcedure() {
+            @Override
+            public boolean apply(Object o) {
+                Entry entry = (Entry) o;
+                chunkEntries.removeKey(entry.chunk.toMorton());
+                if (entry.renderer != null) {
+                    freeRenderes.add(entry.renderer);
+                }
+                return true;
+            }
+        });
     }
 
-    private void renderUpdated() {
-        for (Map.Entry<Chunk, Integer> entry : chunkStates.entrySet()) {
-            Chunk chunk = entry.getKey();
-            if( entry.getValue()!=currentState ) {
-                oldChunks.add(chunk);
-            } else {
-                ChunkRenderer renderer;
-                if( chunkRenderers.containsKey(chunk) ) {
-                    renderer = chunkRenderers.get(chunk);
+    private void resortEntries() {
+        chunkEntries.forEachPair(new LongObjectProcedure() {
+            @Override
+            public boolean apply(long morton, Object o) {
+                Entry entry = (Entry) o;
+                Chunk chunk = entry.chunk;
+                if( entry.state != currentState ) {
+                    oldChunks.add( entry );
                 } else {
-                    renderer = findFreeChunkRenderer();
-                    renderer.setChunk(chunk);
-                    chunkRenderers.put(chunk, renderer);
-                }
-                if( !renderer.needsUpdate() ) {
-                    renderer.render();
-                } else {
-                    if( chunksInFrustum.containsKey(chunk) ) {
-                        renderer.setDistanceToEye( chunksInFrustum.get(chunk) );
+                    ChunkRenderer renderer = entry.renderer;
+                    if( renderer==null ) {
+                        renderer = entry.renderer = findFreeChunkRenderer();
+                        renderer.setChunk(chunk);
                     }
-                    if( !updates.contains(renderer) ) {
-                        updates.add(renderer);
+                    if( renderer.needsUpdate() ) {
+                        if( !newChunks.contains(entry, false) ) {
+                            newChunks.add(entry);
+                        }
+                    } else {
+                        if( entry.inFrustum ) {
+                            visibleChunks.add(entry);
+                        }
                     }
                 }
+                return true;  
             }
-        }
+        });
     }
 
     protected void render(OctreeNode node, boolean testChildren) {
@@ -135,13 +169,22 @@ public class OctreeRenderer {
             }
             if (child.isLeaf()) {
                 Chunk chunk = (Chunk) child;
-                chunks.add(chunk);
-                chunkStates.put(chunk, currentState);
+                long morton = chunk.toMorton();
+                Entry entry;
+                if( chunkEntries.containsKey(morton) ) {
+                    entry = (Entry) chunkEntries.get(morton);
+                } else {
+                    entry = new Entry(chunk);                    
+                    chunkEntries.put(morton, entry);
+                }
+                
+                entry.state = currentState;
                 float dist = camera.getFrustum().sphereInFrustum2(chunk.getBoundingSphere());
                 if( dist > 0 ) {
-                    chunksInFrustum.put(chunk, dist);
+                    entry.distanceToEye = dist;
+                    entry.inFrustum = true;
                 } else {
-                    chunksInSphere.add(chunk);
+                    entry.distanceToEye = 250;
                 }
             } else {
                 render(child, testChildren);
@@ -156,7 +199,7 @@ public class OctreeRenderer {
     public ArrayList<String> getDebugInfo() {
         ArrayList<String> result = new ArrayList<String>();
         result.add(String.format("Free: %d", freeRenderes.size()));
-        result.add(String.format("Chunks: %d (frustum=%d, sphere=%d, updates=%d)", chunks.size(), chunksInFrustum.size(), chunksInSphere.size(), updates.size()));
+        result.add(String.format("Chunks: %d (new=%d, visible=%d)", chunkEntries.size(), newChunks.size(), visibleChunks.size()));
         return result;
     }
 }

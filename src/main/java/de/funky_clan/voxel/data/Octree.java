@@ -1,5 +1,7 @@
 package de.funky_clan.voxel.data;
 
+import cern.colt.function.LongObjectProcedure;
+import cern.colt.map.OpenLongObjectHashMap;
 import de.funky_clan.octree.WritableRaster;
 
 import java.util.HashMap;
@@ -8,7 +10,7 @@ import java.util.HashMap;
  * @author synopia
  */
 public class Octree implements WritableRaster {
-    private HashMap<Long, OctreeNode> chunks = new HashMap<Long, OctreeNode>();
+    private OpenLongObjectHashMap chunks = new OpenLongObjectHashMap();
     private OctreeNode root;
 
     public Octree(int x, int y, int z, int size) {
@@ -32,7 +34,7 @@ public class Octree implements WritableRaster {
         long cz = z/OctreeNode.CHUNK_SIZE;
         long morton = OctreeNode.toMorton(cx, cy, cz);
         if( chunks.containsKey(morton) ) {
-            OctreeNode node = chunks.get(morton);
+            OctreeNode node = (OctreeNode) chunks.get(morton);
             if (node instanceof Chunk) {
                 Chunk chunk = (Chunk) node;
                 return chunk.getPixel(x, y, z);
