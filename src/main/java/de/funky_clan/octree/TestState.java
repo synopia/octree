@@ -35,10 +35,11 @@ public class TestState implements State {
         engine.init(window);
 
         engine.getCamera().lookAt(500, 500, 0, 1,80,1, 0, 1, 0);
+//        engine.getCamera().lookAt(0, 0, 0, 1,1,1, 0, 1, 0);
         texture = window.getTexture("minecraft/terrain.png");
 
-//        SchematicLoader loader = new SchematicLoader();
-//        tree = loader.load("new_skull_hollow.schematic");
+        SchematicLoader loader = new SchematicLoader();
+        loader.load(engine.getRoot(), "colloseum.schematic");
         SphereGenerator s = new SphereGenerator();
         OctreeNode octree = engine.getRoot();
 
@@ -48,7 +49,7 @@ public class TestState implements State {
 //                regionFileLoader.load(octree, i,j);
 //            }
 //        }
-        SchematicLoader loader = new SchematicLoader();
+//        SchematicLoader loader = new SchematicLoader();
 //        loader.load(octree, "turm1.schematic");
 //        octree.setPixel(128,128,128,100);
         octree.setPixel(1,80,1,100);

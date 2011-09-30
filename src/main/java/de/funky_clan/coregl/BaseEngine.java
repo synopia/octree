@@ -2,6 +2,7 @@ package de.funky_clan.coregl;
 
 import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.coregl.renderer.FontRenderer;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -21,12 +22,15 @@ public abstract class BaseEngine {
     private GameWindow window;
     private boolean fpsControl;
     private boolean showInfo;
+    private long lastFps;
+    private int  fps;
+    private int  recordedFps;
 
     public void init(GameWindow window) {
         this.window = window;
         camera = new Camera(10,10,10);
         fontRenderer     = new FontRenderer(window);
-        renderer = new BufferedRenderer(0x4000, GL11.GL_FLOAT, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
+        renderer = new BufferedRenderer( GL11.GL_FLOAT, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
         lighting = new Lighting();
         GL11.glEnable(GL11.GL_LIGHTING);
     }
@@ -39,15 +43,25 @@ public abstract class BaseEngine {
     }
 
     public void beginRender( int delta ) {
+        updateFps();
+
         lighting.doLighting(camera.getX(), camera.getY(), camera.getZ());
         camera.setView();
         renderer.prepare();
     }
 
+    private void updateFps() {
+        if( Sys.getTime()-lastFps > 1000 ) {
+            recordedFps = fps;
+            lastFps     = Sys.getTime();
+            fps = 0;
+        }
+        fps++;
+    }
+
     public void endRender( int delta ) {
         if( isShowInfo() ) {
-            float fps = 1000.f / delta;
-            fontRenderer.print(window, 10, 10, String.format("FPS: %.2f", fps));
+            fontRenderer.print(window, 10, 10, String.format("FPS: %d", recordedFps));
             ArrayList<String> infos = getDebugInfo();
             int y = 20;
             for (String info : infos) {

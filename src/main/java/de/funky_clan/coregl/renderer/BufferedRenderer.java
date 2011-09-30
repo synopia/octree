@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class BufferedRenderer {
     public static final int NUMBER_OF_BUFFERS = 8;
+    public static final int BUFFER_SIZE = 0x10000;
 
     protected List<VBO> buffers = new ArrayList<VBO>();
     protected int bufferIndex = 0;
@@ -35,15 +36,8 @@ public class BufferedRenderer {
 
     protected int trianglesTotal;
 
-    private int bufferSize;
-
-    public BufferedRenderer(int size) {
-        this( size, GL11.GL_FLOAT, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT );
-    }
-
-    public BufferedRenderer(int size, int texCoordFormat, int colorFormat, int normalFormat) {
+    public BufferedRenderer( int texCoordFormat, int colorFormat, int normalFormat) {
         vboIds = BufferUtils.createIntBuffer(1);
-        this.bufferSize = size;
         this.texCoordFormat = texCoordFormat;
         this.colorFormat    = colorFormat;
         this.normalFormat   = normalFormat;
@@ -52,6 +46,10 @@ public class BufferedRenderer {
         texCoordOffset = strideSize; strideSize += 2*sizeOfFormat(texCoordFormat);
         colorOffset    = strideSize; strideSize += 4*sizeOfFormat(colorFormat);
         normalOffset   = strideSize; strideSize += 3*sizeOfFormat(normalFormat);
+
+        for (int i = 0; i < NUMBER_OF_BUFFERS; i++) {
+            buffers.add( createVBOBuffer() );
+        }
     }
 
     public void prepare() {
@@ -59,7 +57,7 @@ public class BufferedRenderer {
     }
 
     protected ByteBuffer createBuffer() {
-        return BufferUtils.createByteBuffer(bufferSize);
+        return BufferUtils.createByteBuffer(BUFFER_SIZE);
     }
 
     protected int genVBOId() {
@@ -85,12 +83,7 @@ public class BufferedRenderer {
         return buffers.get(bufferIndex);
     }
     public boolean begin() {
-        if( buffers.size()==0 ) {
-            for (int i = 0; i < NUMBER_OF_BUFFERS; i++) {
-                buffers.add( createVBOBuffer() );
-            }
-        }
-
+        trianglesTotal = 0;
         return true;
     }
 

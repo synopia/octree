@@ -45,7 +45,9 @@ public class ChunkRenderer implements Comparable<ChunkRenderer>{
     }
 
     public void update() {
-        populator.populateChunk(chunk);
+        if( populator!=null ) {
+            populator.populateChunk(chunk);
+        }
         GL11.glNewList(glListId, GL11.GL_COMPILE);
         renderer.begin();
 
@@ -78,6 +80,7 @@ public class ChunkRenderer implements Comparable<ChunkRenderer>{
         }
 
         renderer.render();
+//        System.out.println(renderer.getTrianglesTotal()*3*renderer.getStrideSize());
         GL11.glEndList();
         dirty = false;
         chunk.setDirty(false);
