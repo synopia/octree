@@ -17,7 +17,7 @@ public class BufferedRenderer {
     public static final int NUMBER_OF_BUFFERS = 8;
     public static final int BUFFER_SIZE = 0x10000;
 
-    protected List<VBO> buffers = new ArrayList<VBO>();
+    protected VBO[] buffers;
     protected int bufferIndex = 0;
 
     private IntBuffer vboIds;
@@ -47,8 +47,9 @@ public class BufferedRenderer {
         colorOffset    = strideSize; strideSize += 4*sizeOfFormat(colorFormat);
         normalOffset   = strideSize; strideSize += 3*sizeOfFormat(normalFormat);
 
+        buffers = new VBO[NUMBER_OF_BUFFERS];
         for (int i = 0; i < NUMBER_OF_BUFFERS; i++) {
-            buffers.add( createVBOBuffer() );
+            buffers[i] = createVBOBuffer();
         }
     }
 
@@ -80,7 +81,7 @@ public class BufferedRenderer {
     }
 
     protected VBO getCurrentBuffer() {
-        return buffers.get(bufferIndex);
+        return buffers[bufferIndex];
     }
     public boolean begin() {
         trianglesTotal = 0;
@@ -88,7 +89,7 @@ public class BufferedRenderer {
     }
 
     public void onBufferFull() {
-        VBO buffer = buffers.get(bufferIndex);
+        VBO buffer = buffers[bufferIndex];
         if( buffer.getVertices()==0 ) {
             return;
         }
@@ -97,11 +98,9 @@ public class BufferedRenderer {
         trianglesTotal += buffer.getVertices()/3;
         buffer.clear();
         bufferIndex ++;
-        if( bufferIndex>=buffers.size() ) {
-            bufferIndex = 0;
-        }
-
+        bufferIndex %= NUMBER_OF_BUFFERS;
     }
+
     public void render() {
         onBufferFull();
     }
@@ -177,9 +176,7 @@ public class BufferedRenderer {
 
     public ArrayList<String> getDebugInfos() {
         ArrayList<String> result = new ArrayList<String>();
-        int noBuffers = buffers.size();
         result.add(String.format("Triangles: %d", trianglesTotal));
-        result.add(String.format("VBOBuffers: %d", noBuffers));
         result.add( String.format("Mem: %d/%d kB",
             (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024, Runtime.getRuntime().totalMemory()/1024
             ));
