@@ -46,7 +46,7 @@ public class VoxelEngine extends BaseEngine implements WritableRaster {
         octreeRenderer.render(root.getRoot(), getCamera(), frameStartTime);
         endRender(delta);
 
-        root.doPopulation();
+        root.doPopulation(frameStartTime);
     }
 
     @Override

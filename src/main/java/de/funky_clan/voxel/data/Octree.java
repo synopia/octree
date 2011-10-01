@@ -3,6 +3,7 @@ package de.funky_clan.voxel.data;
 import cern.colt.map.OpenLongObjectHashMap;
 import de.funky_clan.octree.WritableRaster;
 import de.funky_clan.voxel.ChunkPopulator;
+import org.lwjgl.Sys;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
@@ -40,11 +41,13 @@ public class Octree implements WritableRaster {
         }
     }
 
-    public void doPopulation( ) {
-        while (!queue.isEmpty()) {
+    public void doPopulation( long startTime ) {
+        while (!queue.isEmpty() && Sys.getTime()-startTime<(1000/60.f)) {
             Entry entry = queue.poll();
             Chunk chunk = entry.getChunk();
-            populator.populateChunk(chunk);
+            if( chunk!=null ) {
+                populator.populateChunk(chunk);
+            }
 
         }
     }
