@@ -165,10 +165,10 @@ public class OctreeNode implements WritableRaster {
     }
 
     public static long toMorton(long x, long y, long z) {
-        return Morton.mortonCode(new long[]{x, y, z} )[0];
+        return Morton.mortonCode(x, y, z );
     }
     public long toMorton() {
-        return Morton.mortonCode(new long[]{x, y, z} )[0];
+        return Morton.mortonCode(x, y, z );
     }
 
     public Octree getOctree() {

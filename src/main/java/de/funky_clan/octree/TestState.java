@@ -14,6 +14,7 @@ import de.funky_clan.voxel.data.OctreeNode;
 import de.funky_clan.voxel.renderer.OctreeRenderer;
 import de.funky_clan.octree.generators.SphereGenerator;
 import de.funky_clan.octree.minecraft.SchematicLoader;
+import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,17 +33,18 @@ public class TestState implements State {
     private Texture texture;
     private Controller ctrl;
     private long frames = 0;
+    private long startTime;
 
     public void init(GameWindow window) throws IOException {
-//        engine = new VoxelEngine(1<<30, new MinecraftPopulator());//SpherePopulator(500,500,500,499));
-        engine = new VoxelEngine(1<<30, new SpherePopulator(500,500,500,499));
+        engine = new VoxelEngine(1<<30, new MinecraftPopulator());//SpherePopulator(500,500,500,499));
+//        engine = new VoxelEngine(1<<30, new SpherePopulator(500,500,500,499));
         engine.setFpsControl(true);
         engine.setShowInfo(true);
         engine.init(window);
 
-        engine.getCamera().lookAt(500, 500, 0, 1,80,1, 0, 1, 0);
+//        engine.getCamera().lookAt(500, 500, 0, 1,80,1, 0, 1, 0);
+        engine.getCamera().lookAt(0, 80, 0, 1,80,1, 0, 1, 0);
 //        engine.getCamera().lookAt(0, 0, 0, 1,1,1, 0, 1, 0);
-//        engine.getCamera().lookAt(0, 80, 0, 1,80,1, 0, 1, 0);
         texture = window.getTexture("minecraft/terrain.png");
 
         SchematicLoader loader = new SchematicLoader();
@@ -82,8 +84,10 @@ public class TestState implements State {
         engine.getLighting().createLight(0,0,0, .4f, .4f, .4f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
         engine.getLighting().createLight(30,30,30, .9f, .9f, .9f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
         try {
+            startTime = Sys.getTime();
             ctrl = new Controller();
             ctrl.startCPUProfiling(ProfilingModes.CPU_TRACING, "");
+
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -115,10 +119,14 @@ public class TestState implements State {
         texture.bind();
         engine.render(delta);
         frames++;
-        if( frames==500 ) {
+        if( Sys.getTime()-startTime>60000 && startTime>0) {
             try {
+                startTime = 0;
                 ctrl.captureSnapshot(ProfilingModes.SNAPSHOT_WITHOUT_HEAP);
+//                ctrl.captureMemorySnapshot();
                 ctrl.stopCPUProfiling();
+                ctrl.startAllocationRecording(true, 1, false, 0);
+                System.out.println("done profiling");
             } catch (Exception e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }

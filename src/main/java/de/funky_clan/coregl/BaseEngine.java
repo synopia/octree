@@ -5,6 +5,7 @@ import de.funky_clan.coregl.renderer.FontRenderer;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -63,6 +64,7 @@ public abstract class BaseEngine {
     }
 
     public void endRender( int delta ) {
+        Display.sync(90);
         if( isShowInfo() ) {
             fontRenderer.print(window, 10, 10, String.format("FPS: %d", recordedFps));
             ArrayList<String> infos = getDebugInfo();

@@ -18,6 +18,7 @@ public class MortonTest {
         OctreeNode root = new Octree(0,0,0, 1<<21).getRoot();
         System.out.println(root.getChunk(0,0,0));
         System.out.println(root.getChunk(0,0,32));
+/*
         long[] morton = Morton.mortonCode(new long[]{1, 2, 3});
         System.out.println(Arrays.toString(morton));
         System.out.println(Arrays.toString(Morton.mortonCode(new long[]{0, 0, 0})));
@@ -32,5 +33,6 @@ public class MortonTest {
         System.out.println(new BigInteger(Morton.mortonCode(new long[]{1,1, 16})[0]+"").toString(2));
         System.out.println(new BigInteger(Morton.mortonCode(new long[]{0,0, 5})[0]+"").toString(2));
         System.out.println(new BigInteger(Morton.mortonCode(new long[]{0, 0, 6})[0] + "").toString(2));
+*/
     }
 }

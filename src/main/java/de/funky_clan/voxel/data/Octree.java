@@ -4,6 +4,10 @@ import cern.colt.map.OpenLongObjectHashMap;
 import de.funky_clan.octree.WritableRaster;
 import de.funky_clan.voxel.ChunkPopulator;
 
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
+
 /**
  * @author synopia
  */
@@ -45,8 +49,19 @@ public class Octree implements WritableRaster {
         }
     }
 
+     private OctreeNode get( long morton ) {
+         Reference<OctreeNode> ref = (WeakReference<OctreeNode>) chunks.get(morton);
+         OctreeNode result = null;
+         if( ref!=null ) {
+             result = ref.get();
+             if( result==null ) {
+                 chunks.removeKey(morton);
+             }
+         }
+         return result;
+     }
      private void add( OctreeNode node ) {
-        chunks.put( node.toMorton(), node );
+        chunks.put( node.toMorton(), new WeakReference<OctreeNode>(node) );
     }
 
     @Override
@@ -60,8 +75,8 @@ public class Octree implements WritableRaster {
         long cy = y/OctreeNode.CHUNK_SIZE;
         long cz = z/OctreeNode.CHUNK_SIZE;
         long morton = OctreeNode.toMorton(cx, cy, cz);
-        if( chunks.containsKey(morton) ) {
-            OctreeNode node = (OctreeNode) chunks.get(morton);
+        OctreeNode node = get(morton);
+        if( node!=null ) {
             if (node instanceof Chunk) {
                 Chunk chunk = (Chunk) node;
                 return chunk.getPixel(x, y, z);

@@ -71,7 +71,10 @@ public class OctreeRenderer {
     private void updateNew(long frameStartTime) {
         while (!newChunks.isEmpty() && Sys.getTime() - frameStartTime < (1000/30.f) ) {
             Entry entry = newChunks.poll();
-            entry.getRenderer().update();
+            ChunkRenderer renderer = entry.getRenderer();
+            if( renderer!=null ) {
+                renderer.update();
+            }
         }
     }
 
@@ -83,6 +86,8 @@ public class OctreeRenderer {
                 chunkEntries.removeKey(entry.getChunk().toMorton());
                 if (entry.getRenderer() != null) {
                     freeRenderes.add(entry.getRenderer());
+                    entry.setChunk(null);
+                    entry.setRenderer(null);
                 }
                 return true;
             }

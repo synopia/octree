@@ -4,7 +4,7 @@ package de.funky_clan.voxel;
  * @author synopia
  */
 public class Morton {
-    public static long[] mortonCode(long[] xyz){
+    public static long[] mortonCodeFull(long[] xyz){
         long[] ret = {0,0,0};
         long t;
         for(int i=0; i<3; i++){
@@ -51,6 +51,38 @@ public class Morton {
                 ret[j] = ret[j] | (t << i); //the shift puts x into the "low" order interleaved bits, y in middle, and z at the top. so after all the loops the number's bits origins will be zyxzyxzyxzyx...
             }
         }
+        return ret;
+    }
+    public static long mortonCode(long x, long y, long z){
+        long ret = 0;
+        long t;
+        int j=0;
+        int i=0;
+        t = (~x) >>> (1+(21*j));
+        t = (t | t<<32) & 0x1f00000000ffffl;
+        t = (t | t<<16) & 0x1f0000ff0000ffl;
+        t = (t | t<<8) & 0x100f00f00f00f00fl;
+        t = (t | t<<4) & 0x10c30c30c30c30c3l;
+        t = (t | t<<2) & 0x1249249249249249l;
+        ret = ret | (t << i); //the shift puts x into the "low" order interleaved bits, y in middle, and z at the top. so after all the loops the number's bits origins will be zyxzyxzyxzyx...
+
+        i++;
+        t = (~y) >>> (1+(21*j));
+        t = (t | t<<32) & 0x1f00000000ffffl;
+        t = (t | t<<16) & 0x1f0000ff0000ffl;
+        t = (t | t<<8) & 0x100f00f00f00f00fl;
+        t = (t | t<<4) & 0x10c30c30c30c30c3l;
+        t = (t | t<<2) & 0x1249249249249249l;
+        ret = ret | (t << i); //the shift puts x into the "low" order interleaved bits, y in middle, and z at the top. so after all the loops the number's bits origins will be zyxzyxzyxzyx...
+
+        i++;
+        t = (~z) >>> (1+(21*j));
+        t = (t | t<<32) & 0x1f00000000ffffl;
+        t = (t | t<<16) & 0x1f0000ff0000ffl;
+        t = (t | t<<8) & 0x100f00f00f00f00fl;
+        t = (t | t<<4) & 0x10c30c30c30c30c3l;
+        t = (t | t<<2) & 0x1249249249249249l;
+        ret = ret | (t << i); //the shift puts x into the "low" order interleaved bits, y in middle, and z at the top. so after all the loops the number's bits origins will be zyxzyxzyxzyx...
         return ret;
     }
 }
