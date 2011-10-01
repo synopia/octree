@@ -17,7 +17,7 @@ public class BufferedRenderer {
     public static final int NUMBER_OF_BUFFERS = 8;
     public static final int BUFFER_SIZE = 0x10000;
 
-    protected VBO[] buffers;
+    protected VBOBuffer2[] buffers;
     protected int bufferIndex = 0;
 
     private IntBuffer vboIds;
@@ -47,7 +47,7 @@ public class BufferedRenderer {
         colorOffset    = strideSize; strideSize += 4*sizeOfFormat(colorFormat);
         normalOffset   = strideSize; strideSize += 3*sizeOfFormat(normalFormat);
 
-        buffers = new VBO[NUMBER_OF_BUFFERS];
+        buffers = new VBOBuffer2[NUMBER_OF_BUFFERS];
         for (int i = 0; i < NUMBER_OF_BUFFERS; i++) {
             buffers[i] = createVBOBuffer();
         }
@@ -66,12 +66,12 @@ public class BufferedRenderer {
         return vboIds.get(0);
     }
 
-    protected VBO createVBOBuffer() {
+    protected VBOBuffer2 createVBOBuffer() {
         return new VBOBuffer2(this);
     }
 
     public void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz) {
-        getCurrentBuffer().addVertex(
+        buffers[bufferIndex].addVertex(
             x * scale[0] + translation[0],
             y * scale[1] + translation[1],
             z * scale[2] + translation[2],
@@ -80,7 +80,7 @@ public class BufferedRenderer {
             color, nx, ny, nz);
     }
 
-    protected VBO getCurrentBuffer() {
+    protected VBOBuffer2 getCurrentBuffer() {
         return buffers[bufferIndex];
     }
     public boolean begin() {
@@ -89,7 +89,7 @@ public class BufferedRenderer {
     }
 
     public void onBufferFull() {
-        VBO buffer = buffers[bufferIndex];
+        VBOBuffer2 buffer = buffers[bufferIndex];
         if( buffer.getVertices()==0 ) {
             return;
         }
@@ -106,7 +106,7 @@ public class BufferedRenderer {
     }
 
     public void ensureSpace(int vertices) {
-        VBO buffer = getCurrentBuffer();
+        VBOBuffer2 buffer = getCurrentBuffer();
         buffer.ensureSpace(vertices);
     }
 

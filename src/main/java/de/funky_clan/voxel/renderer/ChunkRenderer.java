@@ -2,25 +2,22 @@ package de.funky_clan.voxel.renderer;
 
 import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.coregl.renderer.CubeRenderer;
-import de.funky_clan.voxel.ChunkPopulator;
 import de.funky_clan.voxel.data.Chunk;
-import de.funky_clan.voxel.data.OctreeNode;
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL11;
 
 /**
  * @author synopia
  */
 public class ChunkRenderer {
+    private static int[][] NEIGHBORS = new int[][]{
+            {0,0,1}, {0,0,-1}, {0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}
+    };
     private BufferedRenderer renderer;
     private CubeRenderer cubeRenderer;
     private int glListId;
     private boolean dirty;
-    private Chunk chunk;
 
-    private int[][] neighbors = new int[][]{
-            {0,0,1}, {0,0,-1}, {0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}
-    };
+    private Chunk chunk;
     private int[] map;
 
     public ChunkRenderer(BufferedRenderer renderer) {
@@ -77,9 +74,9 @@ public class ChunkRenderer {
 
         if( color!=0 ) {
             for (int i = 0; i < 6; i++) {
-                int nx = x + neighbors[i][0];
-                int ny = y + neighbors[i][1];
-                int nz = z + neighbors[i][2];
+                int nx = x + NEIGHBORS[i][0];
+                int ny = y + NEIGHBORS[i][1];
+                int nz = z + NEIGHBORS[i][2];
                 int noffs = nx + ( ny*size+nz ) * size;
                 boolean empty;
                 if( noffs>=0 && noffs<map.length ) {

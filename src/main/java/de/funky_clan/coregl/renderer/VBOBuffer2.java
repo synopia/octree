@@ -11,7 +11,7 @@ import java.util.Arrays;
 /**
 * @author synopia
 */
-public class VBOBuffer2 implements VBO{
+public final class VBOBuffer2 {
     private ByteBuffer byteBuffer;
     private IntBuffer intBuffer;
     private int vboId;
@@ -41,7 +41,6 @@ public class VBOBuffer2 implements VBO{
     }
 
     public void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz) {
-        ensureSpace(1);
         vertices ++;
 
         rawBuffer[pos] = Float.floatToRawIntBits(x); pos++;
@@ -99,7 +98,6 @@ public class VBOBuffer2 implements VBO{
         rawBuffer = newBuffer;
     }
 
-    @Override
     public void free() {
         clear();
     }
