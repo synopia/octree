@@ -19,8 +19,9 @@ public class ChunkRenderer {
     private Chunk chunk;
 
     private int[][] neighbors = new int[][]{
-        {0,0,1}, {0,0,-1}, {0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}
+            {0,0,1}, {0,0,-1}, {0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}
     };
+    private int[] map;
 
     public ChunkRenderer(BufferedRenderer renderer) {
         this.renderer = renderer;
@@ -45,33 +46,16 @@ public class ChunkRenderer {
 
         int size = chunk.getSize();
         boolean totallyEmpty = true;
-        int[] map = chunk.getMap();
-        if( map!=null ) {
+        map = chunk.getMap();
+        if( map !=null ) {
             GL11.glNewList(glListId, GL11.GL_COMPILE);
             renderer.begin();
             for( int x = 0; x < size; x++ ) {
                 for( int y = 0; y < size; y++ ) {
                     for( int z = 0; z < size; z++ ) {
-                        int offs = x + ( y*size+z ) * size;
-                        int color = map[offs];
-    //                    int color = chunk.getPixel(x+chunk.getX(), y+chunk.getY(), z+chunk.getZ());
-
-                        if( color!=0 ) {
-                            for (int i = 0; i < 6; i++) {
-                                int nx = x + neighbors[i][0];
-                                int ny = y + neighbors[i][1];
-                                int nz = z + neighbors[i][2];
-
-                                boolean empty;
-                                nx += chunk.getX();
-                                ny += chunk.getY();
-                                nz += chunk.getZ();
-                                empty = chunk.getPixel(nx, ny, nz) == 0;
-                                if(empty) {
-                                    totallyEmpty = false;
-                                    cubeRenderer.renderCubeFace(x + chunk.getX(), y + chunk.getY(), z + chunk.getZ(), 1/16.f, 0, color, i);
-                                }
-                            }
+                        boolean rendered = renderBlock(x, y, z);
+                        if( rendered ) {
+                            totallyEmpty = false;
                         }
                     }
                 }
@@ -83,6 +67,33 @@ public class ChunkRenderer {
         dirty = false;
         chunk.setDirty(false);
         chunk.setVisible(!totallyEmpty);
+    }
+
+    private boolean renderBlock( int x, int y, int z ) {
+        boolean result = false;
+        int size = chunk.getSize();
+        int offs = x + ( y*size+z ) * size;
+        int color = map[offs];
+
+        if( color!=0 ) {
+            for (int i = 0; i < 6; i++) {
+                int nx = x + neighbors[i][0];
+                int ny = y + neighbors[i][1];
+                int nz = z + neighbors[i][2];
+                int noffs = nx + ( ny*size+nz ) * size;
+                boolean empty;
+                if( noffs>=0 && noffs<map.length ) {
+                    empty = map[noffs]==0;
+                } else {
+                    empty = chunk.getPixel(nx, ny, nz)==0;
+                }
+                if(empty) {
+                    result = true;
+                    cubeRenderer.renderCubeFace(x + chunk.getX(), y + chunk.getY(), z + chunk.getZ(), 1/16.f, 0, color, i);
+                }
+            }
+        }
+        return result;
     }
 
 
