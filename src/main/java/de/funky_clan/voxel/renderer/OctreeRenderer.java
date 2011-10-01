@@ -150,9 +150,8 @@ public class OctreeRenderer {
                 Chunk chunk = (Chunk) child;
                 long morton = chunk.toMorton();
                 Entry entry;
-                if( chunkEntries.containsKey(morton) ) {
-                    entry = (Entry) chunkEntries.get(morton);
-                } else {
+                entry = (Entry) chunkEntries.get(morton);
+                if( entry==null ) {
                     entry = new Entry(chunk);
                     chunkEntries.put(morton, entry);
                 }

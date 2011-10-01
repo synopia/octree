@@ -41,11 +41,14 @@ public class Octree implements WritableRaster {
     }
 
     public void doPopulation( long startTime ) {
-        while (!queue.isEmpty() && Sys.getTime()-startTime<(1000/60.f)) {
+        while (!queue.isEmpty() ) {
             Entry entry = queue.poll();
             Chunk chunk = entry.getChunk();
             if( chunk!=null && chunks.containsKey(chunk.toMorton())) {
                 populator.populateChunk(chunk);
+            }
+            if( Sys.getTime()-startTime>(1000/60.f) ) {
+                break;
             }
         }
     }
