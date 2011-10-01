@@ -84,8 +84,11 @@ public class OctreeRenderer {
             public boolean apply(Object o) {
                 Entry entry = (Entry) o;
                 chunkEntries.removeKey(entry.getChunk().toMorton());
-                if (entry.getRenderer() != null) {
-                    freeRenderes.add(entry.getRenderer());
+                tree.remove(entry.getChunk());
+                ChunkRenderer renderer = entry.getRenderer();
+                if (renderer != null) {
+                    renderer.setChunk(null);
+                    freeRenderes.add(renderer);
                     entry.setChunk(null);
                     entry.setRenderer(null);
                 }

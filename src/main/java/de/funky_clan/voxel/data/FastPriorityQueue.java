@@ -42,4 +42,12 @@ public class FastPriorityQueue<T extends Comparable<T>> {
     public int size() {
         return queue2.size();
     }
+    
+    public void remove( T object ) {
+        if( dirty ) {
+            queue2.sort();
+        }
+        int index = queue2.binarySearch(object);
+        queue2.remove(index);
+    }
 }

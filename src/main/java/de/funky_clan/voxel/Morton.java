@@ -54,9 +54,6 @@ public class Morton {
         return ret;
     }
     public static long mortonCode(long x, long y, long z){
-        x>>=4;
-        y>>=4;
-        z>>=4;
         long ret = 0;
         long t;
         int j=0;

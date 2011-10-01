@@ -67,6 +67,7 @@ public class VoxelEngine extends BaseEngine implements WritableRaster {
     protected ArrayList<String> getDebugInfo() {
         ArrayList<String> info = super.getDebugInfo();
         info.addAll( octreeRenderer.getDebugInfo() );
+        info.add(String.format("Octree Chunks: %d, to be populated: %d", root.size(), root.populateSize()));
         return info;
     }
 }

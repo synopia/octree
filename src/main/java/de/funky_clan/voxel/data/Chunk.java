@@ -67,6 +67,7 @@ public class Chunk extends OctreeNode {
 
     @Override
     protected void finalize() throws Throwable {
+        System.out.println("Chunk finalize");
         COUNT++;
         super.finalize();
     }

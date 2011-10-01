@@ -48,7 +48,7 @@ public class TestState implements State {
         texture = window.getTexture("minecraft/terrain.png");
 
         SchematicLoader loader = new SchematicLoader();
-        loader.load(engine.getRoot(), "colloseum.schematic");
+//        loader.load(engine.getRoot(), "colloseum.schematic");
         SphereGenerator s = new SphereGenerator();
         OctreeNode octree = engine.getRoot();
 
