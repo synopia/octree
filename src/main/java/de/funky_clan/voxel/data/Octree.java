@@ -20,7 +20,6 @@ public class Octree implements WritableRaster {
 
     public Octree(int x, int y, int z, int size) {
         root = new OctreeNode(this, x, y, z, size);
-        add( root );
     }
 
     public void setPopulator(ChunkPopulator populator) {
@@ -52,6 +51,10 @@ public class Octree implements WritableRaster {
         }
     }
 
+    protected void remove( OctreeNode node ) {
+        chunks.removeKey(node.toMorton());
+    }
+
      private OctreeNode get( long morton ) {
          Reference<OctreeNode> ref = (WeakReference<OctreeNode>) chunks.get(morton);
          OctreeNode result = null;
@@ -64,7 +67,12 @@ public class Octree implements WritableRaster {
          return result;
      }
      private void add( OctreeNode node ) {
-        chunks.put( node.toMorton(), new WeakReference<OctreeNode>(node) );
+
+         long morton = node.toMorton();
+         if( chunks.containsKey(morton) ) {
+             throw new IllegalStateException("morton alread exists: "+morton+", chunk="+((Reference<OctreeNode>)chunks.get(morton)).get()+" new="+node);
+         }
+         chunks.put(morton, new WeakReference<OctreeNode>(node) );
     }
 
     @Override
@@ -98,8 +106,8 @@ public class Octree implements WritableRaster {
             node = new OctreeNode(this, x, y, z, size);
         } else {
             node = new Chunk(this, x, y, z, size);
+            add(node);
         }
-        add(node);
         return node;
     }
 }

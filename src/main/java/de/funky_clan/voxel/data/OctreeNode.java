@@ -174,4 +174,10 @@ public class OctreeNode implements WritableRaster {
     public Octree getOctree() {
         return octree;
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        octree.remove(this);
+        super.finalize();
+    }
 }
