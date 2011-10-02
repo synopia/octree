@@ -11,10 +11,9 @@ public class Chunk extends OctreeNode {
 
     public Chunk(Octree octree, int x, int y, int z, int size) {
         super(octree, x, y, z, size);
-
-
         visible = true;
         dirty   = true;
+        COUNT ++;
     }
 
     @Override
@@ -67,8 +66,8 @@ public class Chunk extends OctreeNode {
 
     @Override
     protected void finalize() throws Throwable {
-        System.out.println("Chunk finalize");
-        COUNT++;
+        COUNT--;
+        octree.remove(this);
         super.finalize();
     }
 

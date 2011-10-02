@@ -69,11 +69,14 @@ public class OctreeRenderer {
     }
 
     private void updateNew(long frameStartTime) {
-        while (!newChunks.isEmpty() && Sys.getTime() - frameStartTime < (1000/30.f) ) {
+        while (!newChunks.isEmpty() ) {
             Entry entry = newChunks.poll();
             ChunkRenderer renderer = entry.getRenderer();
             if( renderer!=null ) {
                 renderer.update();
+            }
+            if( frameStartTime==0 || Sys.getTime() - frameStartTime > (1000/60.f) ) {
+                break;
             }
         }
     }
@@ -177,7 +180,7 @@ public class OctreeRenderer {
     public ArrayList<String> getDebugInfo() {
         ArrayList<String> result = new ArrayList<String>();
         result.add(String.format("Free: %d", freeRenderes.size()));
-        result.add(String.format("Chunks: %d (new=%d, visible=%d)", chunkEntries.size(), newChunks.size(), visibleChunks.size()));
+        result.add(String.format("Chunks:%d %d (new=%d, visible=%d)", Chunk.COUNT, chunkEntries.size(), newChunks.size(), visibleChunks.size()));
         return result;
     }
 }

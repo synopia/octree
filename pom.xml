@@ -9,20 +9,9 @@
     <version>1.0</version>
 
     <properties>
-        <lwjgl.version>2.6</lwjgl.version>
-        <platform>win64</platform>
+        <lwjgl.version>2.7.1</lwjgl.version>
+        <!--platform>win64</platform-->
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.lwjgl</groupId>
-                <artifactId>lwjgl-native</artifactId>
-                <version>${lwjgl.version}</version>
-                <classifier>${platform}</classifier>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -50,34 +39,6 @@
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
             <version>3.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.lwjgl</groupId>
-            <artifactId>lwjgl-native</artifactId>
-            <classifier>mac</classifier>
-            <version>${lwjgl.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.lwjgl</groupId>
-            <artifactId>lwjgl-native</artifactId>
-            <classifier>win32</classifier>
-            <version>${lwjgl.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.lwjgl</groupId>
-            <artifactId>lwjgl-native</artifactId>
-            <classifier>win64</classifier>
-            <version>${lwjgl.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.lwjgl</groupId>
-            <artifactId>lwjgl-native</artifactId>
-            <version>${lwjgl.version}</version>
-            <classifier>linux32</classifier>
         </dependency>
 
         <dependency>
@@ -126,10 +87,9 @@
                     <artifactItems>
                         <artifactItem>
                             <groupId>org.lwjgl</groupId>
-                            <artifactId>lwjgl-native</artifactId>
+                            <artifactId>lwjgl-native-platform</artifactId>
                             <version>${lwjgl.version}</version>
                             <type>jar</type>
-                            <classifier>${platform}</classifier>
                             <outputDirectory>${project.build.directory}/natives</outputDirectory>
                             <overWrite>true</overWrite>
                         </artifactItem>
@@ -145,12 +105,27 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
 
     </build>
 
     <repositories>
+        <repository>
+            <id>central</id>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>clojure</id>
+            <url>http://build.clojure.org/releases</url>
+        </repository>
+        <repository>
+            <id>clojure-snapshots</id>
+            <url>http://build.clojure.org/snapshots</url>
+        </repository>
+        <repository>
+            <id>clojars</id>
+            <url>http://clojars.org/repo/</url>
+        </repository>
         <repository>
             <id>OPENNMS</id>
             <name>OpenNMS</name>

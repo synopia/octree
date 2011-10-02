@@ -2,6 +2,7 @@ package de.funky_clan.voxel.renderer;
 
 import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.coregl.renderer.CubeRenderer;
+import de.funky_clan.octree.minecraft.blocks.Block;
 import de.funky_clan.voxel.data.Chunk;
 import org.lwjgl.opengl.GL11;
 
@@ -71,22 +72,23 @@ public class ChunkRenderer {
         int size = chunk.getSize();
         int offs = x + ( y*size+z ) * size;
         int color = map[offs];
+        Block block = Block.MAP[color & 0x7f];
 
-        if( color!=0 ) {
+        if( !block.isTransparent() ) {
             for (int i = 0; i < 6; i++) {
                 int nx = x + NEIGHBORS[i][0];
                 int ny = y + NEIGHBORS[i][1];
                 int nz = z + NEIGHBORS[i][2];
                 int noffs = nx + ( ny*size+nz ) * size;
-                boolean empty;
+                boolean transparent;
                 if( noffs>=0 && noffs<map.length ) {
-                    empty = map[noffs]==0;
+                    transparent = Block.MAP[map[noffs] & 0x7f].isTransparent();
                 } else {
-                    empty = chunk.getPixel(nx, ny, nz)==0;
+                    transparent = Block.MAP[chunk.getPixel(nx, ny, nz) & 0x7f].isTransparent();
                 }
-                if(empty) {
+                if(transparent) {
                     result = true;
-                    cubeRenderer.renderCubeFace(x + chunk.getX(), y + chunk.getY(), z + chunk.getZ(), 1/16.f, 0, color, i);
+                    cubeRenderer.renderCubeFace(x + chunk.getX(), y + chunk.getY(), z + chunk.getZ(), block.getTextureX(), block.getTextureY(), color, i);
                 }
             }
         }

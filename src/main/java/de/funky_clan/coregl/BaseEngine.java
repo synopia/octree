@@ -27,6 +27,7 @@ public abstract class BaseEngine {
     private long lastFps;
     private int  fps;
     private int  recordedFps;
+    private boolean profileMode;
 
     public void init(GameWindow window) {
         this.window = window;
@@ -53,7 +54,9 @@ public abstract class BaseEngine {
     }
 
     private void updateFps() {
-        frameStartTime = Sys.getTime();
+        if( !profileMode ) {
+            frameStartTime = Sys.getTime();
+        }
 
         if( frameStartTime - lastFps > 1000 ) {
             recordedFps = fps;
@@ -64,7 +67,9 @@ public abstract class BaseEngine {
     }
 
     public void endRender( int delta ) {
-        Display.sync(90);
+        if( !profileMode ) {
+            Display.sync(90);
+        }
         if( isShowInfo() ) {
             fontRenderer.print(window, 10, 10, String.format("FPS: %d", recordedFps));
             ArrayList<String> infos = getDebugInfo();
@@ -141,5 +146,13 @@ public abstract class BaseEngine {
 
     public Lighting getLighting() {
         return lighting;
+    }
+
+    public boolean isProfileMode() {
+        return profileMode;
+    }
+
+    public void setProfileMode(boolean profileMode) {
+        this.profileMode = profileMode;
     }
 }

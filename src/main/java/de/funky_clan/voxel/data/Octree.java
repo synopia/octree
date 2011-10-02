@@ -41,13 +41,13 @@ public class Octree implements WritableRaster {
     }
 
     public void doPopulation( long startTime ) {
-        while (!queue.isEmpty() ) {
+        while (!queue.isEmpty()  ) {
             Entry entry = queue.poll();
             Chunk chunk = entry.getChunk();
             if( chunk!=null && chunks.containsKey(chunk.toMorton())) {
                 populator.populateChunk(chunk);
             }
-            if( Sys.getTime()-startTime>(1000/60.f) ) {
+            if( startTime==0 || Sys.getTime()-startTime>(1000/60.f) ) {
                 break;
             }
         }
@@ -55,7 +55,6 @@ public class Octree implements WritableRaster {
 
     public void remove( OctreeNode node ) {
         chunks.removeKey(node.toMorton());
-
     }
 
      private OctreeNode get( long morton ) {

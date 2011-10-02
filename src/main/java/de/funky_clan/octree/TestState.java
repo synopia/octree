@@ -36,14 +36,15 @@ public class TestState implements State {
     private long startTime;
 
     public void init(GameWindow window) throws IOException {
-//        engine = new VoxelEngine(1<<30, new MinecraftPopulator());//SpherePopulator(500,500,500,499));
-        engine = new VoxelEngine(1<<30, new SpherePopulator(500,500,500,499));
+        engine = new VoxelEngine(1<<30, new MinecraftPopulator());//SpherePopulator(500,500,500,499));
+//        engine = new VoxelEngine(1<<30, new SpherePopulator(500,500,500,499));
         engine.setFpsControl(true);
         engine.setShowInfo(true);
         engine.init(window);
+        engine.setProfileMode(false);
 
-        engine.getCamera().lookAt(500, 500, 0, 1,80,1, 0, 1, 0);
-//        engine.getCamera().lookAt(0, 80, 0, 1,80,1, 0, 1, 0);
+//        engine.getCamera().lookAt(500, 500, 0, 1,80,1, 0, 1, 0);
+        engine.getCamera().lookAt(0, 80, 0, 1,80,1, 0, 1, 0);
 //        engine.getCamera().lookAt(0, 0, 0, 1,1,1, 0, 1, 0);
         texture = window.getTexture("minecraft/terrain.png");
 
@@ -84,10 +85,12 @@ public class TestState implements State {
         engine.getLighting().createLight(0,0,0, .4f, .4f, .4f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
         engine.getLighting().createLight(30,30,30, .9f, .9f, .9f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
         try {
-            startTime = Sys.getTime();
-            ctrl = new Controller();
-            ctrl.startCPUProfiling(ProfilingModes.CPU_TRACING, "");
-
+            if( engine.isProfileMode() ) {
+                startTime = Sys.getTime();
+                ctrl = new Controller();
+                ctrl.startCPUProfiling(ProfilingModes.CPU_TRACING, "");
+                ctrl.startAllocationRecording(true, 1, false, 0);
+            }
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -119,13 +122,13 @@ public class TestState implements State {
         texture.bind();
         engine.render(delta);
         frames++;
-        if( Sys.getTime()-startTime>60000 && startTime>0) {
+        if( frames==1000 && engine.isProfileMode() ) {
             try {
                 startTime = 0;
                 ctrl.captureSnapshot(ProfilingModes.SNAPSHOT_WITHOUT_HEAP);
-//                ctrl.captureMemorySnapshot();
                 ctrl.stopCPUProfiling();
-                ctrl.startAllocationRecording(true, 1, false, 0);
+                ctrl.stopAllocationRecording();
+
                 System.out.println("done profiling");
             } catch (Exception e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
