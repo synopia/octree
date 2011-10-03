@@ -19,6 +19,7 @@ import java.util.List;
 public class OctreeRenderer {
 
     public static final int MAX_CHUNK_RENDERERS = 10000;
+    public static final String CHUNKS_TEXT = "Chunks:%d %d (new=%d, visible=%d)";
 
     private OpenLongObjectHashMap chunkEntries = new OpenLongObjectHashMap();
     private ObjectArrayList       oldChunks = new ObjectArrayList();
@@ -91,7 +92,7 @@ public class OctreeRenderer {
                 ChunkRenderer renderer = entry.getRenderer();
                 if (renderer != null) {
                     renderer.setChunk(null);
-                    freeRenderes.add(renderer);
+                    freeRenderes.add(0, renderer);
                     entry.setChunk(null);
                     entry.setRenderer(null);
                 }
@@ -179,8 +180,7 @@ public class OctreeRenderer {
 
     public ArrayList<String> getDebugInfo() {
         ArrayList<String> result = new ArrayList<String>();
-        result.add(String.format("Free: %d", freeRenderes.size()));
-        result.add(String.format("Chunks:%d %d (new=%d, visible=%d)", Chunk.COUNT, chunkEntries.size(), newChunks.size(), visibleChunks.size()));
+        result.add(String.format(CHUNKS_TEXT, Chunk.COUNT, chunkEntries.size(), newChunks.size(), visibleChunks.size()));
         return result;
     }
 }

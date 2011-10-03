@@ -16,6 +16,7 @@ import java.util.List;
 public class BufferedRenderer {
     public static final int NUMBER_OF_BUFFERS = 8;
     public static final int BUFFER_SIZE = 0x10000;
+    public static final String TRIANGLES_TEXT = "Triangles: %d";
 
     protected VBOBuffer2[] buffers;
     protected int bufferIndex = 0;
@@ -176,10 +177,7 @@ public class BufferedRenderer {
 
     public ArrayList<String> getDebugInfos() {
         ArrayList<String> result = new ArrayList<String>();
-        result.add(String.format("Triangles: %d", trianglesTotal));
-        result.add( String.format("Mem: %d/%d kB",
-            (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024, Runtime.getRuntime().totalMemory()/1024
-            ));
+        result.add(String.format(TRIANGLES_TEXT, trianglesTotal));
         return result;
     }
 

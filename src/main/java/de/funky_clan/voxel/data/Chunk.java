@@ -78,10 +78,10 @@ public class Chunk extends OctreeElement {
 
 
     public static long toMorton(long x, long y, long z) {
-        return Morton.mortonCode(x, y, z);
+        return Morton.mortonCode(x>>4, y>>4, z>>4);
     }
     public long toMorton() {
-        return Morton.mortonCode(x, y, z );
+        return Morton.mortonCode(x>>4, y>>4, z>>4 );
     }
 
 }

@@ -84,10 +84,7 @@ public class Octree implements WritableRaster {
         if( x<0 || y<0 || z<0 ) {
             return 0;
         }
-        long cx = x/OctreeNode.CHUNK_SIZE;
-        long cy = y/OctreeNode.CHUNK_SIZE;
-        long cz = z/OctreeNode.CHUNK_SIZE;
-        long morton = Chunk.toMorton(cx, cy, cz);
+        long morton = Chunk.toMorton(x, y, z);
         Chunk chunk= get(morton);
         if( chunk!=null ) {
             return chunk.getPixel(x, y, z);
@@ -104,8 +101,12 @@ public class Octree implements WritableRaster {
         if( size> OctreeNode.CHUNK_SIZE ) {
             node = new OctreeNode(this, x, y, z, size);
         } else {
-            node = new Chunk(this, x, y, z, size);
-            add((Chunk) node);
+            long morton = Chunk.toMorton(x, y, z);
+            node = get(morton);
+            if( node==null ) {
+                node = new Chunk(this, x, y, z, size);
+                add((Chunk) node);
+            }
         }
         return node;
     }

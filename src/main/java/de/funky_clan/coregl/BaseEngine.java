@@ -15,6 +15,7 @@ import java.util.ArrayList;
  * @author synopia
  */
 public abstract class BaseEngine {
+    public static final String FPS_TEST = "FPS: %d";
     protected Camera camera;
     protected FontRenderer fontRenderer;
     protected BufferedRenderer renderer;
@@ -28,6 +29,7 @@ public abstract class BaseEngine {
     private int  fps;
     private int  recordedFps;
     private boolean profileMode;
+    private String profilingText;
 
     public void init(GameWindow window) {
         this.window = window;
@@ -36,6 +38,7 @@ public abstract class BaseEngine {
         renderer = new BufferedRenderer( GL11.GL_FLOAT, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
         lighting = new Lighting();
         GL11.glEnable(GL11.GL_LIGHTING);
+        setProfileMode(false);
     }
 
     public void update( int delta ) {
@@ -71,7 +74,8 @@ public abstract class BaseEngine {
             Display.sync(90);
         }
         if( isShowInfo() ) {
-            fontRenderer.print(window, 10, 10, String.format("FPS: %d", recordedFps));
+            fontRenderer.print(window, 10, 10, String.format(FPS_TEST, recordedFps));
+            
             ArrayList<String> infos = getDebugInfo();
             int y = 20;
             for (String info : infos) {
@@ -82,7 +86,9 @@ public abstract class BaseEngine {
     }
 
     protected ArrayList<String> getDebugInfo() {
-        return renderer.getDebugInfos();
+        ArrayList<String> infos = renderer.getDebugInfos();
+        infos.add(profilingText);
+        return infos;
     }
 
     protected void moveCamera(int delta) {
@@ -153,6 +159,11 @@ public abstract class BaseEngine {
     }
 
     public void setProfileMode(boolean profileMode) {
+        if( profileMode ) {
+            profilingText = "profiler: on";
+        } else {
+            profilingText = "profiler: off";
+        }
         this.profileMode = profileMode;
     }
 }

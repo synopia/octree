@@ -15,6 +15,7 @@ import de.funky_clan.voxel.renderer.OctreeRenderer;
 import de.funky_clan.octree.generators.SphereGenerator;
 import de.funky_clan.octree.minecraft.SchematicLoader;
 import org.lwjgl.Sys;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,8 @@ public class TestState implements State {
     private Controller ctrl;
     private long frames = 0;
     private long startTime;
+    private long startFrame;
+    private boolean memorySnapshop;
 
     public void init(GameWindow window) throws IOException {
         engine = new VoxelEngine(1<<30, new MinecraftPopulator());//SpherePopulator(500,500,500,499));
@@ -41,7 +44,6 @@ public class TestState implements State {
         engine.setFpsControl(true);
         engine.setShowInfo(true);
         engine.init(window);
-        engine.setProfileMode(false);
 
 //        engine.getCamera().lookAt(500, 500, 0, 1,80,1, 0, 1, 0);
         engine.getCamera().lookAt(0, 80, 0, 1,80,1, 0, 1, 0);
@@ -85,12 +87,7 @@ public class TestState implements State {
         engine.getLighting().createLight(0,0,0, .4f, .4f, .4f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
         engine.getLighting().createLight(30,30,30, .9f, .9f, .9f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
         try {
-            if( engine.isProfileMode() ) {
-                startTime = Sys.getTime();
-                ctrl = new Controller();
-                ctrl.startCPUProfiling(ProfilingModes.CPU_TRACING, "");
-                ctrl.startAllocationRecording(true, 1, false, 0);
-            }
+            ctrl = new Controller();
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -114,6 +111,22 @@ public class TestState implements State {
         float z = (float) Math.sin( angle ) * 128*2;
 
 //        engine.getCamera().lookAt(x+128, 128, z+128, 128,128,128,0,1,0);
+        
+        if( Keyboard.isKeyDown(Keyboard.KEY_P) && !engine.isProfileMode() ) {
+            try {
+                engine.setProfileMode(true);
+                startTime = Sys.getTime();
+                startFrame = frames;
+                ctrl.startCPUProfiling(ProfilingModes.CPU_TRACING, "");
+                ctrl.startAllocationRecording(true, 1, false, 0);
+                System.out.println("profiling started");
+            } catch (Exception e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        if( Keyboard.isKeyDown(Keyboard.KEY_M)) {
+            memorySnapshop = true;
+        }
     }
 
     public void render(GameWindow window, int delta) {
@@ -122,16 +135,22 @@ public class TestState implements State {
         texture.bind();
         engine.render(delta);
         frames++;
-        if( frames==1000 && engine.isProfileMode() ) {
+        if( frames-startFrame==250 && engine.isProfileMode() ) {
             try {
+                engine.setProfileMode(false);
                 startTime = 0;
+                startFrame = 0;
+                if( memorySnapshop ) {
+                    ctrl.captureMemorySnapshot();
+                    memorySnapshop = false;
+                }
                 ctrl.captureSnapshot(ProfilingModes.SNAPSHOT_WITHOUT_HEAP);
-                ctrl.stopCPUProfiling();
+                ctrl.stopCPUProfiling();                
                 ctrl.stopAllocationRecording();
 
                 System.out.println("done profiling");
             } catch (Exception e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
         }
     }

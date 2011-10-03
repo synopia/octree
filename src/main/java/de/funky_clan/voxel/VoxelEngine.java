@@ -14,6 +14,9 @@ import java.util.ArrayList;
  * @author synopia
  */
 public class VoxelEngine extends BaseEngine implements WritableRaster {
+    public static final String OCTREE_CHUNKS_TEXT = "Octree Chunks: %d, to be populated: %d";
+    public static final String POSITION_TEXT = "Position: %2f %2f %2f";
+    public static final String MEM_TEXT = "Mem: %d/%d kB";
     private Octree root;
     private OctreeRenderer octreeRenderer;
 
@@ -67,7 +70,12 @@ public class VoxelEngine extends BaseEngine implements WritableRaster {
     protected ArrayList<String> getDebugInfo() {
         ArrayList<String> info = super.getDebugInfo();
         info.addAll( octreeRenderer.getDebugInfo() );
-        info.add(String.format("Octree Chunks: %d, to be populated: %d", root.size(), root.populateSize()));
+        info.add(String.format(POSITION_TEXT, camera.getX(), camera.getY(), camera.getZ()));
+        info.add(String.format(OCTREE_CHUNKS_TEXT, root.size(), root.populateSize()));
+        info.add( String.format(MEM_TEXT,
+            (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024, Runtime.getRuntime().totalMemory()/1024
+            ));
+
         return info;
     }
 }
