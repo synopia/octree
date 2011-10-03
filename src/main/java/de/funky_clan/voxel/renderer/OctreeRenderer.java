@@ -95,6 +95,7 @@ public class OctreeRenderer {
                     freeRenderes.add(0, renderer);
                     entry.setChunk(null);
                     entry.setRenderer(null);
+                    entry.setDistanceToEye(0);
                 }
                 return true;
             }

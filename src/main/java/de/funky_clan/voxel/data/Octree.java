@@ -73,6 +73,15 @@ public class Octree implements WritableRaster {
          long morton = node.toMorton();
          chunks.put(morton, new WeakReference<Chunk>(node) );
     }
+    
+    public Chunk getChunk( int x, int y, int z ) {
+        Chunk chunk = get(Chunk.toMorton(x, y, z));
+        if( chunk==null ) {
+            chunk = new Chunk(this, x, y, z, OctreeNode.CHUNK_SIZE);
+            add(chunk);
+        }
+        return chunk;
+    }
 
     @Override
     public void setPixel(int x, int y, int z, int color) {
