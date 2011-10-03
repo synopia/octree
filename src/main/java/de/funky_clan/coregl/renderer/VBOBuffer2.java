@@ -12,22 +12,26 @@ import java.util.Arrays;
 * @author synopia
 */
 public final class VBOBuffer2 {
+    public static final int BUFFER_SIZE = 0x10000;
     private ByteBuffer byteBuffer;
-    private IntBuffer intBuffer;
     private int vboId;
     private int vertices;
     private BufferedRenderer renderer;
-    private int[] rawBuffer;
-    private int pos;
+    private MappedVertex buffer;
+    private int maxVertices;
 
     public VBOBuffer2(BufferedRenderer renderer) {
         this.renderer = renderer;
-        this.byteBuffer = renderer.createBuffer();
-        this.intBuffer  = byteBuffer.asIntBuffer();
+        this.byteBuffer = createBuffer();
         this.vboId = renderer.genVBOId();
-        rawBuffer = new int[byteBuffer.capacity()>>2];
+        buffer = MappedVertex.map(byteBuffer);
+        maxVertices = BUFFER_SIZE / MappedVertex.SIZEOF;
     }
-
+    
+    protected ByteBuffer createBuffer() {
+        return BufferUtils.createByteBuffer(BUFFER_SIZE);
+    }
+    
     public ByteBuffer getByteBuffer() {
         return byteBuffer;
     }
@@ -41,27 +45,22 @@ public final class VBOBuffer2 {
     }
 
     public void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz) {
+        buffer.view = vertices;
+        buffer.x = x;
+        buffer.y = y;
+        buffer.z = z;
+        buffer.tx = tx;
+        buffer.ty = ty;
+        buffer.color = color;
+        buffer.nx = nx;
+        buffer.ny = ny;
+        buffer.nz = nz;
+        
         vertices ++;
-
-        rawBuffer[pos] = Float.floatToRawIntBits(x); pos++;
-        rawBuffer[pos] = Float.floatToRawIntBits(y); pos++;
-        rawBuffer[pos] = Float.floatToRawIntBits(z); pos++;
-        if( renderer.getTexCoordFormat()!=0 ) {
-            rawBuffer[pos] = Float.floatToRawIntBits(tx); pos++;
-            rawBuffer[pos] = Float.floatToRawIntBits(ty); pos++;
-        }
-        if( renderer.getColorFormat()!=0 ) {
-            rawBuffer[pos] = color; pos++;
-        }
-        if( renderer.getNormalFormat()!=0 ) {
-            rawBuffer[pos] = Float.floatToRawIntBits(nx); pos++;
-            rawBuffer[pos] = Float.floatToRawIntBits(ny); pos++;
-            rawBuffer[pos] = Float.floatToRawIntBits(nz); pos++;
-        }
     }
 
     public void ensureSpace(int vertices) {
-        if( (rawBuffer.length-pos)<<2<vertices* renderer.getStrideSize() ) {
+        if( this.vertices+vertices > maxVertices ) {
             renderer.onBufferFull();
         }
     }
@@ -69,9 +68,6 @@ public final class VBOBuffer2 {
     public void upload() {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
         renderer.setupPointers();
-        intBuffer.rewind();
-        intBuffer.put(rawBuffer);
-        byteBuffer.rewind();
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, byteBuffer, GL15.GL_STREAM_DRAW);
     }
 
@@ -83,22 +79,7 @@ public final class VBOBuffer2 {
 
     public void clear() {
         byteBuffer.clear();
-        pos = 0;
         vertices = 0;
     }
 
-    public void resize() {
-        int size = byteBuffer.capacity()*2;
-        byteBuffer = BufferUtils.createByteBuffer(size);
-        intBuffer = byteBuffer.asIntBuffer();
-
-        int[] newBuffer = new int[size>>2];
-        System.arraycopy(rawBuffer, 0, newBuffer, 0, pos);
-
-        rawBuffer = newBuffer;
-    }
-
-    public void free() {
-        clear();
-    }
 }

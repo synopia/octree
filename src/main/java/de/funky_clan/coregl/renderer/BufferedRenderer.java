@@ -15,7 +15,6 @@ import java.util.List;
  */
 public class BufferedRenderer {
     public static final int NUMBER_OF_BUFFERS = 8;
-    public static final int BUFFER_SIZE = 0x10000;
     public static final String TRIANGLES_TEXT = "Triangles: %d";
 
     protected VBOBuffer2[] buffers;
@@ -56,10 +55,6 @@ public class BufferedRenderer {
 
     public void prepare() {
         trianglesTotal = 0;
-    }
-
-    protected ByteBuffer createBuffer() {
-        return BufferUtils.createByteBuffer(BUFFER_SIZE);
     }
 
     protected int genVBOId() {

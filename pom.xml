@@ -9,7 +9,7 @@
     <version>1.0</version>
 
     <properties>
-        <lwjgl.version>2.7.1</lwjgl.version>
+        <lwjgl.version>2.8.0</lwjgl.version>
         <!--platform>win64</platform-->
     </properties>
 
@@ -50,6 +50,16 @@
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-util</artifactId>
             <version>${lwjgl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>3.2</version>
         </dependency>
         <dependency>
             <groupId>jdbm</groupId>
