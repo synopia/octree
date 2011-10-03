@@ -53,13 +53,14 @@ public class Octree implements WritableRaster {
         }
     }
 
-    public void remove( OctreeNode node ) {
-        chunks.removeKey(node.toMorton());
+    public void remove( Chunk chunk ) {
+        chunks.removeKey(chunk.toMorton());
+        root.removeChunk(chunk.getX(), chunk.getY(), chunk.getZ());
     }
 
-     private OctreeNode get( long morton ) {
-         Reference<OctreeNode> ref = (WeakReference<OctreeNode>) chunks.get(morton);
-         OctreeNode result = null;
+     private Chunk get( long morton ) {
+         Reference<Chunk> ref = (WeakReference<Chunk>) chunks.get(morton);
+         Chunk result = null;
          if( ref!=null ) {
              result = ref.get();
              if( result==null ) {
@@ -68,13 +69,9 @@ public class Octree implements WritableRaster {
          }
          return result;
      }
-     private void add( OctreeNode node ) {
-
+     private void add( Chunk node ) {
          long morton = node.toMorton();
-         if( chunks.containsKey(morton) ) {
-             throw new IllegalStateException("morton alread exists: "+morton+", chunk="+((Reference<OctreeNode>)chunks.get(morton)).get()+" new="+node);
-         }
-         chunks.put(morton, new WeakReference<OctreeNode>(node) );
+         chunks.put(morton, new WeakReference<Chunk>(node) );
     }
 
     @Override
@@ -90,13 +87,10 @@ public class Octree implements WritableRaster {
         long cx = x/OctreeNode.CHUNK_SIZE;
         long cy = y/OctreeNode.CHUNK_SIZE;
         long cz = z/OctreeNode.CHUNK_SIZE;
-        long morton = OctreeNode.toMorton(cx, cy, cz);
-        OctreeNode node = get(morton);
-        if( node!=null ) {
-            if (node instanceof Chunk) {
-                Chunk chunk = (Chunk) node;
-                return chunk.getPixel(x, y, z);
-            }
+        long morton = Chunk.toMorton(cx, cy, cz);
+        Chunk chunk= get(morton);
+        if( chunk!=null ) {
+            return chunk.getPixel(x, y, z);
         }
         return 0;
     }
@@ -105,13 +99,13 @@ public class Octree implements WritableRaster {
         return root;
     }
 
-    public OctreeNode createNode( int x, int y, int z, int size) {
-        OctreeNode node;
+    public OctreeElement createNode( int x, int y, int z, int size) {
+        OctreeElement node;
         if( size> OctreeNode.CHUNK_SIZE ) {
             node = new OctreeNode(this, x, y, z, size);
         } else {
             node = new Chunk(this, x, y, z, size);
-            add(node);
+            add((Chunk) node);
         }
         return node;
     }

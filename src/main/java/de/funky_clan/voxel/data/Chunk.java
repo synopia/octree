@@ -1,9 +1,11 @@
 package de.funky_clan.voxel.data;
 
+import de.funky_clan.voxel.Morton;
+
 /**
  * @author synopia
  */
-public class Chunk extends OctreeNode {
+public class Chunk extends OctreeElement {
     public static int COUNT = 0;
     private int[] map;
     private boolean dirty;
@@ -11,7 +13,6 @@ public class Chunk extends OctreeNode {
 
     public Chunk(Octree octree, int x, int y, int z, int size) {
         super(octree, x, y, z, size);
-        visible = true;
         dirty   = true;
         COUNT ++;
     }
@@ -75,5 +76,12 @@ public class Chunk extends OctreeNode {
         return map;
     }
 
+
+    public static long toMorton(long x, long y, long z) {
+        return Morton.mortonCode(x, y, z);
+    }
+    public long toMorton() {
+        return Morton.mortonCode(x, y, z );
+    }
 
 }

@@ -8,10 +8,14 @@ import java.util.Arrays;
 public enum Block {
     AIR( 0, true ),
     DIRT( 1, 2, 0 ),
-    SAND( 2, 2, 1),
+    GRASS( 2, 2, 0),
     STONE( 3, 1, 0),
-    WOOD( 4, 4, 0),
-    TREE_TRUNK( 5, 4, 1),
+    COBBLESTONE( 4, 0, 1),
+    WOOD( 5, 4, 0),
+    WATER(8, true),
+    STATIONARY_WATER(9, true),
+
+    SAND( 12, 2, 1),
     ;
 
     private float tx;

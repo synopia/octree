@@ -99,6 +99,9 @@ public class ChunkRenderer {
     public void setChunk(Chunk chunk) {
         dirty = true;
         this.chunk = chunk;
+        if( chunk==null ) {
+            this.map   = null;
+        }
     }
 
     public Chunk getChunk() {

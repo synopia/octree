@@ -145,7 +145,7 @@ public class OctreeRenderer {
             }
         }
         for (int i = 0; i < 8; i++) {
-            OctreeNode child = node.getChild(i);
+            OctreeElement child = node.getChild(i);
             if( child==null ) {
                 continue;
             }
@@ -168,7 +168,7 @@ public class OctreeRenderer {
                     entry.setDistanceToEye( 250 );
                 }
             } else {
-                render(child, testChildren);
+                render((OctreeNode) child, testChildren);
             }
         }
     }

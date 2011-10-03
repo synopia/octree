@@ -1,44 +1,39 @@
 package de.funky_clan.voxel.data;
 
-import de.funky_clan.octree.WritableRaster;
-import de.funky_clan.coregl.geom.Cube;
-import de.funky_clan.coregl.geom.Sphere;
 import de.funky_clan.voxel.Morton;
-import org.lwjgl.util.vector.Vector3f;
 
 import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 
 /**
  * @author synopia
  */
-public class OctreeNode implements WritableRaster {
+public class OctreeNode extends OctreeElement {
     private static final int[][] OFFSETS = new int[][] {
         {0,0,0}, {1,0,0}, {0,1,0}, {1,1,0}, {0,0,1}, {1,0,1}, {0,1,1}, {1,1,1}
     };
     public static final int CHUNK_SIZE = 32;
-    protected int x;
-    protected int y;
-    protected int z;
-    protected int size;
-    protected boolean visible;
-    protected Reference<OctreeNode>[] children = new Reference[8];
-    protected OctreeNode parent;
-    protected Octree octree;
-
-    private Sphere boundingSphere;
+    protected Reference<OctreeElement>[] children = new Reference[8];
 
     public OctreeNode(Octree octree, int x, int y, int z, int size) {
-        this.octree = octree;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.size = size;
-        visible = true;
+        super(octree, x, y, z, size);
+    }
+    
+    public void removeChunk( int x, int y, int z ) {
+        int relX = x-this.x;
+        int relY = y-this.y;
+        int relZ = z-this.z;
+        int code = 0;
+        int newSize = size/2;
+        if( relX>=newSize ) code |= 1;
+        if( relY>=newSize ) code |= 2;
+        if( relZ>=newSize ) code |= 4;
 
-        float hsize = size / 2;
-        boundingSphere = new Sphere(x+ hsize, y+ hsize, z+ hsize, (float) Math.sqrt(hsize*hsize*3));
+        if( newSize==CHUNK_SIZE ) {
+            children[code] = null;
+        } else {
+            ((OctreeNode)children[code].get()).removeChunk(x, y, z);
+        }
     }
 
     public Chunk getChunk( int x, int y, int z ) {
@@ -54,7 +49,7 @@ public class OctreeNode implements WritableRaster {
         if( newSize==CHUNK_SIZE ) {
             return (Chunk) getChild(code);
         }
-        return getChild(code).getChunk(x, y, z);
+        return ((OctreeNode) getChild(code)).getChunk(x, y, z);
     }
 
     @Override
@@ -88,25 +83,25 @@ public class OctreeNode implements WritableRaster {
         return getChild(code).getPixel(x, y, z);
     }
 
-    public OctreeNode getChild( int code ) {
-        OctreeNode node;
+    public OctreeElement getChild( int code ) {
+        OctreeElement node;
         if( children[code]==null ) {
             node = createNode(code);
-            children[code] = new WeakReference<OctreeNode>(node);
+            children[code] = new WeakReference<OctreeElement>(node);
             return node;
         }
 
         node = children[code].get();
         if( node==null ) {
             node = createNode(code);
-            children[code] = new WeakReference<OctreeNode>(node);
+            children[code] = new WeakReference<OctreeElement>(node);
         }
 
         return node;
     }
 
-    private OctreeNode createNode(int code) {
-        OctreeNode node;
+    private OctreeElement createNode(int code) {
+        OctreeElement node;
         int newSize = size/2;
         int newX = this.x + OFFSETS[code][0] * newSize;
         int newY = this.y + OFFSETS[code][1] * newSize;
@@ -118,60 +113,10 @@ public class OctreeNode implements WritableRaster {
         return node;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getZ() {
-        return z;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
-
-    public boolean isLeaf() {
-        return false;
-    }
-
-    public Sphere getBoundingSphere() {
-        return boundingSphere;
-    }
-
 
     @Override
     public String toString() {
         return x+", "+y+", "+z+" size="+size;
     }
 
-    public OctreeNode getParent() {
-        return parent;
-    }
-
-    public void setParent(OctreeNode parent) {
-        this.parent = parent;
-    }
-
-    public static long toMorton(long x, long y, long z) {
-        return Morton.mortonCode(x, y, z );
-    }
-    public long toMorton() {
-        return Morton.mortonCode(x, y, z );
-    }
-
-    public Octree getOctree() {
-        return octree;
-    }
 }
