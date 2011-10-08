@@ -39,14 +39,14 @@ public class TestState implements State {
     private boolean memorySnapshop;
 
     public void init(GameWindow window) throws IOException {
-        engine = new VoxelEngine(1<<30, new MinecraftPopulator());//SpherePopulator(500,500,500,499));
+        engine = new VoxelEngine(1<<30, new MinecraftPopulator(2048, 2048));//SpherePopulator(500,500,500,499));
 //        engine = new VoxelEngine(1<<30, new SpherePopulator(500,500,500,499));
         engine.setFpsControl(true);
         engine.setShowInfo(true);
         engine.init(window);
 
 //        engine.getCamera().lookAt(500, 500, 0, 1,80,1, 0, 1, 0);
-        engine.getCamera().lookAt(0, 80, 0, 1,80,1, 0, 1, 0);
+        engine.getCamera().lookAt(2048, 80, 2048, 1,80,1, 0, 1, 0);
 //        engine.getCamera().lookAt(0, 0, 0, 1,1,1, 0, 1, 0);
         texture = window.getTexture("minecraft/terrain.png");
 
@@ -55,21 +55,13 @@ public class TestState implements State {
         SphereGenerator s = new SphereGenerator();
         OctreeNode octree = engine.getRoot();
 
-        MinecraftPopulator pop = new MinecraftPopulator();
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 2; j++) {
-                for (int h = 0; h < 4; h++) {
-                    pop.populateChunk( engine.getRoot().getChunk(32*i,32*h,32*j));
-                }
-            }
-        }
 //        SchematicLoader loader = new SchematicLoader();
 //        loader.load(octree, "turm1.schematic");
 //        octree.setPixel(128,128,128,100);
-        octree.setPixel(1,80,1,100);
-        octree.setPixel(2,80,1,100);
-        octree.setPixel(1,81,1,100);
-        octree.setPixel(1,80,2,100);
+        octree.setPixel(1,80,1,78);
+        octree.setPixel(2,80,1,78);
+        octree.setPixel(1,81,1,78);
+        octree.setPixel(1,80,2,78);
 //        s.generate(octree, 128, 128, 128, 110);
 //        s.generate(octree, 256, 128, 128, 110);
 //        s.generate(octree, 256, 256, 128, 110);

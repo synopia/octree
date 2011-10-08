@@ -74,30 +74,32 @@ public class ChunkRenderer {
         int color = map[offs];
         Block block = Block.MAP[color & 0x7f];
 
-        if( !block.isTransparent() ) {
+        if( block!=Block.AIR ) {
             for (int i = 0; i < 6; i++) {
                 int nx = x + NEIGHBORS[i][0];
                 int ny = y + NEIGHBORS[i][1];
                 int nz = z + NEIGHBORS[i][2];
 
                 boolean transparent;
+                Block neighbor;
                 if( nx>=0 && ny>=0 && nz>=0 && nx<32 && ny<32 && nz<32 ) {
                     int noffs = nx + ( ny*size+nz ) * size;
-                    transparent = Block.MAP[map[noffs] & 0x7f].isTransparent();
+                    neighbor = Block.MAP[map[noffs] & 0x7f];
                 } else {
                     int cx = ((chunk.getX()+nx)>>5)<<5;
                     int cy = ((chunk.getY()+ny)>>5)<<5;
                     int cz = ((chunk.getZ()+nz)>>5)<<5;
                     if( cx<0 || cy<0 || cz<0 ) {
-                        transparent = true;
+                        neighbor = Block.AIR;
                     } else {
                         Chunk n = chunk.getOctree().getChunk(cx, cy, cz);
                         if( !n.isPopulated() ) {
                             throw new IllegalStateException("Chunk is not available "+n+" while rendering "+chunk);
                         }
-                        transparent = Block.MAP[n.getPixel(chunk.getX()+nx, chunk.getY()+ny, chunk.getZ()+nz) & 0x7f].isTransparent();
+                        neighbor = Block.MAP[n.getPixel(chunk.getX()+nx, chunk.getY()+ny, chunk.getZ()+nz) & 0x7f];
                     }
                 }
+                transparent = neighbor.isTransparent() && neighbor!=block;
                 if(transparent) {
                     result = true;
                     cubeRenderer.renderCubeFace(x + chunk.getX(), y + chunk.getY(), z + chunk.getZ(), block.getTextureX(i), block.getTextureY(i), color, i);
