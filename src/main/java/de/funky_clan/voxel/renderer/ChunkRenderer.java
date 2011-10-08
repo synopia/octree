@@ -79,16 +79,28 @@ public class ChunkRenderer {
                 int nx = x + NEIGHBORS[i][0];
                 int ny = y + NEIGHBORS[i][1];
                 int nz = z + NEIGHBORS[i][2];
-                int noffs = nx + ( ny*size+nz ) * size;
+
                 boolean transparent;
-                if( noffs>=0 && noffs<map.length ) {
+                if( nx>=0 && ny>=0 && nz>=0 && nx<32 && ny<32 && nz<32 ) {
+                    int noffs = nx + ( ny*size+nz ) * size;
                     transparent = Block.MAP[map[noffs] & 0x7f].isTransparent();
                 } else {
-                    transparent = Block.MAP[chunk.getPixel(nx, ny, nz) & 0x7f].isTransparent();
+                    int cx = ((chunk.getX()+nx)>>5)<<5;
+                    int cy = ((chunk.getY()+ny)>>5)<<5;
+                    int cz = ((chunk.getZ()+nz)>>5)<<5;
+                    if( cx<0 || cy<0 || cz<0 ) {
+                        transparent = true;
+                    } else {
+                        Chunk n = chunk.getOctree().getChunk(cx, cy, cz);
+                        if( !n.isPopulated() ) {
+                            throw new IllegalStateException("Chunk is not available "+n+" while rendering "+chunk);
+                        }
+                        transparent = Block.MAP[n.getPixel(chunk.getX()+nx, chunk.getY()+ny, chunk.getZ()+nz) & 0x7f].isTransparent();
+                    }
                 }
                 if(transparent) {
                     result = true;
-                    cubeRenderer.renderCubeFace(x + chunk.getX(), y + chunk.getY(), z + chunk.getZ(), block.getTextureX(), block.getTextureY(), color, i);
+                    cubeRenderer.renderCubeFace(x + chunk.getX(), y + chunk.getY(), z + chunk.getZ(), block.getTextureX(i), block.getTextureY(i), color, i);
                 }
             }
         }

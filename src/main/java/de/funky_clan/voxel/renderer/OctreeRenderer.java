@@ -53,9 +53,10 @@ public class OctreeRenderer {
 
         render(node, true);
         resortEntries();
-        removeOld();
         updateNew(frameStartTime);
         renderVisible();
+
+        removeOld();
     }
 
     private void renderVisible() {
@@ -73,7 +74,7 @@ public class OctreeRenderer {
         while (!newChunks.isEmpty() ) {
             Entry entry = newChunks.poll();
             ChunkRenderer renderer = entry.getRenderer();
-            if( renderer!=null ) {
+            if( renderer!=null && entry.getChunk().isFullyPopulated() ) {
                 renderer.update();
             }
             if( frameStartTime==0 || Sys.getTime() - frameStartTime > (1000/60.f) ) {
@@ -118,7 +119,7 @@ public class OctreeRenderer {
                         renderer.setChunk(chunk);
                     }
                     if( renderer.needsUpdate() ) {
-                        if( chunk.isPopulated() ) {
+                        if( chunk.isFullyPopulated() ) {
                             newChunks.add(entry);
                         } else {
                             tree.populate(entry);

@@ -7,4 +7,5 @@ import de.funky_clan.voxel.data.Chunk;
  */
 public interface ChunkPopulator {
     public void populateChunk( Chunk chunk );
+    public void releaseChunk( Chunk chunk );
 }

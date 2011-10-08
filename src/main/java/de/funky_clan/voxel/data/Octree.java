@@ -32,11 +32,8 @@ public class Octree implements WritableRaster {
         }
         Chunk chunk = entry.getChunk();
 
-        if( !chunk.isPopulated() ) {
+        if( !chunk.isFullyPopulated() ) {
             queue.add(entry);
-
-//            Chunk chunk1 = (Chunk) createNode(chunk.getX() + OctreeNode.CHUNK_SIZE, chunk.getY() + OctreeNode.CHUNK_SIZE, chunk.getZ() + OctreeNode.CHUNK_SIZE, OctreeNode.CHUNK_SIZE);
-//            queue.add(chunk1.toMorton(), chunk1, priority);
         }
     }
 
@@ -56,28 +53,25 @@ public class Octree implements WritableRaster {
     public void remove( Chunk chunk ) {
         chunks.removeKey(chunk.toMorton());
         root.removeChunk(chunk.getX(), chunk.getY(), chunk.getZ());
+        populator.releaseChunk(chunk);
     }
 
+    @SuppressWarnings("unchecked")
      private Chunk get( long morton ) {
-         Reference<Chunk> ref = (WeakReference<Chunk>) chunks.get(morton);
-         Chunk result = null;
-         if( ref!=null ) {
-             result = ref.get();
-             if( result==null ) {
-                 chunks.removeKey(morton);
-             }
-         }
-         return result;
+         return (Chunk) chunks.get(morton);
      }
      private void add( Chunk node ) {
          long morton = node.toMorton();
-         chunks.put(morton, new WeakReference<Chunk>(node) );
+         chunks.put(morton, node );
     }
     
     public Chunk getChunk( int x, int y, int z ) {
+        if( x<0 || y<0 || z<0 ) {
+            return null;
+        }
         Chunk chunk = get(Chunk.toMorton(x, y, z));
         if( chunk==null ) {
-            chunk = new Chunk(this, x, y, z, OctreeNode.CHUNK_SIZE);
+            chunk = root.getChunk(x, y, z);
             add(chunk);
         }
         return chunk;

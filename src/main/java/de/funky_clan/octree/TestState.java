@@ -55,12 +55,14 @@ public class TestState implements State {
         SphereGenerator s = new SphereGenerator();
         OctreeNode octree = engine.getRoot();
 
-//        RegionFileLoader regionFileLoader = new RegionFileLoader();
-//        for (int i = 0; i < 50; i++) {
-//            for (int j = 0; j < 50; j++) {
-//                regionFileLoader.load(octree, i,j);
-//            }
-//        }
+        MinecraftPopulator pop = new MinecraftPopulator();
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                for (int h = 0; h < 4; h++) {
+                    pop.populateChunk( engine.getRoot().getChunk(32*i,32*h,32*j));
+                }
+            }
+        }
 //        SchematicLoader loader = new SchematicLoader();
 //        loader.load(octree, "turm1.schematic");
 //        octree.setPixel(128,128,128,100);
@@ -111,7 +113,7 @@ public class TestState implements State {
         float z = (float) Math.sin( angle ) * 128*2;
 
 //        engine.getCamera().lookAt(x+128, 128, z+128, 128,128,128,0,1,0);
-        
+
         if( Keyboard.isKeyDown(Keyboard.KEY_P) && !engine.isProfileMode() ) {
             try {
                 engine.setProfileMode(true);
@@ -130,7 +132,7 @@ public class TestState implements State {
     }
 
     public void render(GameWindow window, int delta) {
-         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST );
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST );
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST );
         texture.bind();
         engine.render(delta);
@@ -145,7 +147,7 @@ public class TestState implements State {
                     memorySnapshop = false;
                 }
                 ctrl.captureSnapshot(ProfilingModes.SNAPSHOT_WITHOUT_HEAP);
-                ctrl.stopCPUProfiling();                
+                ctrl.stopCPUProfiling();
                 ctrl.stopAllocationRecording();
 
                 System.out.println("done profiling");

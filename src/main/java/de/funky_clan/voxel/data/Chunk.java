@@ -2,6 +2,9 @@ package de.funky_clan.voxel.data;
 
 import de.funky_clan.voxel.Morton;
 
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
+
 /**
  * @author synopia
  */
@@ -10,6 +13,7 @@ public class Chunk extends OctreeElement {
     private int[] map;
     private boolean dirty;
     private boolean populated;
+    private boolean fullyPopulated;
 
     public Chunk(Octree octree, int x, int y, int z, int size) {
         super(octree, x, y, z, size);
@@ -39,6 +43,7 @@ public class Chunk extends OctreeElement {
             return parent.getPixel(x, y, z);
         }
         if( map==null ) {
+            System.out.println("map is null");
             return 0;
         }
         return map[relX + ( relY*size+relZ ) * size];
@@ -65,8 +70,17 @@ public class Chunk extends OctreeElement {
         this.populated = populated;
     }
 
+    public boolean isFullyPopulated() {
+        return populated && fullyPopulated;
+    }
+
+    public void setFullyPopulated(boolean fullyPopulated) {
+        this.fullyPopulated = fullyPopulated;
+    }
+
     @Override
     protected void finalize() throws Throwable {
+        System.out.println("finalize chunk "+this);
         COUNT--;
         octree.remove(this);
         super.finalize();
@@ -76,6 +90,10 @@ public class Chunk extends OctreeElement {
         return map;
     }
 
+    @Override
+    public String toString() {
+        return x+", "+y+", "+z;
+    }
 
     public static long toMorton(long x, long y, long z) {
         return Morton.mortonCode(x>>4, y>>4, z>>4);

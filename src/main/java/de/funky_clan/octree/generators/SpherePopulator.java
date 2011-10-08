@@ -22,6 +22,11 @@ public class SpherePopulator implements ChunkPopulator {
     }
 
     @Override
+    public void releaseChunk(Chunk chunk) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void populateChunk(Chunk chunk) {
         int size = chunk.getSize();
         int minX = chunk.getX();
