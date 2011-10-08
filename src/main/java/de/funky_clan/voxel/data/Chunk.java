@@ -43,7 +43,6 @@ public class Chunk extends OctreeElement {
             return parent.getPixel(x, y, z);
         }
         if( map==null ) {
-            System.out.println("map is null");
             return 0;
         }
         return map[relX + ( relY*size+relZ ) * size];
@@ -80,9 +79,7 @@ public class Chunk extends OctreeElement {
 
     @Override
     protected void finalize() throws Throwable {
-        System.out.println("finalize chunk "+this);
         COUNT--;
-        octree.remove(this);
         super.finalize();
     }
 
