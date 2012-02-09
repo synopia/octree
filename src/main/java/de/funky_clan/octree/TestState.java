@@ -27,6 +27,7 @@ import java.io.IOException;
  */
 public class TestState implements State {
     private final Logger logger = LoggerFactory.getLogger(TestState.class);
+    private final static int RADIUS = 6378;
 
     private VoxelEngine engine;
 
@@ -40,12 +41,12 @@ public class TestState implements State {
 
     public void init(GameWindow window) throws IOException {
 //        engine = new VoxelEngine(1<<30, new MinecraftPopulator(2048, 2048));//SpherePopulator(500,500,500,499));
-        engine = new VoxelEngine(1<<30, new SpherePopulator(500,500,500,499));
+        engine = new VoxelEngine(1<<30, new SpherePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1));
         engine.setFpsControl(true);
         engine.setShowInfo(true);
         engine.init(window);
 
-        engine.getCamera().lookAt(530, 530, 0, 1,80,1, 0, 1, 0);
+//        engine.getCamera().lookAt(RADIUS*1.1f, RADIUS*1.1f, 0, 1,80,1, 0, 1, 0);
 //        engine.getCamera().lookAt(2048, 80, 2048, 1,80,1, 0, 1, 0);
 //        engine.getCamera().lookAt(0, 0, 0, 1,1,1, 0, 1, 0);
         texture = window.getTexture("minecraft/terrain.png");
@@ -98,13 +99,14 @@ public class TestState implements State {
     }
 
     public void update(GameWindow window, int delta) {
+
+        angle += delta/(float) RADIUS/10f;
+        float x = (float) Math.cos( angle ) * (RADIUS+4f);
+        float y = (float) Math.sin( angle ) * (RADIUS+4f);
+        float tx = (float) Math.cos( angle+Math.toRadians(5) ) * (RADIUS+15f);
+        float ty = (float) Math.sin( angle+Math.toRadians(5) ) * (RADIUS);
+        engine.getCamera().lookAt(x+RADIUS, y+RADIUS, RADIUS, tx+RADIUS,ty+RADIUS,RADIUS,0,1,0);
         engine.update(delta);
-
-        angle += delta/5000.f;
-        float x = (float) Math.cos( angle ) * 128*2;
-        float z = (float) Math.sin( angle ) * 128*2;
-
-//        engine.getCamera().lookAt(x+128, 128, z+128, 128,128,128,0,1,0);
 
         if( Keyboard.isKeyDown(Keyboard.KEY_P) && !engine.isProfileMode() ) {
             try {
