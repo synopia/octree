@@ -45,7 +45,7 @@ public class TestState implements State {
         engine.setShowInfo(true);
         engine.init(window);
 
-//        engine.getCamera().lookAt(500, 500, 0, 1,80,1, 0, 1, 0);
+//        engine.getCamera().lookAt(530, 530, 0, 1,80,1, 0, 1, 0);
         engine.getCamera().lookAt(2048, 80, 2048, 1,80,1, 0, 1, 0);
 //        engine.getCamera().lookAt(0, 0, 0, 1,1,1, 0, 1, 0);
         texture = window.getTexture("minecraft/terrain.png");
