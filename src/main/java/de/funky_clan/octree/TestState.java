@@ -39,14 +39,14 @@ public class TestState implements State {
     private boolean memorySnapshop;
 
     public void init(GameWindow window) throws IOException {
-        engine = new VoxelEngine(1<<30, new MinecraftPopulator(2048, 2048));//SpherePopulator(500,500,500,499));
-//        engine = new VoxelEngine(1<<30, new SpherePopulator(500,500,500,499));
+//        engine = new VoxelEngine(1<<30, new MinecraftPopulator(2048, 2048));//SpherePopulator(500,500,500,499));
+        engine = new VoxelEngine(1<<30, new SpherePopulator(500,500,500,499));
         engine.setFpsControl(true);
         engine.setShowInfo(true);
         engine.init(window);
 
-//        engine.getCamera().lookAt(530, 530, 0, 1,80,1, 0, 1, 0);
-        engine.getCamera().lookAt(2048, 80, 2048, 1,80,1, 0, 1, 0);
+        engine.getCamera().lookAt(530, 530, 0, 1,80,1, 0, 1, 0);
+//        engine.getCamera().lookAt(2048, 80, 2048, 1,80,1, 0, 1, 0);
 //        engine.getCamera().lookAt(0, 0, 0, 1,1,1, 0, 1, 0);
         texture = window.getTexture("minecraft/terrain.png");
 

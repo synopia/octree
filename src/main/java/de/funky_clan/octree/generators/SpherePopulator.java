@@ -1,12 +1,13 @@
 package de.funky_clan.octree.generators;
 
+import de.funky_clan.voxel.AbstractPopulator;
 import de.funky_clan.voxel.ChunkPopulator;
 import de.funky_clan.voxel.data.Chunk;
 
 /**
  * @author synopia
  */
-public class SpherePopulator implements ChunkPopulator {
+public class SpherePopulator extends AbstractPopulator {
     private int x;
     private int y;
     private int z;
@@ -22,12 +23,7 @@ public class SpherePopulator implements ChunkPopulator {
     }
 
     @Override
-    public void releaseChunk(Chunk chunk) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void populateChunk(Chunk chunk) {
+    protected void doPopulate(Chunk chunk) {
         int size = chunk.getSize();
         int minX = chunk.getX();
         int minY = chunk.getY();
