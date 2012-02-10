@@ -100,6 +100,11 @@
     </build>
 
     <repositories>
+        <repository>
+            <id>OPENNMS</id>
+            <name>OpenNMS</name>
+            <url>http://repo.opennms.org/maven2</url>
+        </repository>
 
     </repositories>
 </project>
