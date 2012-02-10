@@ -8,12 +8,28 @@
     <artifactId>octtree</artifactId>
     <version>1.0</version>
 
-    <properties>
-        <lwjgl.version>2.8.0</lwjgl.version>
-        <!--platform>win64</platform-->
-    </properties>
-
     <dependencies>
+        <dependency>
+            <groupId>org.lwjgl.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>2.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl.lwjgl</groupId>
+            <artifactId>lwjgl_util</artifactId>
+            <version>2.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>3.2</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -42,31 +58,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.lwjgl</groupId>
-            <artifactId>lwjgl</artifactId>
-            <version>${lwjgl.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.lwjgl</groupId>
-            <artifactId>lwjgl-util</artifactId>
-            <version>${lwjgl.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm-tree</artifactId>
-            <version>3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm-analysis</artifactId>
-            <version>3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>jdbm</groupId>
-            <artifactId>jdbm</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>colt</groupId>
             <artifactId>colt</artifactId>
             <version>1.2.0</version>
@@ -89,57 +80,26 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <configuration>
-                    <artifactItems>
-                        <artifactItem>
-                            <groupId>org.lwjgl</groupId>
-                            <artifactId>lwjgl-native-platform</artifactId>
-                            <version>${lwjgl.version}</version>
-                            <type>jar</type>
-                            <outputDirectory>${project.build.directory}/natives</outputDirectory>
-                            <overWrite>true</overWrite>
-                        </artifactItem>
-                    </artifactItems>
-                </configuration>
+                <groupId>com.googlecode.mavennatives</groupId>
+                <artifactId>maven-nativedependencies-plugin</artifactId>
+                <version>0.0.5</version>
                 <executions>
                     <execution>
-                        <id>unpack</id>
+                        <id>unpacknatives</id>
                         <phase>generate-resources</phase>
                         <goals>
-                            <goal>unpack</goal>
+                            <goal>copy</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
 
     </build>
 
     <repositories>
-        <repository>
-            <id>central</id>
-            <url>http://repo1.maven.org/maven2</url>
-        </repository>
-        <repository>
-            <id>clojure</id>
-            <url>http://build.clojure.org/releases</url>
-        </repository>
-        <repository>
-            <id>clojure-snapshots</id>
-            <url>http://build.clojure.org/snapshots</url>
-        </repository>
-        <repository>
-            <id>clojars</id>
-            <url>http://clojars.org/repo/</url>
-        </repository>
-        <repository>
-            <id>OPENNMS</id>
-            <name>OpenNMS</name>
-            <url>http://repo.opennms.org/maven2</url>
-        </repository>
+
     </repositories>
 </project>

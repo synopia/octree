@@ -49,6 +49,12 @@ public class TestState implements State {
 //        engine.getCamera().lookAt(RADIUS*1.1f, RADIUS*1.1f, 0, 1,80,1, 0, 1, 0);
 //        engine.getCamera().lookAt(2048, 80, 2048, 1,80,1, 0, 1, 0);
 //        engine.getCamera().lookAt(0, 0, 0, 1,1,1, 0, 1, 0);
+        angle = (float) Math.toRadians(45);
+        float x = (float) Math.cos( angle ) * (RADIUS+4f);
+                float y = (float) Math.sin( angle ) * (RADIUS+4f);
+                float tx = (float) Math.cos( angle+Math.toRadians(5) ) * (RADIUS+15f);
+                float ty = (float) Math.sin( angle+Math.toRadians(5) ) * (RADIUS);
+                engine.getCamera().lookAt(x+RADIUS, y+RADIUS, RADIUS, tx+RADIUS,ty+RADIUS,RADIUS,0,1,0);
         texture = window.getTexture("minecraft/terrain.png");
 
         SchematicLoader loader = new SchematicLoader();
@@ -105,7 +111,7 @@ public class TestState implements State {
         float y = (float) Math.sin( angle ) * (RADIUS+4f);
         float tx = (float) Math.cos( angle+Math.toRadians(5) ) * (RADIUS+15f);
         float ty = (float) Math.sin( angle+Math.toRadians(5) ) * (RADIUS);
-        engine.getCamera().lookAt(x+RADIUS, y+RADIUS, RADIUS, tx+RADIUS,ty+RADIUS,RADIUS,0,1,0);
+//        engine.getCamera().lookAt(x+RADIUS, y+RADIUS, RADIUS, tx+RADIUS,ty+RADIUS,RADIUS,0,1,0);
         engine.update(delta);
 
         if( Keyboard.isKeyDown(Keyboard.KEY_P) && !engine.isProfileMode() ) {
