@@ -1,13 +1,9 @@
-package de.funky_clan.voxel.data;
+package de.funky_clan.octree.data;
 
 import cern.colt.map.OpenLongObjectHashMap;
+import de.funky_clan.octree.ChunkPopulator;
 import de.funky_clan.octree.WritableRaster;
-import de.funky_clan.voxel.ChunkPopulator;
 import org.lwjgl.Sys;
-
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
 
 /**
  * @author synopia

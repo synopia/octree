@@ -1,8 +1,8 @@
 package de.funky_clan.octree.generators;
 
 import de.funky_clan.octree.WritableRaster;
-import de.funky_clan.voxel.data.Chunk;
-import de.funky_clan.voxel.data.Octree;
+import de.funky_clan.octree.data.Chunk;
+import de.funky_clan.octree.data.Octree;
 import org.lwjgl.Sys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

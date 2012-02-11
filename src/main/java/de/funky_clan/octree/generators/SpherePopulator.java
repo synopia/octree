@@ -1,8 +1,7 @@
 package de.funky_clan.octree.generators;
 
-import de.funky_clan.voxel.AbstractPopulator;
-import de.funky_clan.voxel.ChunkPopulator;
-import de.funky_clan.voxel.data.Chunk;
+import de.funky_clan.octree.AbstractPopulator;
+import de.funky_clan.octree.data.Chunk;
 
 /**
  * @author synopia

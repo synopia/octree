@@ -1,9 +1,9 @@
-package de.funky_clan.voxel.renderer;
+package de.funky_clan.octree.renderer;
 
 import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.coregl.renderer.CubeRenderer;
 import de.funky_clan.octree.minecraft.blocks.Block;
-import de.funky_clan.voxel.data.Chunk;
+import de.funky_clan.octree.data.Chunk;
 import org.lwjgl.opengl.GL11;
 
 /**

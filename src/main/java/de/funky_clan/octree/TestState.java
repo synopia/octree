@@ -2,16 +2,11 @@ package de.funky_clan.octree;
 
 import com.yourkit.api.Controller;
 import com.yourkit.api.ProfilingModes;
-import de.funky_clan.coregl.BaseEngine;
 import de.funky_clan.coregl.GameWindow;
 import de.funky_clan.coregl.State;
 import de.funky_clan.coregl.Texture;
 import de.funky_clan.octree.generators.SpherePopulator;
-import de.funky_clan.octree.minecraft.MinecraftPopulator;
-import de.funky_clan.octree.minecraft.RegionFileLoader;
-import de.funky_clan.voxel.VoxelEngine;
-import de.funky_clan.voxel.data.OctreeNode;
-import de.funky_clan.voxel.renderer.OctreeRenderer;
+import de.funky_clan.octree.data.OctreeNode;
 import de.funky_clan.octree.generators.SphereGenerator;
 import de.funky_clan.octree.minecraft.SchematicLoader;
 import org.lwjgl.Sys;

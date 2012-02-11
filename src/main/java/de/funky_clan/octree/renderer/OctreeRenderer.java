@@ -1,4 +1,4 @@
-package de.funky_clan.voxel.renderer;
+package de.funky_clan.octree.renderer;
 
 import cern.colt.function.LongObjectProcedure;
 import cern.colt.function.ObjectProcedure;
@@ -7,7 +7,7 @@ import cern.colt.map.OpenLongObjectHashMap;
 import de.funky_clan.coregl.Camera;
 import de.funky_clan.coregl.geom.Sphere;
 import de.funky_clan.coregl.renderer.BufferedRenderer;
-import de.funky_clan.voxel.data.*;
+import de.funky_clan.octree.data.*;
 import org.lwjgl.Sys;
 
 import java.util.ArrayList;

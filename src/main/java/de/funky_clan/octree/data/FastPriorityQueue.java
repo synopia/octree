@@ -1,4 +1,4 @@
-package de.funky_clan.voxel.data;
+package de.funky_clan.octree.data;
 
 import cern.colt.list.ObjectArrayList;
 import cern.colt.map.OpenLongObjectHashMap;

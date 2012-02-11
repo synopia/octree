@@ -1,11 +1,10 @@
-package de.funky_clan.voxel;
+package de.funky_clan.octree;
 
 import de.funky_clan.coregl.BaseEngine;
 import de.funky_clan.coregl.GameWindow;
-import de.funky_clan.octree.WritableRaster;
-import de.funky_clan.voxel.data.Octree;
-import de.funky_clan.voxel.data.OctreeNode;
-import de.funky_clan.voxel.renderer.OctreeRenderer;
+import de.funky_clan.octree.data.Octree;
+import de.funky_clan.octree.data.OctreeNode;
+import de.funky_clan.octree.renderer.OctreeRenderer;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;

@@ -1,6 +1,4 @@
-package de.funky_clan.voxel.data;
-
-import de.funky_clan.voxel.Morton;
+package de.funky_clan.octree.data;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;

@@ -1,13 +1,10 @@
 package de.funky_clan.voxel;
 
-import de.funky_clan.voxel.data.Octree;
-import de.funky_clan.voxel.data.OctreeNode;
+import de.funky_clan.octree.Morton;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.lang.reflect.Array;
 import java.math.BigInteger;
-import java.util.Arrays;
 
 /**
  * @author synopia

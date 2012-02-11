@@ -1,8 +1,8 @@
 package de.funky_clan.octree.minecraft;
 
-import de.funky_clan.voxel.AbstractPopulator;
-import de.funky_clan.voxel.data.Chunk;
-import de.funky_clan.voxel.data.OctreeNode;
+import de.funky_clan.octree.AbstractPopulator;
+import de.funky_clan.octree.data.Chunk;
+import de.funky_clan.octree.data.OctreeNode;
 import org.jnbt.ByteArrayTag;
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTInputStream;

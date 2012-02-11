@@ -1,4 +1,4 @@
-package de.funky_clan.voxel;
+package de.funky_clan.octree;
 
 /**
  * @author synopia

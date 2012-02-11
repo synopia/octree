@@ -1,4 +1,4 @@
-package de.funky_clan.voxel.data;
+package de.funky_clan.octree.data;
 
 import de.funky_clan.coregl.geom.Sphere;
 import de.funky_clan.octree.WritableRaster;

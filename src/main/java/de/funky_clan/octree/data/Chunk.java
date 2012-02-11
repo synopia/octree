@@ -1,12 +1,6 @@
-package de.funky_clan.voxel.data;
+package de.funky_clan.octree.data;
 
-import de.funky_clan.voxel.Morton;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
+import de.funky_clan.octree.Morton;
 
 /**
  * @author synopia
@@ -118,7 +112,7 @@ public class Chunk extends OctreeElement {
         return Morton.mortonCode(x>>4, y>>4, z>>4);
     }
     public long toMorton() {
-        return Morton.mortonCode(x>>4, y>>4, z>>4 );
+        return Morton.mortonCode(x >> 4, y >> 4, z >> 4);
     }
 
 }

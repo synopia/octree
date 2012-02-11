@@ -1,6 +1,7 @@
-package de.funky_clan.voxel;
+package de.funky_clan.octree;
 
-import de.funky_clan.voxel.data.Chunk;
+
+import de.funky_clan.octree.data.Chunk;
 
 /**
  * @author synopia
