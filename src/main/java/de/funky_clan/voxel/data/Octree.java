@@ -79,7 +79,13 @@ public class Octree implements WritableRaster {
 
     @Override
     public void setPixel(int x, int y, int z, int color) {
-
+        if( x<0 || y<0 || z<0 ) {
+            return;
+        }
+        Chunk chunk= getChunk(x, y, z);
+        if( chunk!=null ) {
+            chunk.setPixel(x, y, z, color);
+        }
     }
 
     @Override

@@ -14,25 +14,28 @@ import java.util.Arrays;
  */
 public class MortonTest {
     @Test
-    public void test() {
-        OctreeNode root = new Octree(0,0,0, 1<<21).getRoot();
-        System.out.println(root.getChunk(0,0,0));
-        System.out.println(root.getChunk(0,0,32));
-/*
-        long[] morton = Morton.mortonCode(new long[]{1, 2, 3});
-        System.out.println(Arrays.toString(morton));
-        System.out.println(Arrays.toString(Morton.mortonCode(new long[]{0, 0, 0})));
-        System.out.println(Arrays.toString(Morton.mortonCode(new long[]{0, 0, 1})));
-        System.out.println(Arrays.toString(Morton.mortonCode(new long[]{0, 1, 0})));
-        System.out.println(Arrays.toString(Morton.mortonCode(new long[]{1, 0, 0})));
-        System.out.println(Arrays.toString(Morton.mortonCode(new long[]{1, 1, 2})));
-        System.out.println(new BigInteger(Morton.mortonCode(new long[]{0,0, 1})[0]+"").toString(2));
-        System.out.println(new BigInteger(Morton.mortonCode(new long[]{0,1, 0})[0]+"").toString(2));
-        System.out.println(new BigInteger(Morton.mortonCode(new long[]{1,0, 0})[0]+"").toString(2));
-        System.out.println(new BigInteger(Morton.mortonCode(new long[]{1,1, 0})[0]+"").toString(2));
-        System.out.println(new BigInteger(Morton.mortonCode(new long[]{1,1, 16})[0]+"").toString(2));
-        System.out.println(new BigInteger(Morton.mortonCode(new long[]{0,0, 5})[0]+"").toString(2));
-        System.out.println(new BigInteger(Morton.mortonCode(new long[]{0, 0, 6})[0] + "").toString(2));
-*/
+    public void testDilate( ) {
+        int max = (1 << 21) - 1;
+        assertDilate(max, max, max);
+        assertDilate(max, max-1, max-1);
+        assertDilate(0, 0, 0);
+        assertDilate(max, 0, 0);
+        assertDilate(0, max, 0);
+        assertDilate(0, 0, max);
     }
+
+    private void assertDilate( int x, int y, int z ) {
+        long dilX = Morton.dilate(x);
+        long dilY = Morton.dilate(y);
+        long dilZ = Morton.dilate(z);
+        long morton = Morton.combine(dilX, dilY, dilZ);
+        Assert.assertEquals( decBin(dilX), decBin(Morton.extract(morton, 0)));
+        Assert.assertEquals( decBin(dilY<<1), decBin(Morton.extract(morton, 1)));
+        Assert.assertEquals( decBin(dilZ<<2), decBin(Morton.extract(morton, 2)));
+    }
+    
+    private String decBin( long v ) {
+        return v+" => "+new BigInteger(v + "").toString(2);
+    }
+   
 }

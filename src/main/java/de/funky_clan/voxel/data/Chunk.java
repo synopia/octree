@@ -2,6 +2,9 @@ package de.funky_clan.voxel.data;
 
 import de.funky_clan.voxel.Morton;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 
@@ -12,7 +15,6 @@ public class Chunk extends OctreeElement {
     public static int COUNT = 0;
     private int[] map;
     private boolean dirty;
-    private boolean populated;
     private boolean fullyPopulated;
 
     public Chunk(Octree octree, int x, int y, int z, int size) {
@@ -32,10 +34,20 @@ public class Chunk extends OctreeElement {
         map[relX + ( relY*size+relZ ) * size] = color;
         visible = true;
         dirty   = true;
+
+        if( this.color==null ) {
+            singleColored = true;
+        } else {
+            singleColored = singleColored && this.color==color;
+        }
+        this.color    = color;
     }
 
     @Override
     public int getPixel(int x, int y, int z) {
+        if( populated && singleColored ) {
+            return color;
+        }
         int relX = x-this.x;
         int relY = y-this.y;
         int relZ = z-this.z;
@@ -61,12 +73,22 @@ public class Chunk extends OctreeElement {
         this.dirty = dirty;
     }
 
-    public boolean isPopulated() {
-        return populated;
-    }
-
     public void setPopulated(boolean populated) {
         this.populated = populated;
+        if( populated ) {
+            setPopulated();
+        }
+    }
+
+    @Override
+    public void setPopulated() {
+        this.populated = true;
+        if( singleColored ) {
+            map = null;
+        }
+        if( parent!=null ) {
+            parent.setPopulated();
+        }
     }
 
     public boolean isFullyPopulated() {
@@ -92,7 +114,7 @@ public class Chunk extends OctreeElement {
         return x+", "+y+", "+z;
     }
 
-    public static long toMorton(long x, long y, long z) {
+    public static long toMorton(int x, int y, int z) {
         return Morton.mortonCode(x>>4, y>>4, z>>4);
     }
     public long toMorton() {

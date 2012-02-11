@@ -51,7 +51,7 @@ public class SpherePopulator extends AbstractPopulator {
                 out ++;
             }            
         }
-        if( in>0 && out>0 ) {
+        if( in>0  ) {
             for (int x = minX; x < maxX; x++) {
                 for (int y = minY; y < maxY; y++) {
                     for (int z = minZ; z < maxZ; z++) {
@@ -59,6 +59,8 @@ public class SpherePopulator extends AbstractPopulator {
 
                         if( radiusSq>=dist ) {
                             chunk.setPixel(x, y, z, 1);
+                        } else {
+                            chunk.setPixel(x, y, z, 0);
                         }
                     }
                 }

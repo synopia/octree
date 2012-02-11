@@ -10,7 +10,7 @@ import java.lang.ref.WeakReference;
  */
 public class OctreeNode extends OctreeElement {
     private static final int[][] OFFSETS = new int[][] {
-        {0,0,0}, {1,0,0}, {0,1,0}, {1,1,0}, {0,0,1}, {1,0,1}, {0,1,1}, {1,1,1}
+            {0,0,0}, {1,0,0}, {0,1,0}, {1,1,0}, {0,0,1}, {1,0,1}, {0,1,1}, {1,1,1}
     };
     public static final int CHUNK_SIZE = 32;
     protected Reference<OctreeElement>[] children = new Reference[8];
@@ -18,7 +18,7 @@ public class OctreeNode extends OctreeElement {
     public OctreeNode(Octree octree, int x, int y, int z, int size) {
         super(octree, x, y, z, size);
     }
-    
+
     public void removeChunk( int x, int y, int z ) {
         int relX = x-this.x;
         int relY = y-this.y;
@@ -83,21 +83,17 @@ public class OctreeNode extends OctreeElement {
         return getChild(code).getPixel(x, y, z);
     }
 
-    public OctreeElement getChild( int code ) {
-        OctreeElement node;
-        if( children[code]==null ) {
-            node = createNode(code);
+    public OctreeElement getChild( int code) {
+        return getChild(code, true);
+    }
+    public OctreeElement getChild( int code, boolean create) {
+        if( create && (children[code]==null || children[code].get()==null) ) {
+            OctreeElement node = createNode(code);
             children[code] = new WeakReference<OctreeElement>(node);
             return node;
         }
 
-        node = children[code].get();
-        if( node==null ) {
-            node = createNode(code);
-            children[code] = new WeakReference<OctreeElement>(node);
-        }
-
-        return node;
+        return children[code]!=null ? children[code].get() : null;
     }
 
     private OctreeElement createNode(int code) {
@@ -109,10 +105,34 @@ public class OctreeNode extends OctreeElement {
 
         node = octree.createNode(newX, newY, newZ, newSize);
         node.setParent(this);
-
         return node;
     }
 
+    @Override
+    public void setPopulated() {
+        int populated = 0;
+        for (Reference<OctreeElement> child : children) {
+            if( child!=null )    {
+                OctreeElement element = child.get();
+                if( element!=null ) {
+                    if( element.isPopulated() && element.isSingleColored() ) {
+                        populated++;
+                        color = element.getColor();
+                    }
+                }
+            }
+        }
+        if( populated==children.length ) {
+            singleColored = true;
+            this.populated = true;
+            for (int i = 0, childrenLength = children.length; i < childrenLength; i++) {
+                children[i] = null;
+            }
+            if( parent!=null ) {
+                parent.setPopulated();
+            }
+        }
+    }
 
     @Override
     public String toString() {
