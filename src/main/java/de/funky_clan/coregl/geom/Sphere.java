@@ -39,6 +39,10 @@ public final class Sphere {
         float dist = (x-this.x)*(x-this.x) + (y-this.y)*(y-this.y) +(z-this.z)*(z-this.z);
         return dist < radius*radius;
     }
+
+    public float distanceSq( Sphere sphere ) {
+        return (x-sphere.x)*(x-sphere.x) + (y-sphere.y)*(y-sphere.y) + (z-sphere.z)*(z-sphere.z);
+    }
     @Override
     public String toString() {
         return "["+x+", "+y+", "+z + "], r=" + radius;

@@ -5,11 +5,44 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author synopia
  */
 public class MortonTest {
+    @Test
+    public void testMorton() {
+        Set<Long> set = new LinkedHashSet<Long>();
+        int max = (1 << 20)-1;
+
+        int rounds = 16;
+        for( int i=0; i<rounds; i++ ) {
+
+            set.add(Morton.mortonCode(0,0,0, i));
+            set.add(Morton.mortonCode(0,0,1, i));
+            set.add(Morton.mortonCode(0,1,0, i));
+            set.add(Morton.mortonCode(0,1,1, i));
+            set.add(Morton.mortonCode(1,0,0, i));
+            set.add(Morton.mortonCode(1,0,1, i));
+            set.add(Morton.mortonCode(1,1,0, i));
+            set.add(Morton.mortonCode(1,1,1, i));
+            set.add(Morton.mortonCode(1,1,1, i));
+    
+            set.add(Morton.mortonCode(0,0,0, i));
+            set.add(Morton.mortonCode(0,0,max, i));
+            set.add(Morton.mortonCode(0,max,0, i));
+            set.add(Morton.mortonCode(0,max,max, i));
+            set.add(Morton.mortonCode(max,0,0, i));
+            set.add(Morton.mortonCode(max,0,max, i));
+            set.add(Morton.mortonCode(max,max,0, i));
+            set.add(Morton.mortonCode(max,max,max, i));
+            set.add(Morton.mortonCode(max,max,max, i));
+        }
+
+        Assert.assertEquals(set.size(), rounds*15);
+    }
     @Test
     public void testDilate( ) {
         int max = (1 << 21) - 1;

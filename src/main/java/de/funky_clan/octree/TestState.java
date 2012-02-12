@@ -36,9 +36,9 @@ public class TestState implements State {
     private boolean memorySnapshop;
 
     public void init(GameWindow window) throws IOException {
-//        engine = new VoxelEngine(1<<30, new MinecraftPopulator(2048, 2048));//SpherePopulator(500,500,500,499));
-        engine = new VoxelEngine(1<<30, new SpherePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1));
-        engine = new VoxelEngine(1<<21, new NoisePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1));
+//        engine = new VoxelEngine(1<<21, new MinecraftPopulator(2048, 2048));//SpherePopulator(500,500,500,499));
+        engine = new VoxelEngine(1<<21, new SpherePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1));
+//        engine = new VoxelEngine(1<<21, new NoisePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1));
         engine.setFpsControl(true);
         engine.setShowInfo(true);
         engine.init(window);

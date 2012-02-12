@@ -18,8 +18,8 @@ import java.util.List;
  */
 public class OctreeRenderer {
 
-    public static final int MAX_CHUNK_RENDERERS = 10000;
-    public static final String CHUNKS_TEXT = "Chunks:%d %d (new=%d, visible=%d)";
+    public static final int MAX_CHUNK_RENDERERS = 100000;
+    public static final String CHUNKS_TEXT = "Chunks:%d %d (new=%d, visible=%d, skipped=%d)";
 
     private OpenLongObjectHashMap chunkEntries = new OpenLongObjectHashMap();
     private ObjectArrayList       oldChunks = new ObjectArrayList();
@@ -30,6 +30,7 @@ public class OctreeRenderer {
 
     private int currentState = 0;
     private BufferedRenderer renderer;
+    private int skipped;
 
     private Camera camera;
     private Sphere boundingSphere;
@@ -43,9 +44,10 @@ public class OctreeRenderer {
     }
 
     public void render( OctreeNode node, Camera camera, long frameStartTime ) {
+        skipped = 0;
         tree = node.getOctree();
         currentState ++;
-        boundingSphere = new Sphere(camera.getX(), camera.getY(), camera.getZ(), 200);
+        boundingSphere = new Sphere(camera.getX(), camera.getY(), camera.getZ(), 1000);
         this.camera    = camera;
 
         oldChunks.clear();
@@ -147,6 +149,9 @@ public class OctreeRenderer {
                     testChildren = false;
             }
         }
+        float dist = (float) Math.sqrt(boundingSphere.distanceSq(node.getBoundingSphere()));
+        float factor = node.getSize() / dist;
+
         for (int i = 0; i < 8; i++) {
             OctreeElement child = node.getChild(i);
             if( child==null ) {
@@ -163,7 +168,7 @@ public class OctreeRenderer {
                 }
 
                 entry.setState( currentState );
-                float dist = camera.getFrustum().sphereInFrustum2(chunk.getBoundingSphere());
+                dist = camera.getFrustum().sphereInFrustum2(chunk.getBoundingSphere());
                 if( dist > 0 ) {
                     entry.setDistanceToEye( dist );
                     entry.setInFrustum( true );
@@ -171,7 +176,11 @@ public class OctreeRenderer {
                     entry.setDistanceToEye( 250 );
                 }
             } else {
-                render((OctreeNode) child, testChildren);
+                if( factor>0.9f ) {
+                    render((OctreeNode) child, testChildren);
+                } else {
+                    skipped ++;
+                }
             }
         }
     }
@@ -182,7 +191,7 @@ public class OctreeRenderer {
 
     public ArrayList<String> getDebugInfo() {
         ArrayList<String> result = new ArrayList<String>();
-        result.add(String.format(CHUNKS_TEXT, Chunk.COUNT, chunkEntries.size(), newChunks.size(), visibleChunks.size()));
+        result.add(String.format(CHUNKS_TEXT, Chunk.COUNT, chunkEntries.size(), newChunks.size(), visibleChunks.size(), skipped));
         return result;
     }
 }
