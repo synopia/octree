@@ -5,6 +5,7 @@ import com.yourkit.api.ProfilingModes;
 import de.funky_clan.coregl.GameWindow;
 import de.funky_clan.coregl.State;
 import de.funky_clan.coregl.Texture;
+import de.funky_clan.octree.generators.NoisePopulator;
 import de.funky_clan.octree.generators.SpherePopulator;
 import de.funky_clan.octree.data.OctreeNode;
 import de.funky_clan.octree.generators.SphereGenerator;
@@ -22,7 +23,7 @@ import java.io.IOException;
  */
 public class TestState implements State {
     private final Logger logger = LoggerFactory.getLogger(TestState.class);
-    private final static int RADIUS = 6378;
+    private final static int RADIUS = 400;
 
     private VoxelEngine engine;
 
@@ -37,6 +38,7 @@ public class TestState implements State {
     public void init(GameWindow window) throws IOException {
 //        engine = new VoxelEngine(1<<30, new MinecraftPopulator(2048, 2048));//SpherePopulator(500,500,500,499));
         engine = new VoxelEngine(1<<30, new SpherePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1));
+        engine = new VoxelEngine(1<<21, new NoisePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1));
         engine.setFpsControl(true);
         engine.setShowInfo(true);
         engine.init(window);
