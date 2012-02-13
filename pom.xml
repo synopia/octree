@@ -62,11 +62,7 @@
             <artifactId>colt</artifactId>
             <version>1.2.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.yourkit</groupId>
-            <artifactId>yjp-controller-api-redist</artifactId>
-            <version>9.5.6</version>
-        </dependency>
+        
     </dependencies>
     <build>
 
@@ -100,11 +96,7 @@
     </build>
 
     <repositories>
-        <repository>
-            <id>OPENNMS</id>
-            <name>OpenNMS</name>
-            <url>http://repo.opennms.org/maven2</url>
-        </repository>
+
 
     </repositories>
 </project>

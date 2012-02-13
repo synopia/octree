@@ -2,6 +2,7 @@ package de.funky_clan.octree.minecraft;
 
 import de.funky_clan.octree.AbstractPopulator;
 import de.funky_clan.octree.data.Chunk;
+import de.funky_clan.octree.data.Octree;
 import de.funky_clan.octree.data.OctreeNode;
 import org.jnbt.ByteArrayTag;
 import org.jnbt.CompoundTag;
@@ -22,7 +23,8 @@ public class MinecraftPopulator extends AbstractPopulator {
     private int shiftX;
     private int shiftZ;
 
-    public MinecraftPopulator(int shiftX, int shiftZ) {
+    public MinecraftPopulator(Octree octree, int shiftX, int shiftZ) {
+        super(octree);
         this.shiftX = shiftX;
         this.shiftZ = shiftZ;
         file = new File( "d:/games/minecraft/world" );

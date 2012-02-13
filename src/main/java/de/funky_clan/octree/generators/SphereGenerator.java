@@ -1,9 +1,7 @@
 package de.funky_clan.octree.generators;
 
-import de.funky_clan.octree.WritableRaster;
 import de.funky_clan.octree.data.Chunk;
 import de.funky_clan.octree.data.Octree;
-import org.lwjgl.Sys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +14,7 @@ public class SphereGenerator {
 
     public void generate( Octree octree, int mx, int my, int mz, int radius ) {
         logger.info("Start generating a sphere with radius {} cubes...", radius);
-        populator = new SpherePopulator(mx, my, mz, radius);
+        populator = new SpherePopulator(octree, mx, my, mz, radius);
 
         int minX = (mx - radius)>>5;
         int minY = (my - radius)>>5;
@@ -31,7 +29,7 @@ public class SphereGenerator {
         for (int z = minZ; z <= maxZ; z++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int x = minX; x <= maxX; x++) {
-                    Chunk chunk = octree.getChunk(x << 5, y << 5, z << 5);
+                    Chunk chunk = octree.getChunkForVoxel(x << 5, y << 5, z << 5, 0);
                     populator.doPopulate(chunk);
                 }
             }

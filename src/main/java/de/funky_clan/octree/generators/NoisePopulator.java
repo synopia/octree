@@ -4,6 +4,7 @@ import de.funky_clan.noise.Fractal;
 import de.funky_clan.noise.FractalBrownianMotion;
 import de.funky_clan.octree.AbstractPopulator;
 import de.funky_clan.octree.data.Chunk;
+import de.funky_clan.octree.data.Octree;
 
 /**
  * @author synopia
@@ -17,7 +18,8 @@ public class NoisePopulator extends AbstractPopulator {
     private float radiusSq;
     private Fractal fractal;
 
-    public NoisePopulator(int x, int y, int z, int radius) {
+    public NoisePopulator(Octree octree, int x, int y, int z, int radius) {
+        super(octree);
         this.x = x;
         this.y = y;
         this.z = z;

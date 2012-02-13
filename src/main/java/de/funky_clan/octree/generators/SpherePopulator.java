@@ -2,6 +2,8 @@ package de.funky_clan.octree.generators;
 
 import de.funky_clan.octree.AbstractPopulator;
 import de.funky_clan.octree.data.Chunk;
+import de.funky_clan.octree.data.Octree;
+import de.funky_clan.octree.data.OctreeNode;
 
 /**
  * @author synopia
@@ -13,7 +15,8 @@ public class SpherePopulator extends AbstractPopulator {
     private int radius;
     private float radiusSq;
 
-    public SpherePopulator(int x, int y, int z, int radius) {
+    public SpherePopulator(Octree octree, int x, int y, int z, int radius) {
+        super(octree);
         this.x = x;
         this.y = y;
         this.z = z;
@@ -51,10 +54,14 @@ public class SpherePopulator extends AbstractPopulator {
             }            
         }
         if( in>0  ) {
-            for (int x = minX; x < maxX; x++) {
-                for (int y = minY; y < maxY; y++) {
-                    for (int z = minZ; z < maxZ; z++) {
-                        float dist = dist( x, y, z );
+            float scale = (float) size / OctreeNode.CHUNK_SIZE;
+            for (int x = 0; x < OctreeNode.CHUNK_SIZE; x++) {
+                for (int y = 0; y < OctreeNode.CHUNK_SIZE; y++) {
+                    for (int z = 0; z < OctreeNode.CHUNK_SIZE; z++) {
+                        float rx = minX + (float) x * scale;
+                        float ry = minY + (float) y * scale;
+                        float rz = minZ + (float) z * scale;
+                        float dist = dist( rx, ry, rz );
 
                         if( radiusSq>=dist ) {
                             chunk.setPixel(x, y, z, 1);
@@ -68,7 +75,7 @@ public class SpherePopulator extends AbstractPopulator {
         chunk.setPopulated(true);
     }
 
-    private float dist(int x, int y, int z) {
+    private float dist(float x, float y, float z) {
         return (this.x -x)*(this.x -x) + (this.y -y)*(this.y -y) + (this.z -z)*(this.z -z);
     }
 }

@@ -12,22 +12,25 @@ import java.util.ArrayList;
 /**
  * @author synopia
  */
-public class VoxelEngine extends BaseEngine implements WritableRaster {
+public class VoxelEngine extends BaseEngine {
     public static final String OCTREE_CHUNKS_TEXT = "Octree Chunks: %d, to be populated: %d";
     public static final String POSITION_TEXT = "Position: %2f %2f %2f";
     public static final String MEM_TEXT = "Mem: %d/%d kB";
     private Octree root;
     private OctreeRenderer octreeRenderer;
 
-    public VoxelEngine(int size, ChunkPopulator populator) {
-        root = new Octree(0,0,0,size);
+    public VoxelEngine(int depth) {
+        root = new Octree(0,0,0, depth);
+    }
+
+    public void setPopulator( ChunkPopulator populator ) {
         root.setPopulator(populator);
     }
 
     @Override
     public void init(GameWindow window) {
         super.init(window);
-        octreeRenderer = new OctreeRenderer(getRenderer());
+        octreeRenderer = new OctreeRenderer(root, getRenderer());
     }
 
     @Override
@@ -37,7 +40,7 @@ public class VoxelEngine extends BaseEngine implements WritableRaster {
             int y = (int) camera.getY();
             int z = (int) camera.getZ();
             if( x>0 && y>0 && z>0 ) {
-                setPixel(x, y, z, 1);
+                //setPixel(x, y, z, 1);
             }
         }
         super.update(delta);
@@ -49,16 +52,6 @@ public class VoxelEngine extends BaseEngine implements WritableRaster {
         endRender(delta);
 
        root.doPopulation(frameStartTime);
-    }
-
-    @Override
-    public void setPixel(int x, int y, int z, int color) {
-        root.setPixel(x, y, z, color);
-    }
-
-    @Override
-    public int getPixel(int x, int y, int z) {
-        return root.getPixel(x, y, z);
     }
 
     public OctreeNode getRoot() {

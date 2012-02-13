@@ -1,17 +1,12 @@
 package de.funky_clan.octree;
 
-import com.yourkit.api.Controller;
-import com.yourkit.api.ProfilingModes;
 import de.funky_clan.coregl.GameWindow;
 import de.funky_clan.coregl.State;
 import de.funky_clan.coregl.Texture;
-import de.funky_clan.octree.generators.NoisePopulator;
-import de.funky_clan.octree.generators.SpherePopulator;
 import de.funky_clan.octree.data.OctreeNode;
 import de.funky_clan.octree.generators.SphereGenerator;
+import de.funky_clan.octree.generators.SpherePopulator;
 import de.funky_clan.octree.minecraft.SchematicLoader;
-import org.lwjgl.Sys;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +24,13 @@ public class TestState implements State {
 
     private float angle;
     private Texture texture;
-    private Controller ctrl;
     private long frames = 0;
-    private long startTime;
-    private long startFrame;
-    private boolean memorySnapshop;
 
     public void init(GameWindow window) throws IOException {
-//        engine = new VoxelEngine(1<<21, new MinecraftPopulator(2048, 2048));//SpherePopulator(500,500,500,499));
-        engine = new VoxelEngine(1<<21, new SpherePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1));
-//        engine = new VoxelEngine(1<<21, new NoisePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1));
+//        engine = new VoxelEngine(Morton.MORTON_BITS, new MinecraftPopulator(2048, 2048));//SpherePopulator(500,500,500,499));
+        engine = new VoxelEngine(Morton.MORTON_BITS-5);
+        engine.setPopulator(new SpherePopulator(engine.getRoot().getOctree(), RADIUS,RADIUS,RADIUS,RADIUS-1));
+//        engine = new VoxelEngine(Morton.MORTON_BITS, new NoisePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1));
         engine.setFpsControl(true);
         engine.setShowInfo(true);
         engine.init(window);
@@ -84,11 +76,6 @@ public class TestState implements State {
 //        logger.info("total buffer size: {}", totalBufferSize);
         engine.getLighting().createLight(0,0,0, .4f, .4f, .4f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
         engine.getLighting().createLight(30,30,30, .9f, .9f, .9f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
-        try {
-            ctrl = new Controller();
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
     }
 
     public String getName() {
@@ -110,22 +97,6 @@ public class TestState implements State {
         float ty = (float) Math.sin( angle+Math.toRadians(5) ) * (RADIUS);
 //        engine.getCamera().lookAt(x+RADIUS, y+RADIUS, RADIUS, tx+RADIUS,ty+RADIUS,RADIUS,0,1,0);
         engine.update(delta);
-
-        if( Keyboard.isKeyDown(Keyboard.KEY_P) && !engine.isProfileMode() ) {
-            try {
-                engine.setProfileMode(true);
-                startTime = Sys.getTime();
-                startFrame = frames;
-                ctrl.startCPUProfiling(ProfilingModes.CPU_TRACING, "");
-                ctrl.startAllocationRecording(true, 1, false, 0);
-                System.out.println("profiling started");
-            } catch (Exception e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        }
-        if( Keyboard.isKeyDown(Keyboard.KEY_M)) {
-            memorySnapshop = true;
-        }
     }
 
     public void render(GameWindow window, int delta) {
@@ -134,23 +105,5 @@ public class TestState implements State {
         texture.bind();
         engine.render(delta);
         frames++;
-        if( frames-startFrame==250 && engine.isProfileMode() ) {
-            try {
-                engine.setProfileMode(false);
-                startTime = 0;
-                startFrame = 0;
-                if( memorySnapshop ) {
-                    ctrl.captureMemorySnapshot();
-                    memorySnapshop = false;
-                }
-                ctrl.captureSnapshot(ProfilingModes.SNAPSHOT_WITHOUT_HEAP);
-                ctrl.stopCPUProfiling();
-                ctrl.stopAllocationRecording();
-
-                System.out.println("done profiling");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

@@ -4,11 +4,13 @@ package de.funky_clan.octree;
  * @author synopia
  */
 public class Morton {
+    public static final int MORTON_BITS = 20;
+
     public static long mortonCode(int x, int y, int z){
         return mortonCode(x,y,z,0);
     }
     public static long mortonCode(int x, int y, int z, int add){
-        return combine(dilate(x), dilate(y), dilate(z)) | ((long)add<<60);
+        return combine(dilate(x), dilate(y), dilate(z)) | ((long)add<<(3*MORTON_BITS));
     }
 
     public static long dilate( int input ) {

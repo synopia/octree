@@ -1,34 +1,54 @@
 package de.funky_clan.octree.data;
 
 import de.funky_clan.octree.Morton;
+import de.funky_clan.octree.WritableRaster;
+
+import java.util.Arrays;
 
 /**
  * @author synopia
  */
-public class Chunk extends OctreeElement {
-    public static int COUNT = 0;
+public class Chunk implements WritableRaster {
+    public static int[] COUNT = new int[64];
+    public static final int SIZE = OctreeNode.CHUNK_SIZE;
     private int[] map;
-    private boolean dirty;
-    private boolean fullyPopulated;
+    protected Integer color;
+    protected boolean singleColored;
+    protected boolean populated;
+    protected boolean neighborsPopulated;
+    protected boolean dirty;
+    protected long morton;
 
-    public Chunk(Octree octree, int x, int y, int z, int size) {
-        super(octree, x, y, z, size);
-        dirty   = true;
-        COUNT ++;
+    protected boolean visible;
+
+    private int x;
+    private int y;
+    private int z;
+    private int depth;
+
+    public Chunk(int x, int y, int z, int depth) {
+        COUNT[depth] ++;
+        singleColored = false;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.depth = depth;
+        morton = Morton.mortonCode(x>>OctreeNode.CHUNK_BITS, y>>OctreeNode.CHUNK_BITS, z>>OctreeNode.CHUNK_BITS, depth);
+        visible = true;
     }
 
     @Override
     public void setPixel(int x, int y, int z, int color) {
-        if( map==null ) {
-            map = new int[size*size*size];
+        if( x<0 || y<0 || z<0 || x>=SIZE || y>=SIZE || z>=SIZE ) {
+            throw new IllegalArgumentException("Out of range "+x+", "+y+", "+z);
         }
-        int relX = x-this.x;
-        int relY = y-this.y;
-        int relZ = z-this.z;
-        map[relX + ( relY*size+relZ ) * size] = color;
-        visible = true;
-        dirty   = true;
-
+        if( map==null ) {
+            map = new int[SIZE*SIZE*SIZE];
+            if( singleColored && this.color!=null ) {
+                Arrays.fill(map, this.color);
+            }
+        }
+        map[x + ( y*SIZE+z ) * SIZE] = color;
         if( this.color==null ) {
             singleColored = true;
         } else {
@@ -39,24 +59,79 @@ public class Chunk extends OctreeElement {
 
     @Override
     public int getPixel(int x, int y, int z) {
-        if( populated && singleColored ) {
+        if( singleColored ) {
             return color;
         }
-        int relX = x-this.x;
-        int relY = y-this.y;
-        int relZ = z-this.z;
-        if( relX<0 || relY<0 || relZ<0 || relX>=size || relY>=size || relZ>=size ) {
-            return parent.getPixel(x, y, z);
+        if( x<0 || y<0 || z<0 || x>=SIZE || y>=SIZE || z>=SIZE ) {
+            throw new IllegalArgumentException("Out of range "+x+", "+y+", "+z);
         }
         if( map==null ) {
             return 0;
         }
-        return map[relX + ( relY*size+relZ ) * size];
+        return map[x + ( y*SIZE+z ) * SIZE];
     }
 
     @Override
-    public boolean isLeaf() {
-        return true;
+    protected void finalize() throws Throwable {
+        COUNT[depth]--;
+        super.finalize();
+    }
+
+    public void finishPopulation() {
+        if( singleColored ) {
+            map = null;
+        }
+    }
+    
+    public int[] getMap() {
+        return map;
+    }
+
+    public boolean isSingleColored() {
+        return singleColored;
+    }
+
+    public boolean isPopulated() {
+        return populated;
+    }
+
+    public long getMorton() {
+        return morton;
+    }
+
+    public boolean isNeighborsPopulated() {
+        return neighborsPopulated;
+    }
+
+    public void setNeighborsPopulated(boolean neighborsPopulated) {
+        this.neighborsPopulated = neighborsPopulated;
+    }
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getZ() {
+        return z;
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public void setPopulated(boolean populated) {
+        this.populated = populated;
     }
 
     public boolean isDirty() {
@@ -66,53 +141,8 @@ public class Chunk extends OctreeElement {
     public void setDirty(boolean dirty) {
         this.dirty = dirty;
     }
-
-    public void setPopulated(boolean populated) {
-        this.populated = populated;
-        if( populated ) {
-            setPopulated();
-        }
+    
+    public int getSize() {
+        return OctreeNode.CHUNK_SIZE<<depth;
     }
-
-    @Override
-    public void setPopulated() {
-        this.populated = true;
-        if( singleColored ) {
-            map = null;
-        }
-        if( parent!=null ) {
-            parent.setPopulated();
-        }
-    }
-
-    public boolean isFullyPopulated() {
-        return populated && fullyPopulated;
-    }
-
-    public void setFullyPopulated(boolean fullyPopulated) {
-        this.fullyPopulated = fullyPopulated;
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        COUNT--;
-        super.finalize();
-    }
-
-    public int[] getMap() {
-        return map;
-    }
-
-    @Override
-    public String toString() {
-        return x+", "+y+", "+z;
-    }
-
-    public static long toMorton(int x, int y, int z) {
-        return Morton.mortonCode(x>>4, y>>4, z>>4);
-    }
-    public long toMorton() {
-        return Morton.mortonCode(x >> 4, y >> 4, z >> 4);
-    }
-
 }

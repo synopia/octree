@@ -19,7 +19,7 @@ import java.util.List;
 public class OctreeRenderer {
 
     public static final int MAX_CHUNK_RENDERERS = 100000;
-    public static final String CHUNKS_TEXT = "Chunks:%d %d (new=%d, visible=%d, skipped=%d)";
+    public static final String CHUNKS_TEXT = "Chunks:%s %d (new=%d, visible=%d, skipped=%d)";
 
     private OpenLongObjectHashMap chunkEntries = new OpenLongObjectHashMap();
     private ObjectArrayList       oldChunks = new ObjectArrayList();
@@ -36,18 +36,18 @@ public class OctreeRenderer {
     private Sphere boundingSphere;
     private Octree tree;
 
-    public OctreeRenderer(BufferedRenderer renderer) {
+    public OctreeRenderer(Octree octree, BufferedRenderer renderer) {
+        this.tree = octree;
         this.renderer = renderer;
         for (int i = 0; i < MAX_CHUNK_RENDERERS; i++) {
-            freeRenderes.add(new ChunkRenderer(renderer));
+            freeRenderes.add(new ChunkRenderer(tree, renderer));
         }
     }
 
     public void render( OctreeNode node, Camera camera, long frameStartTime ) {
         skipped = 0;
-        tree = node.getOctree();
         currentState ++;
-        boundingSphere = new Sphere(camera.getX(), camera.getY(), camera.getZ(), 1000);
+        boundingSphere = new Sphere(camera.getX(), camera.getY(), camera.getZ(), 500);
         this.camera    = camera;
 
         oldChunks.clear();
@@ -76,7 +76,7 @@ public class OctreeRenderer {
         while (!newChunks.isEmpty() ) {
             Entry entry = newChunks.poll();
             ChunkRenderer renderer = entry.getRenderer();
-            if( renderer!=null && entry.getChunk().isFullyPopulated() ) {
+            if( renderer!=null && entry.getChunk().isNeighborsPopulated() ) {
                 renderer.update();
             }
             if( frameStartTime==0 || Sys.getTime() - frameStartTime > (1000/60.f) ) {
@@ -90,7 +90,7 @@ public class OctreeRenderer {
             @Override
             public boolean apply(Object o) {
                 Entry entry = (Entry) o;
-                chunkEntries.removeKey(entry.getChunk().toMorton());
+                chunkEntries.removeKey(entry.getChunk().getMorton());
                 tree.remove(entry.getChunk());
                 ChunkRenderer renderer = entry.getRenderer();
                 if (renderer != null) {
@@ -121,7 +121,7 @@ public class OctreeRenderer {
                         renderer.setChunk(chunk);
                     }
                     if( renderer.needsUpdate() ) {
-                        if( chunk.isFullyPopulated() ) {
+                        if( chunk.isNeighborsPopulated() ) {
                             newChunks.add(entry);
                         } else {
                             tree.populate(entry);
@@ -138,9 +138,6 @@ public class OctreeRenderer {
     }
 
     protected void render(OctreeNode node, boolean testChildren) {
-        if( !node.isVisible() ) {
-            return;
-        }
         if( testChildren ) {
             switch (boundingSphere.sphereInSphere(node.getBoundingSphere()) ) {
                 case OUTSIDE:
@@ -152,14 +149,11 @@ public class OctreeRenderer {
         float dist = (float) Math.sqrt(boundingSphere.distanceSq(node.getBoundingSphere()));
         float factor = node.getSize() / dist;
 
-        for (int i = 0; i < 8; i++) {
-            OctreeElement child = node.getChild(i);
-            if( child==null ) {
-                continue;
-            }
-            if (child.isLeaf()) {
-                Chunk chunk = (Chunk) child;
-                long morton = chunk.toMorton();
+        if( node instanceof OctreeChunkNode ) {
+            OctreeChunkNode chunkNode = (OctreeChunkNode) node;
+            if( (factor<.7f || node.isLeaf()) ) {
+                Chunk chunk = chunkNode.getChunk();
+                long morton = chunk.getMorton();
                 Entry entry;
                 entry = (Entry) chunkEntries.get(morton);
                 if( entry==null ) {
@@ -168,7 +162,7 @@ public class OctreeRenderer {
                 }
 
                 entry.setState( currentState );
-                dist = camera.getFrustum().sphereInFrustum2(chunk.getBoundingSphere());
+                dist = camera.getFrustum().sphereInFrustum2(node.getBoundingSphere());
                 if( dist > 0 ) {
                     entry.setDistanceToEye( dist );
                     entry.setInFrustum( true );
@@ -176,11 +170,15 @@ public class OctreeRenderer {
                     entry.setDistanceToEye( 250 );
                 }
             } else {
-                if( factor>0.9f ) {
-                    render((OctreeNode) child, testChildren);
-                } else {
-                    skipped ++;
+                for (int i = 0; i < 8; i++) {
+                    OctreeNode child = (OctreeNode) node.getChild(i);
+                    render(child, testChildren);
                 }
+            }
+        } else {
+            for (int i = 0; i < 8; i++) {
+                OctreeNode child = (OctreeNode) node.getChild(i);
+                render(child, testChildren);
             }
         }
     }
@@ -191,7 +189,11 @@ public class OctreeRenderer {
 
     public ArrayList<String> getDebugInfo() {
         ArrayList<String> result = new ArrayList<String>();
-        result.add(String.format(CHUNKS_TEXT, Chunk.COUNT, chunkEntries.size(), newChunks.size(), visibleChunks.size(), skipped));
+        String res = "";
+        for (int i = 0; i < 5; i++) {
+            res+=i+"="+Chunk.COUNT[i]+" ";
+        }
+        result.add(String.format(CHUNKS_TEXT, res, chunkEntries.size(), newChunks.size(), visibleChunks.size(), skipped));
         return result;
     }
 }

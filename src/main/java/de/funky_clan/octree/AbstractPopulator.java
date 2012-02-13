@@ -11,12 +11,17 @@ public abstract class AbstractPopulator implements ChunkPopulator {
                 {0,0,32}, {0,0,-32}, {0,32,0}, {0,-32,0}, {32,0,0}, {-32,0,0},
         };
 
+    protected Octree octree;
+
+    protected AbstractPopulator(Octree octree) {
+        this.octree = octree;
+    }
+
     @Override
     public void populateChunk(Chunk chunk) {
-        if( chunk.isFullyPopulated() ) {
+        if( chunk.isNeighborsPopulated() ) {
             return;
         }
-        Octree octree = chunk.getOctree();
 
         if( !chunk.isPopulated() ) {
             doPopulate(chunk);
@@ -26,30 +31,29 @@ public abstract class AbstractPopulator implements ChunkPopulator {
         int y = chunk.getY();
         int z = chunk.getZ();
         for (int[] neighborCoords : NEIGHBORS) {
-            Chunk neighbor = octree.getChunk(x + neighborCoords[0], y + neighborCoords[1], z + neighborCoords[2]);
+            Chunk neighbor = octree.getChunkForVoxel(x + neighborCoords[0], y + neighborCoords[1], z + neighborCoords[2], chunk.getDepth());
             if( neighbor!=null ) {
                 if( !neighbor.isPopulated() ) {
                     doPopulate(neighbor);
                 }
             }
         }
-        chunk.setFullyPopulated(true);
+        chunk.setNeighborsPopulated(true);
     }
 
     @Override
     public void releaseChunk(Chunk chunk) {
-        Octree octree = chunk.getOctree();
         int x = chunk.getX();
         int y = chunk.getY();
         int z = chunk.getZ();
         for (int[] neighborCoords : NEIGHBORS) {
-            Chunk neighbor = octree.getChunk(x + neighborCoords[0], y + neighborCoords[1], z + neighborCoords[2]);
+            Chunk neighbor = octree.getChunkForVoxel(x + neighborCoords[0], y + neighborCoords[1], z + neighborCoords[2], chunk.getDepth());
             if( neighbor!=null ) {
-                neighbor.setFullyPopulated(false);
+                neighbor.setNeighborsPopulated(false);
             }
         }
         chunk.setPopulated(false);
-        chunk.setFullyPopulated(false);
+        chunk.setNeighborsPopulated(false);
     }
 
     protected abstract void doPopulate( Chunk chunk );

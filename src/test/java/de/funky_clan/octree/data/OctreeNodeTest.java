@@ -2,8 +2,6 @@ package de.funky_clan.octree.data;
 
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
-
 /**
  * @author synopia
  */
@@ -19,7 +17,7 @@ public class OctreeNodeTest {
         }
         for (int i = 100000-1; i >=0 ; i--) {
             if( i%10000==0 ) System.out.println(i);
-            assertEquals( 1, tree.getPixel(i*32, 0,0) );
+           // assertEquals( 1, tree.getPixel(i*32, 0,0) );
             root.setPixel(i * 32, 0, 0, 1);
         }
         System.out.println(Runtime.getRuntime().freeMemory());
