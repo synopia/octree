@@ -1,6 +1,6 @@
 package de.funky_clan.octree;
 
-import de.funky_clan.octree.minecraft.RegionFileLoader;
+import de.funky_clan.minecraft.RegionFileLoader;
 import de.funky_clan.octree.data.OctreeNode;
 import org.lwjgl.util.vector.Vector3f;
 

@@ -1,7 +1,7 @@
-package de.funky_clan.octree;
+package de.funky_clan.chunks;
 
 
-import de.funky_clan.octree.data.Chunk;
+import de.funky_clan.chunks.Chunk;
 
 /**
  * @author synopia

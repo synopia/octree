@@ -1,6 +1,4 @@
-package de.funky_clan.octree.minecraft.blocks;
-
-import java.util.Arrays;
+package de.funky_clan.minecraft.blocks;
 
 /**
  * @author synopia

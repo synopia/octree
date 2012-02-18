@@ -1,4 +1,4 @@
-package de.funky_clan.octree.minecraft;
+package de.funky_clan.minecraft;
 
 import de.funky_clan.octree.WritableRaster;
 import org.jnbt.ByteArrayTag;
@@ -8,8 +8,6 @@ import org.jnbt.NBTInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
 
 /**
  * @author synopia

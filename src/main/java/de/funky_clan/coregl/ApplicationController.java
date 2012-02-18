@@ -9,19 +9,18 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 /**
  * @author paul.fritsche@objectfab.de
  */
-public class GameWindow {
-    private int   width;
-    private int   height;
-    private HashMap<String, State> states = new HashMap<String, State>();
-    private State currentState = null;
+public class ApplicationController {
+    private int         width;
+    private int         height;
+    private Application application = null;
     private TextureLoader textureLoader;
+    private int syncFps;
 
-    public GameWindow( int width, int height ) {
+    public void createDisplay( String title, int width, int height, boolean fullscreen ) {
         this.width  = width;
         this.height = height;
         textureLoader = new TextureLoader();
@@ -33,9 +32,9 @@ public class GameWindow {
                 Sys.alert( "Error", "800x600x" + currentBpp + " display mode is not available");
             }
 
-            Display.setTitle( "Octree" );
+            Display.setTitle( title );
             Display.setDisplayMode( mode );
-            Display.setFullscreen( false );
+            Display.setFullscreen( fullscreen );
             Display.create();
         } catch (LWJGLException e) {
             e.printStackTrace();
@@ -43,23 +42,16 @@ public class GameWindow {
         }
     }
 
-    public void addState( State state ) {
-        if( currentState==null ) {
-            currentState = state;
-        }
-        states.put( state.getName(), state );
+    public void start( Application application ) {
+        this.application = application;
+        initGl();
+        application.init(this);
+        loop();
     }
 
-    public void startGame() throws IOException {
-        init();
-        gameLoop();
-    }
-
-    public void gameLoop() {
+    protected void loop() {
         boolean running  = true;
         long    lastLoop = getTime();
-
-        currentState.enter( this );
 
         while( running ) {
             int delta = (int)( getTime() - lastLoop );
@@ -70,23 +62,29 @@ public class GameWindow {
             int remainder = delta % 10;
             int step      = delta / 10;
             for( int i=0; i<step; i++ ) {
-                currentState.update( this, 10 );
+                application.update(10);
             }
-            if( remainder!=0 ) {
-                currentState.update( this, remainder );
+            if( remainder != 0) {
+                application.update(remainder);
             }
 
-            currentState.render( this, delta );
+            application.render();
 
             Display.update();
+
+            if( syncFps>0 ) {
+                Display.sync(syncFps);
+            }
+
 
             if( Display.isCloseRequested() ) {
                 running = false;
             }
+
         }
     }
 
-    public void init() throws IOException {
+    public void initGl() {
         GL11.glEnable(     GL11.GL_TEXTURE_2D );
         GL11.glEnable(     GL11.GL_CULL_FACE );
         GL11.glEnable(     GL11.GL_DEPTH_TEST );
@@ -101,10 +99,6 @@ public class GameWindow {
         GL11.glMatrixMode( GL11.GL_MODELVIEW );
         GL11.glHint( GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_FASTEST);
         GL11.glHint( GL11.GL_LINE_SMOOTH_HINT, GL11.GL_FASTEST );
-
-        for (State state : states.values()) {
-            state.init(this);
-        }
 
         Mouse.setGrabbed( true );
     }
@@ -155,5 +149,9 @@ public class GameWindow {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void setSyncFps(int syncFps) {
+        this.syncFps = syncFps;
     }
 }

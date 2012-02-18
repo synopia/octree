@@ -1,4 +1,4 @@
-package de.funky_clan.octree.minecraft;
+package de.funky_clan.minecraft;
 
 /*
 ** 2011 January 5

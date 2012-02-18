@@ -15,9 +15,9 @@ public class MortonTest {
     @Test
     public void testMorton() {
         Set<Long> set = new LinkedHashSet<Long>();
-        int max = (1 << 20)-1;
+        int max = (1 << Morton.MORTON_BITS)-1;
 
-        int rounds = 16;
+        int rounds = 128;
         for( int i=0; i<rounds; i++ ) {
 
             set.add(Morton.mortonCode(0,0,0, i));

@@ -1,5 +1,6 @@
 package de.funky_clan.octree.data;
 
+import de.funky_clan.chunks.Chunk;
 import org.junit.Test;
 
 /**

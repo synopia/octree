@@ -29,4 +29,4 @@ def morton_code_for(bits)
   puts eval(method).to_s(2)
 end
 
-morton_code_for(20)
+morton_code_for(19)

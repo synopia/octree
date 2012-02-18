@@ -117,9 +117,9 @@ public final class Camera {
     }
 
     public void lookAt(float eyeX, float eyeY, float eyeZ, float centerX, float centerY, float centerZ, float upX, float upY, float upZ ) {
-        Vector3f eye = new Vector3f(eyeX, eyeY, eyeZ);
+        Vector3f eye    = new Vector3f(eyeX,    eyeY,    eyeZ);
         Vector3f lookAt = new Vector3f(centerX, centerY, centerZ);
-        Vector3f up  = new Vector3f(upX, upY, upZ);
+        Vector3f up     = new Vector3f(upX,     upY,     upZ);
 
         Vector3f x = new Vector3f();
         Vector3f y = new Vector3f();
@@ -146,6 +146,5 @@ public final class Camera {
         transform[12] = eyeX;
         transform[13] = eyeY;
         transform[14] = eyeZ;
-
     }
 }

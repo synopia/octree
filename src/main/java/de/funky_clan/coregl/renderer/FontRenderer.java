@@ -1,6 +1,6 @@
 package de.funky_clan.coregl.renderer;
 
-import de.funky_clan.coregl.GameWindow;
+import de.funky_clan.coregl.ApplicationController;
 import de.funky_clan.coregl.Texture;
 import org.lwjgl.opengl.GL11;
 
@@ -11,8 +11,8 @@ public class FontRenderer {
     private Texture fontTexture;
     private int fontListBase;
 
-    public FontRenderer( GameWindow window ) {
-        fontTexture = window.getTexture( "font.png" );
+    public FontRenderer( ApplicationController ctrl ) {
+        fontTexture = ctrl.getTexture( "font.png" );
         int fontSizeX = 8;
         int fontSizeY = 12;
 
@@ -54,8 +54,8 @@ public class FontRenderer {
         }
     }
 
-    public void print( GameWindow window, int x, int y, String text ) {
-        window.enterOrtho();
+    public void print( ApplicationController ctrl, int x, int y, String text ) {
+        ctrl.enterOrtho();
         GL11.glEnable( GL11.GL_BLEND );
         GL11.glBlendFunc( GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA );
         fontTexture.bind();
@@ -64,6 +64,6 @@ public class FontRenderer {
         for( int i=0; i<text.length(); i++ ) {
             GL11.glCallList( fontListBase + (text.charAt(i)-32));
         }
-        window.leaveOrtho();
+        ctrl.leaveOrtho();
     }
 }

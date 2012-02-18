@@ -7,7 +7,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector3f;
 
 import java.util.ArrayList;
 
@@ -22,7 +21,7 @@ public abstract class BaseEngine {
     protected Lighting lighting;
     protected long frameStartTime;
 
-    private GameWindow window;
+    private ApplicationController ctrl;
     private boolean fpsControl;
     private boolean showInfo;
     private long lastFps;
@@ -31,10 +30,10 @@ public abstract class BaseEngine {
     private boolean profileMode;
     private String profilingText;
 
-    public void init(GameWindow window) {
-        this.window = window;
+    public void init(ApplicationController ctrl) {
+        this.ctrl = ctrl;
         camera = new Camera(10,10,10);
-        fontRenderer     = new FontRenderer(window);
+        fontRenderer     = new FontRenderer(ctrl);
         renderer = new BufferedRenderer( GL11.GL_FLOAT, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
         lighting = new Lighting();
         GL11.glEnable(GL11.GL_LIGHTING);
@@ -48,7 +47,7 @@ public abstract class BaseEngine {
         lighting.update(delta);
     }
 
-    public void beginRender( int delta ) {
+    public void beginRender() {
         updateFps();
 
         lighting.doLighting(camera.getX(), camera.getY(), camera.getZ());
@@ -69,17 +68,17 @@ public abstract class BaseEngine {
         fps++;
     }
 
-    public void endRender( int delta ) {
+    public void endRender() {
         if( !profileMode ) {
             Display.sync(90);
         }
         if( isShowInfo() ) {
-            fontRenderer.print(window, 10, 10, String.format(FPS_TEST, recordedFps));
+            fontRenderer.print(ctrl, 10, 10, String.format(FPS_TEST, recordedFps));
             
             ArrayList<String> infos = getDebugInfo();
             int y = 20;
             for (String info : infos) {
-                fontRenderer.print(window, 10, y, info );
+                fontRenderer.print(ctrl, 10, y, info );
                 y += 10;
             }
         }
@@ -108,6 +107,7 @@ public abstract class BaseEngine {
         if( Keyboard.isKeyDown(Keyboard.KEY_D) ) {
             camera.moveLoc(1,0,0,delta/100.f*mod);
         }
+
         if( Mouse.isButtonDown(0) ) {
         }
         if( Mouse.isButtonDown(1) ) {
@@ -115,7 +115,7 @@ public abstract class BaseEngine {
         int mouseDx = Mouse.getDX();
         int mouseDy = Mouse.getDY();
         if( mouseDx!=0 ) {
-            camera.rotateGlob( -mouseDx/10.f,0,1,0 );
+            camera.rotateLoc( -mouseDx/10.f,0,1,0 );
         }
         if( mouseDy!=0 ) {
             camera.rotateLoc( mouseDy/10.f,1,0,0 );

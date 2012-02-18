@@ -1,10 +1,12 @@
 package de.funky_clan.octree;
 
+import de.funky_clan.chunks.ChunkOctree;
+import de.funky_clan.chunks.ChunkPopulator;
+import de.funky_clan.chunks.ChunkStorage;
+import de.funky_clan.coregl.ApplicationController;
 import de.funky_clan.coregl.BaseEngine;
-import de.funky_clan.coregl.GameWindow;
 import de.funky_clan.octree.data.Octree;
 import de.funky_clan.octree.data.OctreeNode;
-import de.funky_clan.octree.renderer.OctreeRenderer;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
@@ -17,20 +19,22 @@ public class VoxelEngine extends BaseEngine {
     public static final String POSITION_TEXT = "Position: %2f %2f %2f";
     public static final String MEM_TEXT = "Mem: %d/%d kB";
     private Octree root;
+    private ChunkStorage storage;
     private OctreeRenderer octreeRenderer;
 
     public VoxelEngine(int depth) {
-        root = new Octree(0,0,0, depth);
+        storage = new ChunkStorage();
+        root = new ChunkOctree(storage, 0,0,0, depth);
     }
 
     public void setPopulator( ChunkPopulator populator ) {
-        root.setPopulator(populator);
+        storage.setPopulator(populator);
     }
 
     @Override
-    public void init(GameWindow window) {
-        super.init(window);
-        octreeRenderer = new OctreeRenderer(root, getRenderer());
+    public void init(ApplicationController ctrl) {
+        super.init(ctrl);
+        octreeRenderer = new OctreeRenderer(root, getRenderer(), storage);
     }
 
     @Override
@@ -46,12 +50,12 @@ public class VoxelEngine extends BaseEngine {
         super.update(delta);
     }
 
-    public void render( int delta ) {
-        beginRender(delta);
+    public void render() {
+        beginRender();
         octreeRenderer.render(root.getRoot(), getCamera(), frameStartTime);
-        endRender(delta);
+        endRender();
 
-       root.doPopulation(frameStartTime);
+       storage.doPopulation(frameStartTime);
     }
 
     public OctreeNode getRoot() {
@@ -63,11 +67,15 @@ public class VoxelEngine extends BaseEngine {
         ArrayList<String> info = super.getDebugInfo();
         info.addAll( octreeRenderer.getDebugInfo() );
         info.add(String.format(POSITION_TEXT, camera.getX(), camera.getY(), camera.getZ()));
-        info.add(String.format(OCTREE_CHUNKS_TEXT, root.size(), root.populateSize()));
+        info.add(String.format(OCTREE_CHUNKS_TEXT, storage.size(), storage.populateSize()));
         info.add( String.format(MEM_TEXT,
             (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024, Runtime.getRuntime().totalMemory()/1024
             ));
 
         return info;
+    }
+
+    public ChunkStorage getStorage() {
+        return storage;
     }
 }

@@ -1,4 +1,4 @@
-package de.funky_clan.octree.minecraft;
+package de.funky_clan.minecraft;
 
 
 import de.funky_clan.octree.WritableRaster;
@@ -9,7 +9,6 @@ import org.jnbt.ShortTag;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;

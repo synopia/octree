@@ -12,6 +12,7 @@ public class OctreeNode extends OctreeElement {
     };
     public static final int CHUNK_BITS = 5;
     public static final int CHUNK_SIZE = 1<<CHUNK_BITS;
+    @SuppressWarnings("unchecked")
     protected Reference<OctreeNode>[] children = new Reference[8];
 
     public OctreeNode(Octree octree, int x, int y, int z, int depth) {
