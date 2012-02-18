@@ -20,7 +20,7 @@ public class ChunkStorage {
     public void setPopulator(NeigborPopulator populator) {
         this.populator = populator;
 
-        ExecutorService pool = Executors.newFixedThreadPool(2);
+        ExecutorService pool = Executors.newFixedThreadPool(1);
         Runnable runner = new Runnable() {
             @Override
             public void run() {
@@ -34,7 +34,6 @@ public class ChunkStorage {
                 }
             }
         };
-        pool.execute(runner);
         pool.execute(runner);
     }
 
@@ -73,7 +72,7 @@ public class ChunkStorage {
 
     public void remove( Chunk chunk ) {
         chunks.removeKey(chunk.getMorton());
-        populator.releaseChunk(chunk);
+//        populator.releaseChunk(chunk);
     }
 
     @SuppressWarnings("unchecked")

@@ -49,7 +49,8 @@ public class Main implements Application  {
         ChunkPopulator populator = null;
         if( sphere ) {
             populator = new SpherePopulator(RADIUS, RADIUS, RADIUS, RADIUS - 1);
-        } else if( noise ) {
+        }
+        if( noise ) {
             populator = new NoisePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1);
         }
         FileStorage fileStorage = null;

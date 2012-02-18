@@ -26,9 +26,6 @@ public class NeigborPopulator {
         }
 
         if( !chunk.isPopulated() ) {
-            if( !chunk.isAllocated() ) {
-                chunk.allocate(ByteBuffer.allocateDirect(OctreeChunkNode.CHUNK_SIZE * OctreeChunkNode.CHUNK_SIZE * OctreeChunkNode.CHUNK_SIZE * 2));
-            }
             populator.doPopulate(chunk);
         }
 
@@ -39,9 +36,6 @@ public class NeigborPopulator {
             int[] neighborCoords = NEIGHBORS[i];
             Chunk neighbor = chunkStorage.getChunkForVoxel(x + neighborCoords[0], y + neighborCoords[1], z + neighborCoords[2], chunk.getDepth());
             if (neighbor != null && !neighbor.isPopulated() && !neighbor.isPartialyPopulated(i) ) {
-                if( !neighbor.isAllocated() ) {
-                    neighbor.allocate(ByteBuffer.allocateDirect(OctreeChunkNode.CHUNK_SIZE * OctreeChunkNode.CHUNK_SIZE * OctreeChunkNode.CHUNK_SIZE * 2));
-                }
                 populator.doPopulateForNeighbor(neighbor, i);
                 neighbor.setPartialyPopulated(i);
             }
@@ -61,5 +55,6 @@ public class NeigborPopulator {
         }
         chunk.setPopulated(false);
         chunk.setNeighborsPopulated(false);
+//        chunk.setAllocated(false);
     }
 }

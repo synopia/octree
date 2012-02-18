@@ -149,7 +149,6 @@ public class Chunk implements WritableRaster {
             finishPopulation();
             state[POPULATED] = true;
         } else {
-            //map = null; todo
             state[POPULATED] = false;
             for (int i = POPULATED_SIDE_0; i <= POPULATED_SIDE_6; i++) {
                 state[POPULATED_SIDE_0] = false;
@@ -190,7 +189,10 @@ public class Chunk implements WritableRaster {
         return state[ALLOCATED];
     }
 
-    public void setAllocated() {
-        state[ALLOCATED] = true;
+    public void setAllocated(boolean allocated) {
+        state[ALLOCATED] = allocated;
+        if( !allocated ) {
+            map = null;
+        }
     }
 }

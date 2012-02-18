@@ -26,6 +26,9 @@ public class SpherePopulator implements ChunkPopulator {
 
     @Override
     public void doPopulate(Chunk chunk) {
+        if( chunk.isPopulated() ) {
+            return;
+        }
         int size = chunk.getSize();
         int minX = chunk.getX();
         int minY = chunk.getY();

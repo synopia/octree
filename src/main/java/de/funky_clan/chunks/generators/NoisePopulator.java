@@ -36,6 +36,9 @@ public class NoisePopulator implements ChunkPopulator {
 
     @Override
     public void doPopulate(Chunk chunk) {
+        if( chunk.isPopulated() ) {
+            return;
+        }
         int size = chunk.getSize();
         int minX = chunk.getX();
         int minY = chunk.getY();
@@ -79,6 +82,7 @@ public class NoisePopulator implements ChunkPopulator {
 
     @Override
     public void doPopulateForNeighbor(Chunk chunk, int neighbor) {
+/*
         int size = chunk.getSize();
         int minX = chunk.getX();
         int minY = chunk.getY();
@@ -101,6 +105,8 @@ public class NoisePopulator implements ChunkPopulator {
                  populateBlock(chunk, minX, minY, minZ, scale, x, y, z);
             }
         }
+*/
+        doPopulate(chunk);
     }
 
     private void populateBlock(Chunk chunk, int minX, int minY, int minZ, float scale, int x, int y, int z) {
