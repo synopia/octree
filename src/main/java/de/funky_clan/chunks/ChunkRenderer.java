@@ -9,6 +9,9 @@ import de.funky_clan.octree.data.OctreeNode;
 import de.funky_clan.minecraft.blocks.Block;
 import org.lwjgl.opengl.GL11;
 
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
+
 /**
  * @author synopia
  */
@@ -22,7 +25,7 @@ public class ChunkRenderer {
     private boolean dirty;
 
     private Chunk chunk;
-    private int[] map;
+    private ByteBuffer map;
     private ChunkStorage storage;
 
     public ChunkRenderer(ChunkStorage storage, BufferedRenderer renderer) {
@@ -73,7 +76,7 @@ public class ChunkRenderer {
     private boolean renderBlock( int x, int y, int z ) {
         boolean result = false;
         int offs = x + ( y*OctreeNode.CHUNK_SIZE+z ) * OctreeNode.CHUNK_SIZE;
-        int color = map[offs];
+        int color = map.getShort(offs*2);
         Block block = Block.MAP[color & 0x7f];
         renderer.setScale(chunk.getSize()/OctreeNode.CHUNK_SIZE, chunk.getSize()/OctreeNode.CHUNK_SIZE, chunk.getSize()/OctreeNode.CHUNK_SIZE );
         if( block!=Block.AIR ) {
@@ -86,7 +89,7 @@ public class ChunkRenderer {
                 Block neighbor;
                 if( nx>=0 && ny>=0 && nz>=0 && nx<32 && ny<32 && nz<32 ) {
                     int noffs = nx + ( ny*OctreeNode.CHUNK_SIZE+nz ) * OctreeNode.CHUNK_SIZE;
-                    neighbor = Block.MAP[map[noffs] & 0x7f];
+                    neighbor = Block.MAP[map.getShort(noffs*2) & 0x7f];
                 } else {
                     neighbor = Block.AIR;
 /*

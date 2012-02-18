@@ -1,17 +1,17 @@
 package de.funky_clan.chunks.generators;
 
+import de.funky_clan.chunks.ChunkPopulator;
 import de.funky_clan.chunks.ChunkStorage;
+import de.funky_clan.chunks.NeigborPopulator;
 import de.funky_clan.noise.Fractal;
 import de.funky_clan.noise.FractalBrownianMotion;
-import de.funky_clan.chunks.AbstractPopulator;
 import de.funky_clan.chunks.Chunk;
-import de.funky_clan.octree.data.Octree;
 import de.funky_clan.octree.data.OctreeNode;
 
 /**
  * @author synopia
  */
-public class NoisePopulator extends AbstractPopulator {
+public class NoisePopulator implements ChunkPopulator {
     public static final double SPREAD = 0.1;
     private int x;
     private int y;
@@ -22,8 +22,7 @@ public class NoisePopulator extends AbstractPopulator {
     private double outerRadiusSq;
     private Fractal fractal;
 
-    public NoisePopulator(ChunkStorage chunkStorage, int x, int y, int z, int radius) {
-        super(chunkStorage);
+    public NoisePopulator(int x, int y, int z, int radius) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -36,7 +35,7 @@ public class NoisePopulator extends AbstractPopulator {
     }
 
     @Override
-    protected void doPopulate(Chunk chunk) {
+    public void doPopulate(Chunk chunk) {
         int size = chunk.getSize();
         int minX = chunk.getX();
         int minY = chunk.getY();
@@ -79,7 +78,7 @@ public class NoisePopulator extends AbstractPopulator {
     }
 
     @Override
-    protected void doPopulateForNeighbor(Chunk chunk, int neighbor) {
+    public void doPopulateForNeighbor(Chunk chunk, int neighbor) {
         int size = chunk.getSize();
         int minX = chunk.getX();
         int minY = chunk.getY();
@@ -102,7 +101,6 @@ public class NoisePopulator extends AbstractPopulator {
                  populateBlock(chunk, minX, minY, minZ, scale, x, y, z);
             }
         }
-        chunk.setPartialyPopulated(true);
     }
 
     private void populateBlock(Chunk chunk, int minX, int minY, int minZ, float scale, int x, int y, int z) {

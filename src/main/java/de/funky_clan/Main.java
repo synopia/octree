@@ -1,17 +1,23 @@
 package de.funky_clan;
 
+import de.funky_clan.chunks.ChainedPopulator;
+import de.funky_clan.chunks.ChunkPopulator;
+import de.funky_clan.chunks.NeigborPopulator;
 import de.funky_clan.chunks.generators.NoisePopulator;
 import de.funky_clan.coregl.Application;
 import de.funky_clan.coregl.ApplicationController;
 import de.funky_clan.coregl.Camera;
 import de.funky_clan.coregl.Texture;
 import de.funky_clan.coregl.renderer.MappedVertex;
+import de.funky_clan.filesystem.FileStorage;
 import de.funky_clan.octree.Morton;
 import de.funky_clan.octree.VoxelEngine;
 import de.funky_clan.chunks.generators.SpherePopulator;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.mapped.MappedObjectClassLoader;
 import org.lwjgl.util.mapped.MappedObjectTransformer;
+
+import java.io.FileNotFoundException;
 
 /**
  * @author synopia
@@ -40,11 +46,19 @@ public class Main implements Application  {
     @Override
     public void init(ApplicationController ctrl) {
         engine = new VoxelEngine(Morton.MORTON_BITS-5);
+        ChunkPopulator populator = null;
         if( sphere ) {
-            engine.setPopulator(new SpherePopulator(engine.getStorage(), RADIUS,RADIUS,RADIUS,RADIUS-1));
+            populator = new SpherePopulator(RADIUS, RADIUS, RADIUS, RADIUS - 1);
         } else if( noise ) {
-            engine.setPopulator(new NoisePopulator(engine.getStorage(), RADIUS,RADIUS,RADIUS,RADIUS-1));
+            populator = new NoisePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1);
         }
+        FileStorage fileStorage = null;
+        try {
+            fileStorage = new FileStorage();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        engine.setPopulator(new NeigborPopulator(engine.getStorage(), new ChainedPopulator(fileStorage, populator)));
 
         engine.setFpsControl(true);
         engine.setShowInfo(true);

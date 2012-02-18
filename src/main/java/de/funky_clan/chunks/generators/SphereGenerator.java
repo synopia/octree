@@ -15,7 +15,7 @@ public class SphereGenerator {
 
     public void generate( ChunkStorage storage, int mx, int my, int mz, int radius ) {
         logger.info("Start generating a sphere with radius {} cubes...", radius);
-        populator = new SpherePopulator(storage, mx, my, mz, radius);
+        populator = new SpherePopulator(mx, my, mz, radius);
 
         int minX = (mx - radius)>>5;
         int minY = (my - radius)>>5;

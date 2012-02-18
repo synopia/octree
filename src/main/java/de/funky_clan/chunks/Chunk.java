@@ -4,22 +4,37 @@ import de.funky_clan.octree.Morton;
 import de.funky_clan.octree.WritableRaster;
 import de.funky_clan.octree.data.OctreeNode;
 
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.util.Arrays;
+import java.util.BitSet;
 
 /**
  * @author synopia
  */
 public class Chunk implements WritableRaster {
+    public  static final int ALLOCATED           = 1;
+    public  static final int QUEUED              = 2;
+    public  static final int NEIGHBORS_POPULATED = 3;
+    public  static final int POPULATED           = 4;
+    public  static final int POPULATED_SIDE_0    = 5;
+    public  static final int POPULATED_SIDE_1    = 6;
+    public  static final int POPULATED_SIDE_2    = 7;
+    public  static final int POPULATED_SIDE_3    = 8;
+    public  static final int POPULATED_SIDE_4    = 9;
+    public  static final int POPULATED_SIDE_5    = 10;
+    public  static final int POPULATED_SIDE_6    = 11;
+    public  static final int DIRTY               = 12;
+    private static final int MAX                 = 13;
+
     public static int[] COUNT = new int[64];
     public static final int SIZE = OctreeNode.CHUNK_SIZE;
-    private int[] map;
-    protected Integer color;
-    protected boolean singleColored;
-    protected boolean partialyPopulated;
-    protected boolean populated;
-    protected boolean neighborsPopulated;
-    protected boolean dirty;
-    protected boolean queued;
+    private ByteBuffer map;
+    private Integer color;
+    private boolean singleColored;
+
+    private boolean[] state = new boolean[MAX];
+
     protected long morton;
 
     protected boolean visible;
@@ -40,18 +55,17 @@ public class Chunk implements WritableRaster {
         visible = true;
     }
 
+    public void allocate(ByteBuffer map) {
+        this.map = map;
+        state[ALLOCATED] = true;
+    }
+
     @Override
     public void setPixel(int x, int y, int z, int color) {
         if( x<0 || y<0 || z<0 || x>=SIZE || y>=SIZE || z>=SIZE ) {
             throw new IllegalArgumentException("Out of range "+x+", "+y+", "+z);
         }
-        if( map==null ) {
-            map = new int[SIZE*SIZE*SIZE];
-            if( singleColored && this.color!=null ) {
-                Arrays.fill(map, this.color);
-            }
-        }
-        map[x + ( y*SIZE+z ) * SIZE] = color;
+        map.putShort(2*(x + ( y*SIZE+z ) * SIZE), (short) color);
         if( this.color==null ) {
             singleColored = true;
         } else {
@@ -68,10 +82,7 @@ public class Chunk implements WritableRaster {
         if( x<0 || y<0 || z<0 || x>=SIZE || y>=SIZE || z>=SIZE ) {
             throw new IllegalArgumentException("Out of range "+x+", "+y+", "+z);
         }
-        if( map==null ) {
-            return 0;
-        }
-        return map[x + ( y*SIZE+z ) * SIZE];
+        return map.getShort(2*(x + ( y*SIZE+z ) * SIZE));
     }
 
     @Override
@@ -82,11 +93,11 @@ public class Chunk implements WritableRaster {
 
     public void finishPopulation() {
         if( singleColored ) {
-            map = null;
+//            map = null;
         }
     }
     
-    public int[] getMap() {
+    public ByteBuffer getMap() {
         return map;
     }
 
@@ -95,7 +106,7 @@ public class Chunk implements WritableRaster {
     }
 
     public boolean isPopulated() {
-        return populated;
+        return state[POPULATED];
     }
 
     public long getMorton() {
@@ -103,11 +114,11 @@ public class Chunk implements WritableRaster {
     }
 
     public boolean isNeighborsPopulated() {
-        return neighborsPopulated;
+        return state[NEIGHBORS_POPULATED];
     }
 
     public void setNeighborsPopulated(boolean neighborsPopulated) {
-        this.neighborsPopulated = neighborsPopulated;
+        state[NEIGHBORS_POPULATED] = neighborsPopulated;
     }
     public boolean isVisible() {
         return visible;
@@ -136,37 +147,50 @@ public class Chunk implements WritableRaster {
     public void setPopulated(boolean populated) {
         if( populated ) {
             finishPopulation();
+            state[POPULATED] = true;
         } else {
-            map = null;
+            //map = null; todo
+            state[POPULATED] = false;
+            for (int i = POPULATED_SIDE_0; i <= POPULATED_SIDE_6; i++) {
+                state[POPULATED_SIDE_0] = false;
+            }
         }
-        this.populated = populated;
+
     }
 
     public boolean isDirty() {
-        return dirty;
+        return state[DIRTY];
     }
 
     public void setDirty(boolean dirty) {
-        this.dirty = dirty;
+        state[DIRTY] = dirty;
     }
     
     public int getSize() {
         return OctreeNode.CHUNK_SIZE<<depth;
     }
 
-    public boolean isPartialyPopulated() {
-        return partialyPopulated;
+    public boolean isPartialyPopulated(int side) {
+        return state[POPULATED_SIDE_0+side];
     }
 
-    public void setPartialyPopulated(boolean partialyPopulated) {
-        this.partialyPopulated = partialyPopulated;
+    public void setPartialyPopulated(int side) {
+        state[POPULATED_SIDE_0+side] = true;
     }
 
     public boolean isQueued() {
-        return queued;
+        return state[QUEUED];
     }
 
-    public void setQueued(boolean queued) {
-        this.queued = queued;
+    public void setQueued() {
+        state[QUEUED] = true;
+    }
+
+    public boolean isAllocated() {
+        return state[ALLOCATED];
+    }
+
+    public void setAllocated() {
+        state[ALLOCATED] = true;
     }
 }

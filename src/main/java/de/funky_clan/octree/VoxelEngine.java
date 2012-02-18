@@ -1,7 +1,7 @@
 package de.funky_clan.octree;
 
+import de.funky_clan.chunks.NeigborPopulator;
 import de.funky_clan.chunks.ChunkOctree;
-import de.funky_clan.chunks.ChunkPopulator;
 import de.funky_clan.chunks.ChunkStorage;
 import de.funky_clan.coregl.ApplicationController;
 import de.funky_clan.coregl.BaseEngine;
@@ -27,7 +27,7 @@ public class VoxelEngine extends BaseEngine {
         root = new ChunkOctree(storage, 0,0,0, depth);
     }
 
-    public void setPopulator( ChunkPopulator populator ) {
+    public void setPopulator( NeigborPopulator populator ) {
         storage.setPopulator(populator);
     }
 

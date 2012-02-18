@@ -2,28 +2,34 @@ package de.funky_clan.chunks;
 
 import de.funky_clan.octree.data.Octree;
 
+import java.nio.ByteBuffer;
+
 /**
  * @author synopia
  */
-public abstract class AbstractPopulator implements ChunkPopulator {
+public class NeigborPopulator {
     protected static int[][] NEIGHBORS = new int[][]{
                 {0,0,32}, {0,0,-32}, {0,32,0}, {0,-32,0}, {32,0,0}, {-32,0,0},
         };
 
     protected ChunkStorage chunkStorage;
+    private ChunkPopulator populator;
 
-    protected AbstractPopulator(ChunkStorage chunkStorage) {
+    public NeigborPopulator(ChunkStorage chunkStorage, ChunkPopulator populator ) {
         this.chunkStorage = chunkStorage;
+        this.populator    = populator;
     }
 
-    @Override
     public void populateChunk(Chunk chunk) {
         if( chunk.isNeighborsPopulated() ) {
             return;
         }
 
         if( !chunk.isPopulated() ) {
-            doPopulate(chunk);
+            if( !chunk.isAllocated() ) {
+                chunk.allocate(ByteBuffer.allocateDirect(OctreeChunkNode.CHUNK_SIZE * OctreeChunkNode.CHUNK_SIZE * OctreeChunkNode.CHUNK_SIZE * 2));
+            }
+            populator.doPopulate(chunk);
         }
 
         int x = chunk.getX();
@@ -32,16 +38,17 @@ public abstract class AbstractPopulator implements ChunkPopulator {
         for (int i = 0, neighborsLength = NEIGHBORS.length; i < neighborsLength; i++) {
             int[] neighborCoords = NEIGHBORS[i];
             Chunk neighbor = chunkStorage.getChunkForVoxel(x + neighborCoords[0], y + neighborCoords[1], z + neighborCoords[2], chunk.getDepth());
-            if (neighbor != null) {
-                if (! (neighbor.isPopulated()||neighbor.isPartialyPopulated())) {
-                    doPopulateForNeighbor(neighbor, i);
+            if (neighbor != null && !neighbor.isPopulated() && !neighbor.isPartialyPopulated(i) ) {
+                if( !neighbor.isAllocated() ) {
+                    neighbor.allocate(ByteBuffer.allocateDirect(OctreeChunkNode.CHUNK_SIZE * OctreeChunkNode.CHUNK_SIZE * OctreeChunkNode.CHUNK_SIZE * 2));
                 }
+                populator.doPopulateForNeighbor(neighbor, i);
+                neighbor.setPartialyPopulated(i);
             }
         }
         chunk.setNeighborsPopulated(true);
     }
 
-    @Override
     public void releaseChunk(Chunk chunk) {
         int x = chunk.getX();
         int y = chunk.getY();
@@ -55,9 +62,4 @@ public abstract class AbstractPopulator implements ChunkPopulator {
         chunk.setPopulated(false);
         chunk.setNeighborsPopulated(false);
     }
-
-    protected abstract void doPopulate( Chunk chunk );
-    protected abstract void doPopulateForNeighbor( Chunk chunk, int neighbor );
-
-
 }

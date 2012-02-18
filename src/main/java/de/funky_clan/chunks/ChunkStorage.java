@@ -1,26 +1,23 @@
 package de.funky_clan.chunks;
 
 import cern.colt.map.OpenLongObjectHashMap;
-import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import de.funky_clan.octree.Morton;
-import de.funky_clan.octree.data.Entry;
-import de.funky_clan.octree.data.FastPriorityQueue;
 import de.funky_clan.octree.data.OctreeNode;
-import org.lwjgl.Sys;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
+import java.nio.ByteBuffer;
 import java.util.concurrent.*;
 
 /**
  * @author synopia
  */
 public class ChunkStorage {
-    private ChunkPopulator populator;
+    private NeigborPopulator populator;
     private OpenLongObjectHashMap chunks = new OpenLongObjectHashMap();
     private BlockingQueue<Chunk> queue = new ArrayBlockingQueue<Chunk>(1000);
 
-    public void setPopulator(ChunkPopulator populator) {
+    public void setPopulator(NeigborPopulator populator) {
         this.populator = populator;
 
         ExecutorService pool = Executors.newFixedThreadPool(2);
@@ -46,9 +43,9 @@ public class ChunkStorage {
             return;
         }
 
-        if( !chunk.isNeighborsPopulated() && !chunk.isQueued() ) {
+        if( !chunk.isQueued() ) {
             queue.offer(chunk);
-            chunk.setQueued(true);
+            chunk.setQueued();
         }
     }
 
@@ -57,7 +54,6 @@ public class ChunkStorage {
             Chunk chunk = queue.take();
             if( chunk!=null ) {
                 populator.populateChunk(chunk);
-                chunk.setQueued(false);
             }
         }
     }

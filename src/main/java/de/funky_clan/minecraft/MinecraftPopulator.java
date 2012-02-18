@@ -1,9 +1,9 @@
 package de.funky_clan.minecraft;
 
-import de.funky_clan.chunks.AbstractPopulator;
+import de.funky_clan.chunks.ChunkPopulator;
+import de.funky_clan.chunks.NeigborPopulator;
 import de.funky_clan.chunks.Chunk;
 import de.funky_clan.chunks.ChunkStorage;
-import de.funky_clan.octree.data.Octree;
 import de.funky_clan.octree.data.OctreeNode;
 import org.jnbt.ByteArrayTag;
 import org.jnbt.CompoundTag;
@@ -16,7 +16,7 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class MinecraftPopulator extends AbstractPopulator {
+public class MinecraftPopulator implements ChunkPopulator {
     private File file;
     public static final int SIZE_X = 1 << 4;
     public static final int SIZE_Y = 1 << 7;
@@ -24,15 +24,14 @@ public class MinecraftPopulator extends AbstractPopulator {
     private int shiftX;
     private int shiftZ;
 
-    public MinecraftPopulator(ChunkStorage storage, int shiftX, int shiftZ) {
-        super(storage);
+    public MinecraftPopulator(int shiftX, int shiftZ) {
         this.shiftX = shiftX;
         this.shiftZ = shiftZ;
         file = new File( "d:/games/minecraft/world" );
     }
 
     @Override
-    protected void doPopulate(Chunk chunk) {
+    public void doPopulate(Chunk chunk) {
         if( chunk.getY()>=0 && chunk.getY()<128 ) {
             populateMCChunk(chunk, 0, chunk.getY(), 0);
             populateMCChunk(chunk, 16,chunk.getY(),  0);
@@ -77,7 +76,7 @@ public class MinecraftPopulator extends AbstractPopulator {
     }
 
     @Override
-    protected void doPopulateForNeighbor(Chunk chunk, int neighbor) {
+    public void doPopulateForNeighbor(Chunk chunk, int neighbor) {
         doPopulate(chunk);
     }
 }

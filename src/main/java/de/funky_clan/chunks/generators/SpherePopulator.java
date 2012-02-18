@@ -1,23 +1,22 @@
 package de.funky_clan.chunks.generators;
 
-import de.funky_clan.chunks.AbstractPopulator;
+import de.funky_clan.chunks.ChunkPopulator;
+import de.funky_clan.chunks.NeigborPopulator;
 import de.funky_clan.chunks.Chunk;
 import de.funky_clan.chunks.ChunkStorage;
-import de.funky_clan.octree.data.Octree;
 import de.funky_clan.octree.data.OctreeNode;
 
 /**
  * @author synopia
  */
-public class SpherePopulator extends AbstractPopulator {
+public class SpherePopulator implements ChunkPopulator {
     private int x;
     private int y;
     private int z;
     private int radius;
     private float radiusSq;
 
-    public SpherePopulator(ChunkStorage chunkStorage, int x, int y, int z, int radius) {
-        super(chunkStorage);
+    public SpherePopulator(int x, int y, int z, int radius) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -26,7 +25,7 @@ public class SpherePopulator extends AbstractPopulator {
     }
 
     @Override
-    protected void doPopulate(Chunk chunk) {
+    public void doPopulate(Chunk chunk) {
         int size = chunk.getSize();
         int minX = chunk.getX();
         int minY = chunk.getY();
@@ -77,7 +76,7 @@ public class SpherePopulator extends AbstractPopulator {
     }
 
     @Override
-    protected void doPopulateForNeighbor(Chunk chunk, int neighbor) {
+    public void doPopulateForNeighbor(Chunk chunk, int neighbor) {
         doPopulate(chunk);
     }
 

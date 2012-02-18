@@ -7,6 +7,6 @@ import de.funky_clan.chunks.Chunk;
  * @author synopia
  */
 public interface ChunkPopulator {
-    public void populateChunk( Chunk chunk );
-    public void releaseChunk( Chunk chunk );
+    void doPopulate( Chunk chunk );
+    void doPopulateForNeighbor( Chunk chunk, int neighbor );
 }
