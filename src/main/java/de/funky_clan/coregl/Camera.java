@@ -1,6 +1,7 @@
 package de.funky_clan.coregl;
 
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 
 import de.funky_clan.coregl.geom.Frustum;
 import org.lwjgl.BufferUtils;
@@ -146,5 +147,22 @@ public final class Camera {
         transform[12] = eyeX;
         transform[13] = eyeY;
         transform[14] = eyeZ;
+    }
+
+    public void project( float x, float y, float z ) {
+        float forwardX = transform[8];
+        float forwardY = transform[9];
+        float forwardZ = transform[10];
+        float ex = transform[12];
+        float ey = transform[13];
+        float ez = transform[14];
+        float nx = x-ex;
+        float ny = y-ey;
+        float nz = z-ez;
+        float dist = (float) Math.sqrt(nx*nx+ny*ny+nz*nz);
+        nx /= dist;
+        ny /= dist;
+        nz /= dist;
+        lookAt( ex, ey, ez, ex-forwardX, ey-forwardY, ez-forwardZ, -nx, -ny, -nz);
     }
 }

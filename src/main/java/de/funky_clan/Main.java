@@ -27,8 +27,8 @@ public class Main implements Application  {
     @Override
     public void init(ApplicationController ctrl) {
         engine = new VoxelEngine(Morton.MORTON_BITS-5);
-//        engine.setPopulator(new SpherePopulator(engine.getStorage(), RADIUS,RADIUS,RADIUS,RADIUS-1));
-        engine.setPopulator(new NoisePopulator(engine.getStorage(), RADIUS,RADIUS,RADIUS,RADIUS-1));
+        engine.setPopulator(new SpherePopulator(engine.getStorage(), RADIUS,RADIUS,RADIUS,RADIUS-1));
+//        engine.setPopulator(new NoisePopulator(engine.getStorage(), RADIUS,RADIUS,RADIUS,RADIUS-1));
 
         engine.setFpsControl(true);
         engine.setShowInfo(true);
@@ -57,6 +57,7 @@ public class Main implements Application  {
     public void update(int delta) {
         engine.update(delta);
         Camera cam = engine.getCamera();
+        cam.project(RADIUS,RADIUS,RADIUS);
     }
 
     @Override

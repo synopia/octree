@@ -115,7 +115,7 @@ public abstract class BaseEngine {
         int mouseDx = Mouse.getDX();
         int mouseDy = Mouse.getDY();
         if( mouseDx!=0 ) {
-            camera.rotateLoc( -mouseDx/10.f,0,1,0 );
+            camera.rotateGlob( -mouseDx/10.f,0,1,0 );
         }
         if( mouseDy!=0 ) {
             camera.rotateLoc( mouseDy/10.f,1,0,0 );
