@@ -154,7 +154,6 @@ public class Chunk implements WritableRaster {
                 state[POPULATED_SIDE_0] = false;
             }
         }
-
     }
 
     public boolean isDirty() {

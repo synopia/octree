@@ -72,7 +72,7 @@ public class ChunkStorage {
 
     public void remove( Chunk chunk ) {
         chunks.removeKey(chunk.getMorton());
-//        populator.releaseChunk(chunk);
+        populator.releaseChunk(chunk);
     }
 
     @SuppressWarnings("unchecked")

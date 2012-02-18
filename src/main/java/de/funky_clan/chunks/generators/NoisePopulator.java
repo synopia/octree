@@ -82,7 +82,6 @@ public class NoisePopulator implements ChunkPopulator {
 
     @Override
     public void doPopulateForNeighbor(Chunk chunk, int neighbor) {
-/*
         int size = chunk.getSize();
         int minX = chunk.getX();
         int minY = chunk.getY();
@@ -93,20 +92,18 @@ public class NoisePopulator implements ChunkPopulator {
             for (int j = 0; j < OctreeNode.CHUNK_SIZE; j++) {
                 int x,y,z;
                 switch (neighbor) {
-                    case 0: x = i; y=i; z=0; break;
-                    case 1: x = i; y=i; z=OctreeNode.CHUNK_SIZE-1; break;
-                    case 2: x = i; y=0; z=i; break;
-                    case 3: x = i; y=OctreeNode.CHUNK_SIZE-1; z=i; break;
-                    case 4: x = 0; y=i; z=i; break;
-                    case 5: x = OctreeNode.CHUNK_SIZE-1; y=i; z=i; break;
+                    case 0: x = i; y=j; z=0; break;
+                    case 1: x = i; y=j; z=OctreeNode.CHUNK_SIZE-1; break;
+                    case 2: x = i; y=0; z=j; break;
+                    case 3: x = i; y=OctreeNode.CHUNK_SIZE-1; z=j; break;
+                    case 4: x = 0; y=i; z=j; break;
+                    case 5: x = OctreeNode.CHUNK_SIZE-1; y=i; z=j; break;
                     default:
                         throw new IllegalStateException();
                 }
                  populateBlock(chunk, minX, minY, minZ, scale, x, y, z);
             }
         }
-*/
-        doPopulate(chunk);
     }
 
     private void populateBlock(Chunk chunk, int minX, int minY, int minZ, float scale, int x, int y, int z) {
