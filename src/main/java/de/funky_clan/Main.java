@@ -22,11 +22,29 @@ public class Main implements Application  {
     private VoxelEngine engine;
     private Texture     texture;
 
+    private boolean sphere;
+    private boolean noise  = true;
+
+    public Main( String[] args ) {
+        for (String arg : args) {
+            if (arg.equalsIgnoreCase("--sphere") || arg.equalsIgnoreCase("-s")) {
+                noise = false;
+                sphere = true;
+            } else if (arg.equalsIgnoreCase("--noise") || arg.equalsIgnoreCase("-n")) {
+                noise = true;
+                sphere = false;
+            }
+        }
+    }
+
     @Override
     public void init(ApplicationController ctrl) {
         engine = new VoxelEngine(Morton.MORTON_BITS-5);
-        engine.setPopulator(new SpherePopulator(engine.getStorage(), RADIUS,RADIUS,RADIUS,RADIUS-1));
-//        engine.setPopulator(new NoisePopulator(engine.getStorage(), RADIUS,RADIUS,RADIUS,RADIUS-1));
+        if( sphere ) {
+            engine.setPopulator(new SpherePopulator(engine.getStorage(), RADIUS,RADIUS,RADIUS,RADIUS-1));
+        } else if( noise ) {
+            engine.setPopulator(new NoisePopulator(engine.getStorage(), RADIUS,RADIUS,RADIUS,RADIUS-1));
+        }
 
         engine.setFpsControl(true);
         engine.setShowInfo(true);
@@ -63,6 +81,6 @@ public class Main implements Application  {
         ApplicationController ctrl = new ApplicationController();
         ctrl.createDisplay("Octree", 800, 600, false);
         ctrl.setSyncFps(60);
-        ctrl.start( new Main() );
+        ctrl.start( new Main(args) );
     }
 }
