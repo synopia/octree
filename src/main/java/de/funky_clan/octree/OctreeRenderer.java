@@ -23,7 +23,7 @@ import java.util.List;
 public class OctreeRenderer {
 
     public static final int MAX_CHUNK_RENDERERS = 100000;
-    public static final String CHUNKS_TEXT = "Chunks:%s %d (new=%d, visible=%d, skipped=%d)";
+    public static final String CHUNKS_TEXT = "Chunks:%s rendering=%d (new=%d, visible=%d, skipped=%d)";
 
     private OpenLongObjectHashMap chunkEntries = new OpenLongObjectHashMap();
     private ObjectArrayList       oldChunks = new ObjectArrayList();
@@ -103,10 +103,10 @@ public class OctreeRenderer {
                 if (renderer != null) {
                     renderer.setChunk(null);
                     freeRenderes.add(0, renderer);
-                    entry.setChunk(null);
                     entry.setRenderer(null);
-                    entry.setDistanceToEye(0);
                 }
+                entry.setChunk(null);
+                entry.setDistanceToEye(0);
                 return true;
             }
         });

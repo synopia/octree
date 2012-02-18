@@ -134,7 +134,11 @@ public class Chunk implements WritableRaster {
     }
 
     public void setPopulated(boolean populated) {
-        finishPopulation();
+        if( populated ) {
+            finishPopulation();
+        } else {
+            map = null;
+        }
         this.populated = populated;
     }
 

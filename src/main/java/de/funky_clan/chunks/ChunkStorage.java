@@ -8,6 +8,8 @@ import de.funky_clan.octree.data.FastPriorityQueue;
 import de.funky_clan.octree.data.OctreeNode;
 import org.lwjgl.Sys;
 
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
 import java.util.concurrent.*;
 
 /**
@@ -80,11 +82,12 @@ public class ChunkStorage {
 
     @SuppressWarnings("unchecked")
     public Chunk get( long morton ) {
-         return (Chunk) chunks.get(morton);
+        Reference r = (Reference) chunks.get(morton);
+        return r!=null ? (Chunk) r.get() : null;
      }
      public void add( Chunk node ) {
          long morton = node.getMorton();
-         chunks.put(morton, node );
+         chunks.put(morton, new WeakReference<Chunk>(node) );
     }
 
     public int size() {
