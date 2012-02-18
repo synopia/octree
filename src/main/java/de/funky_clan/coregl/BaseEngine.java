@@ -69,9 +69,6 @@ public abstract class BaseEngine {
     }
 
     public void endRender() {
-        if( !profileMode ) {
-            Display.sync(90);
-        }
         if( isShowInfo() ) {
             fontRenderer.print(ctrl, 10, 10, String.format(FPS_TEST, recordedFps));
             

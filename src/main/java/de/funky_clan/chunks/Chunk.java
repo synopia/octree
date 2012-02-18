@@ -19,6 +19,7 @@ public class Chunk implements WritableRaster {
     protected boolean populated;
     protected boolean neighborsPopulated;
     protected boolean dirty;
+    protected boolean queued;
     protected long morton;
 
     protected boolean visible;
@@ -155,5 +156,13 @@ public class Chunk implements WritableRaster {
 
     public void setPartialyPopulated(boolean partialyPopulated) {
         this.partialyPopulated = partialyPopulated;
+    }
+
+    public boolean isQueued() {
+        return queued;
+    }
+
+    public void setQueued(boolean queued) {
+        this.queued = queued;
     }
 }

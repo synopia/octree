@@ -1,11 +1,14 @@
 package de.funky_clan.chunks;
 
 import cern.colt.map.OpenLongObjectHashMap;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import de.funky_clan.octree.Morton;
 import de.funky_clan.octree.data.Entry;
 import de.funky_clan.octree.data.FastPriorityQueue;
 import de.funky_clan.octree.data.OctreeNode;
 import org.lwjgl.Sys;
+
+import java.util.concurrent.*;
 
 /**
  * @author synopia
@@ -13,32 +16,46 @@ import org.lwjgl.Sys;
 public class ChunkStorage {
     private ChunkPopulator populator;
     private OpenLongObjectHashMap chunks = new OpenLongObjectHashMap();
-    private FastPriorityQueue<Entry> queue = new FastPriorityQueue<Entry>();
+    private BlockingQueue<Chunk> queue = new ArrayBlockingQueue<Chunk>(1000);
 
     public void setPopulator(ChunkPopulator populator) {
         this.populator = populator;
+
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        Runnable runner = new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        doPopulation();
+                        Thread.sleep(10);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        pool.execute(runner);
+        pool.execute(runner);
     }
 
-    public void populate( Entry entry ) {
+    public void populate( Chunk chunk ) {
         if( populator==null ) {
             return;
         }
-        Chunk chunk = entry.getChunk();
 
-        if( !chunk.isNeighborsPopulated() ) {
-            queue.add(entry);
+        if( !chunk.isNeighborsPopulated() && !chunk.isQueued() ) {
+            queue.offer(chunk);
+            chunk.setQueued(true);
         }
     }
 
-    public void doPopulation( long startTime ) {
+    protected void doPopulation() throws InterruptedException {
         while (!queue.isEmpty()  ) {
-            Entry entry = queue.poll();
-            Chunk chunk = entry.getChunk();
+            Chunk chunk = queue.take();
             if( chunk!=null ) {
                 populator.populateChunk(chunk);
-            }
-            if( startTime==0 || Sys.getTime()-startTime>(1000/60.f) ) {
-                break;
+                chunk.setQueued(false);
             }
         }
     }
@@ -74,7 +91,7 @@ public class ChunkStorage {
         return chunks.size();
     }
     public int populateSize() {
-        return queue.size();
+        return 1000-queue.remainingCapacity();
     }
 
 }

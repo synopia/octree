@@ -54,8 +54,6 @@ public class VoxelEngine extends BaseEngine {
         beginRender();
         octreeRenderer.render(root.getRoot(), getCamera(), frameStartTime);
         endRender();
-
-       storage.doPopulation(frameStartTime);
     }
 
     public OctreeNode getRoot() {

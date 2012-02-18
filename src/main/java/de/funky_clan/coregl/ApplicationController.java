@@ -82,6 +82,7 @@ public class ApplicationController {
             }
 
         }
+        System.exit(0);
     }
 
     public void initGl() {

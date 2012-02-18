@@ -118,7 +118,7 @@ public class OctreeRenderer {
             public boolean apply(long morton, Object o) {
                 Entry entry = (Entry) o;
                 Chunk chunk = entry.getChunk();
-                if( currentState-entry.getState() > 10  ) {
+                if( currentState-entry.getState() > 40  ) {
                     oldChunks.add( entry );
                 } else {
                     ChunkRenderer renderer = entry.getRenderer();
@@ -131,7 +131,7 @@ public class OctreeRenderer {
                         if( chunk.isNeighborsPopulated() ) {
                             newChunks.add(entry);
                         } else {
-                            chunkStorage.populate(entry);
+                            chunkStorage.populate(chunk);
                         }
                     } else {
                         if( entry.isInFrustum() ) {
