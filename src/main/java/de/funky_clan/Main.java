@@ -21,8 +21,6 @@ public class Main implements Application  {
 
     private VoxelEngine engine;
     private Texture     texture;
-    private float       angle;
-
 
     @Override
     public void init(ApplicationController ctrl) {
@@ -38,19 +36,8 @@ public class Main implements Application  {
         engine.getLighting().createLight(0,0,0, .4f, .4f, .4f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
         engine.getLighting().createLight(30,30,30, .9f, .9f, .9f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
 
-        int deg=45;
-//        setPositionOnPlanet(0);
         engine.getCamera().lookAt(RADIUS, 2*RADIUS, RADIUS, 1+RADIUS,2*RADIUS,RADIUS,0,1,0);
 
-    }
-
-    private void setPositionOnPlanet(int deg) {
-        angle = (float) Math.toRadians(deg);
-        float x = (float) Math.cos( angle ) * (RADIUS+4f);
-        float y = (float) Math.sin( angle ) * (RADIUS+4f);
-        float tx = (float) Math.cos( angle+Math.toRadians(5) ) * (RADIUS+15f);
-        float ty = (float) Math.sin( angle+Math.toRadians(5) ) * (RADIUS);
-        engine.getCamera().lookAt(x+RADIUS, y+RADIUS, RADIUS, tx+RADIUS,ty+RADIUS,RADIUS,0,1,0);
     }
 
     @Override
