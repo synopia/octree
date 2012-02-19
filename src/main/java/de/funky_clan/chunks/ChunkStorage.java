@@ -61,10 +61,13 @@ public class ChunkStorage {
         if( x<0 || y<0 || z<0 ) {
             return null;
         }
-        long morton = Morton.mortonCode(x >> OctreeNode.CHUNK_BITS, y >> OctreeNode.CHUNK_BITS, z >> OctreeNode.CHUNK_BITS, depth);
+        int cx = x>>OctreeNode.CHUNK_BITS;
+        int cy = y>>OctreeNode.CHUNK_BITS;
+        int cz = z>>OctreeNode.CHUNK_BITS;
+        long morton = Morton.mortonCode(cx, cy, cz, depth);
         Chunk chunk = get(morton);
         if( chunk==null ) {
-            chunk = new Chunk(x, y, z, depth);
+            chunk = new Chunk(cx, cy, cz, depth);
             add(chunk);
         }
         return chunk;
@@ -77,12 +80,11 @@ public class ChunkStorage {
 
     @SuppressWarnings("unchecked")
     public Chunk get( long morton ) {
-        Reference r = (Reference) chunks.get(morton);
-        return r!=null ? (Chunk) r.get() : null;
+        return (Chunk) chunks.get(morton);
      }
      public void add( Chunk node ) {
          long morton = node.getMorton();
-         chunks.put(morton, new WeakReference<Chunk>(node) );
+         chunks.put(morton, node );
     }
 
     public int size() {

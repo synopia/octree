@@ -55,7 +55,7 @@ public final class VBOBuffer2 {
         buffer.nx = nx;
         buffer.ny = ny;
         buffer.nz = nz;
-        
+
         vertices ++;
     }
 

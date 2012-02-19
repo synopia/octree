@@ -133,8 +133,8 @@ public class BufferedRenderer {
         }
 
         if( normalFormat!=0 ) {
-            GL11.glEnableClientState( GL11.GL_NORMAL_ARRAY );
-            GL11.glNormalPointer( normalFormat, strideSize, normalOffset );
+//            GL11.glEnableClientState( GL11.GL_NORMAL_ARRAY );
+//            GL11.glNormalPointer( normalFormat, strideSize, normalOffset );
         }
     }
 

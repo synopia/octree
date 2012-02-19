@@ -68,6 +68,7 @@ public class Main implements Application  {
 
         engine.getLighting().createLight(0,0,0, .4f, .4f, .4f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
         engine.getLighting().createLight(30,30,30, .9f, .9f, .9f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
+        engine.getLighting().createLight(RADIUS, 2.1f*RADIUS, RADIUS, .9f, .9f, .9f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
 
         engine.getCamera().lookAt(RADIUS, 2*RADIUS, RADIUS, 1+RADIUS,2*RADIUS,RADIUS,0,1,0);
 
@@ -84,7 +85,7 @@ public class Main implements Application  {
     public void render() {
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST );
-        texture.bind();
+//        texture.bind();
         engine.render();
     }
 

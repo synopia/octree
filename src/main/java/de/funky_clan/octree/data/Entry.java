@@ -2,6 +2,7 @@ package de.funky_clan.octree.data;
 
 import de.funky_clan.chunks.Chunk;
 import de.funky_clan.chunks.ChunkRenderer;
+import de.funky_clan.chunks.DefaultChunkRenderer;
 
 /**
 * @author synopia

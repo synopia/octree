@@ -1,25 +1,25 @@
 package de.funky_clan.filesystem;
 
 import cern.colt.map.OpenLongObjectHashMap;
-import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 import de.funky_clan.chunks.Chunk;
 import de.funky_clan.chunks.ChunkPopulator;
 import de.funky_clan.chunks.OctreeChunkNode;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * @author synopia
  */
 public class FileStorage implements ChunkPopulator  {
     private static class Entry {
-        public long morton;
-        public long position;
-        public int  size;
+        public long     morton;
+        public int      state;
+        public long     position;
+        public int      size;
+        public ByteBuffer byteBuffer;
     }
     private OpenLongObjectHashMap index = new OpenLongObjectHashMap();
     private RandomAccessFile dataFile;
@@ -41,11 +41,17 @@ public class FileStorage implements ChunkPopulator  {
     }
 
     protected ByteBuffer getByteBuffer( Entry entry ) {
-        try {
-            return dataChannel.map(FileChannel.MapMode.READ_WRITE, entry.position, entry.size);
-        } catch (IOException e) {
-            return ByteBuffer.allocateDirect(entry.size);
+        ByteBuffer map = entry.byteBuffer;
+        if( map==null ) {
+            try {
+                map = dataChannel.map(FileChannel.MapMode.READ_WRITE, entry.position, entry.size);
+            } catch (IOException e) {
+                map = ByteBuffer.allocateDirect(entry.size);
+            }
+            entry.byteBuffer = map;
         }
+
+        return map;
     }
 
     protected Entry find( long code ) {
@@ -70,6 +76,7 @@ public class FileStorage implements ChunkPopulator  {
             while (indexFile.getFilePointer()<indexFile.length() ) {
                 Entry entry     = new Entry();
                 entry.morton    = indexFile.readLong();
+                entry.state     = indexFile.readInt();
                 entry.position  = indexFile.readLong();
                 entry.size      = indexFile.readInt();
                 index.put(entry.morton, entry);
@@ -84,6 +91,7 @@ public class FileStorage implements ChunkPopulator  {
         index.put(code, entry);
         try {
             indexFile.writeLong(entry.morton);
+            indexFile.writeInt(entry.state);
             indexFile.writeLong(entry.position);
             indexFile.writeInt(entry.size);
         } catch (IOException e) {
@@ -97,7 +105,7 @@ public class FileStorage implements ChunkPopulator  {
     }
 
     @Override
-    public void doPopulateForNeighbor(Chunk chunk, int neighbor) {
+    public void doPopulateForNeighbor(Chunk chunk) {
         allocate(chunk);
     }
 
@@ -109,7 +117,7 @@ public class FileStorage implements ChunkPopulator  {
                 chunk.allocate(getByteBuffer(entry));
             } else {
                 chunk.allocate(getByteBuffer(entry));
-                chunk.setPopulated(true);
+                chunk.setPopulated(entry.state>0);
             }
 
         }

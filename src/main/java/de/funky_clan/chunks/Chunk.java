@@ -17,21 +17,15 @@ public class Chunk implements WritableRaster {
     public  static final int QUEUED              = 2;
     public  static final int NEIGHBORS_POPULATED = 3;
     public  static final int POPULATED           = 4;
-    public  static final int POPULATED_SIDE_0    = 5;
-    public  static final int POPULATED_SIDE_1    = 6;
-    public  static final int POPULATED_SIDE_2    = 7;
-    public  static final int POPULATED_SIDE_3    = 8;
-    public  static final int POPULATED_SIDE_4    = 9;
-    public  static final int POPULATED_SIDE_5    = 10;
-    public  static final int POPULATED_SIDE_6    = 11;
-    public  static final int DIRTY               = 12;
-    private static final int MAX                 = 13;
+    public  static final int POPULATED_SIDE      = 5;
+    public  static final int DIRTY               = 6;
+    public  static final int SINGLE_COLORED      = 7;
+    private static final int MAX                 = 8;
 
     public static int[] COUNT = new int[64];
     public static final int SIZE = OctreeNode.CHUNK_SIZE;
     private ByteBuffer map;
     private Integer color;
-    private boolean singleColored;
 
     private boolean[] state = new boolean[MAX];
 
@@ -46,12 +40,12 @@ public class Chunk implements WritableRaster {
 
     public Chunk(int x, int y, int z, int depth) {
         COUNT[depth] ++;
-        singleColored = false;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        state[SINGLE_COLORED] = false;
+        this.x = x<<OctreeNode.CHUNK_BITS;
+        this.y = y<<OctreeNode.CHUNK_BITS;
+        this.z = z<<OctreeNode.CHUNK_BITS;
         this.depth = depth;
-        morton = Morton.mortonCode(x>>OctreeNode.CHUNK_BITS, y>>OctreeNode.CHUNK_BITS, z>>OctreeNode.CHUNK_BITS, depth);
+        morton = Morton.mortonCode(x, y, z, depth);
         visible = true;
     }
 
@@ -67,16 +61,16 @@ public class Chunk implements WritableRaster {
         }
         map.putShort(2*(x + ( y*SIZE+z ) * SIZE), (short) color);
         if( this.color==null ) {
-            singleColored = true;
+            state[SINGLE_COLORED] = true;
         } else {
-            singleColored = singleColored && this.color==color;
+            state[SINGLE_COLORED] &= this.color==color;
         }
         this.color    = color;
     }
 
     @Override
     public int getPixel(int x, int y, int z) {
-        if( singleColored ) {
+        if( isSingleColored() ) {
             return color;
         }
         if( x<0 || y<0 || z<0 || x>=SIZE || y>=SIZE || z>=SIZE ) {
@@ -87,13 +81,19 @@ public class Chunk implements WritableRaster {
 
     @Override
     protected void finalize() throws Throwable {
+        System.out.println("Finalize chunk "+this);
         COUNT[depth]--;
         super.finalize();
     }
 
     public void finishPopulation() {
-        if( singleColored ) {
+        if( isSingleColored() ) {
 //            map = null;
+        } else {
+            if (map!=null && map instanceof MappedByteBuffer) {
+                MappedByteBuffer mapped = (MappedByteBuffer) map;
+                mapped.force();
+            }
         }
     }
     
@@ -102,7 +102,7 @@ public class Chunk implements WritableRaster {
     }
 
     public boolean isSingleColored() {
-        return singleColored;
+        return state[SINGLE_COLORED];
     }
 
     public boolean isPopulated() {
@@ -150,9 +150,7 @@ public class Chunk implements WritableRaster {
             state[POPULATED] = true;
         } else {
             state[POPULATED] = false;
-            for (int i = POPULATED_SIDE_0; i <= POPULATED_SIDE_6; i++) {
-                state[POPULATED_SIDE_0] = false;
-            }
+            state[POPULATED_SIDE] = false;
         }
     }
 
@@ -168,12 +166,12 @@ public class Chunk implements WritableRaster {
         return OctreeNode.CHUNK_SIZE<<depth;
     }
 
-    public boolean isPartialyPopulated(int side) {
-        return state[POPULATED_SIDE_0+side];
+    public boolean isPartialyPopulated() {
+        return state[POPULATED_SIDE];
     }
 
-    public void setPartialyPopulated(int side) {
-        state[POPULATED_SIDE_0+side] = true;
+    public void setPartialyPopulated() {
+        state[POPULATED_SIDE] = true;
     }
 
     public boolean isQueued() {
@@ -193,5 +191,20 @@ public class Chunk implements WritableRaster {
         if( !allocated ) {
             map = null;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Chunk{" +
+                "x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                ", depth=" + depth +
+                ", morton=" + morton +
+                ", isAllocated=" + isAllocated() +
+                ", isPartiallyPopulated=" + isPartialyPopulated() +
+                ", isPopulated=" + isPopulated() +
+                ", isNeighborPopulated=" + isNeighborsPopulated() +
+                '}';
     }
 }

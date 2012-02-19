@@ -79,7 +79,7 @@ public class SpherePopulator implements ChunkPopulator {
     }
 
     @Override
-    public void doPopulateForNeighbor(Chunk chunk, int neighbor) {
+    public void doPopulateForNeighbor(Chunk chunk) {
         doPopulate(chunk);
     }
 

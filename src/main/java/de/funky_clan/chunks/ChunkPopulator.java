@@ -8,5 +8,5 @@ import de.funky_clan.chunks.Chunk;
  */
 public interface ChunkPopulator {
     void doPopulate( Chunk chunk );
-    void doPopulateForNeighbor( Chunk chunk, int neighbor );
+    void doPopulateForNeighbor( Chunk chunk );
 }

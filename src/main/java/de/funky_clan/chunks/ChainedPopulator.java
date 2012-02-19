@@ -21,10 +21,10 @@ public class ChainedPopulator implements ChunkPopulator {
     }
 
     @Override
-    public void doPopulateForNeighbor(Chunk chunk, int neighbor) {
-        first.doPopulateForNeighbor(chunk, neighbor);
-        if( !chunk.isPartialyPopulated(neighbor) &&  !chunk.isPopulated() ) {
-            second.doPopulateForNeighbor(chunk, neighbor);
+    public void doPopulateForNeighbor(Chunk chunk) {
+        first.doPopulateForNeighbor(chunk);
+        if( ! (chunk.isPartialyPopulated() || chunk.isPopulated()) ) {
+            second.doPopulateForNeighbor(chunk);
         }
     }
 }

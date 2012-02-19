@@ -4,14 +4,11 @@ import cern.colt.function.LongObjectProcedure;
 import cern.colt.function.ObjectProcedure;
 import cern.colt.list.ObjectArrayList;
 import cern.colt.map.OpenLongObjectHashMap;
-import de.funky_clan.chunks.Chunk;
-import de.funky_clan.chunks.ChunkStorage;
-import de.funky_clan.chunks.OctreeChunkNode;
+import de.funky_clan.chunks.*;
 import de.funky_clan.coregl.Camera;
 import de.funky_clan.coregl.geom.Sphere;
 import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.octree.data.*;
-import de.funky_clan.chunks.ChunkRenderer;
 import org.lwjgl.Sys;
 
 import java.util.ArrayList;
@@ -47,7 +44,8 @@ public class OctreeRenderer {
         this.renderer     = renderer;
 
         for (int i = 0; i < MAX_CHUNK_RENDERERS; i++) {
-            freeRenderes.add(new ChunkRenderer(chunkStorage, renderer));
+            freeRenderes.add(new MarchingCubeRenderer(renderer, chunkStorage));
+//            freeRenderes.add(new DefaultChunkRenderer(renderer, chunkStorage));
         }
     }
 

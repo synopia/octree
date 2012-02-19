@@ -81,27 +81,29 @@ public class NoisePopulator implements ChunkPopulator {
     }
 
     @Override
-    public void doPopulateForNeighbor(Chunk chunk, int neighbor) {
+    public void doPopulateForNeighbor(Chunk chunk) {
         int size = chunk.getSize();
         int minX = chunk.getX();
         int minY = chunk.getY();
         int minZ = chunk.getZ();
 
         float scale = (float) size / OctreeNode.CHUNK_SIZE;
-        for (int i = 0; i < OctreeNode.CHUNK_SIZE; i++) {
-            for (int j = 0; j < OctreeNode.CHUNK_SIZE; j++) {
-                int x,y,z;
-                switch (neighbor) {
-                    case 0: x = i; y=j; z=0; break;
-                    case 1: x = i; y=j; z=OctreeNode.CHUNK_SIZE-1; break;
-                    case 2: x = i; y=0; z=j; break;
-                    case 3: x = i; y=OctreeNode.CHUNK_SIZE-1; z=j; break;
-                    case 4: x = 0; y=i; z=j; break;
-                    case 5: x = OctreeNode.CHUNK_SIZE-1; y=i; z=j; break;
-                    default:
-                        throw new IllegalStateException();
+        for (int neighbor = 0; neighbor < 6; neighbor++) {
+            for (int i = 0; i < OctreeNode.CHUNK_SIZE; i++) {
+                for (int j = 0; j < OctreeNode.CHUNK_SIZE; j++) {
+                    int x,y,z;
+                    switch (neighbor) {
+                        case 0: x = i; y=j; z=0; break;
+                        case 1: x = i; y=j; z=OctreeNode.CHUNK_SIZE-1; break;
+                        case 2: x = i; y=0; z=j; break;
+                        case 3: x = i; y=OctreeNode.CHUNK_SIZE-1; z=j; break;
+                        case 4: x = 0; y=i; z=j; break;
+                        case 5: x = OctreeNode.CHUNK_SIZE-1; y=i; z=j; break;
+                        default:
+                            throw new IllegalStateException();
+                    }
+                     populateBlock(chunk, minX, minY, minZ, scale, x, y, z);
                 }
-                 populateBlock(chunk, minX, minY, minZ, scale, x, y, z);
             }
         }
     }
