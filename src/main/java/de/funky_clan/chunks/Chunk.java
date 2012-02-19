@@ -27,9 +27,6 @@ public class Chunk implements WritableRaster {
     public static int[] COUNT = new int[64];
     public static final int SIZE = OctreeNode.CHUNK_SIZE;
 
-    @Inject
-    private BlockDevice blockDevice;
-
     private ByteBuffer map;
     private Integer color;
 
@@ -54,7 +51,6 @@ public class Chunk implements WritableRaster {
         morton = Morton.mortonCode(x, y, z, depth);
         visible = true;
         map     = ByteBuffer.allocate(2*SIZE*SIZE*SIZE);
-
     }
 
     @Override
@@ -84,7 +80,6 @@ public class Chunk implements WritableRaster {
 
     @Override
     protected void finalize() throws Throwable {
-        System.out.println("Finalize chunk "+this);
         COUNT[depth]--;
         super.finalize();
     }

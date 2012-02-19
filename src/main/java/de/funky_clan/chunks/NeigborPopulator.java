@@ -51,15 +51,13 @@ public class NeigborPopulator {
         int x = chunk.getX();
         int y = chunk.getY();
         int z = chunk.getZ();
-//        for (int[] neighborCoords : MC_NEIGHBORS) {
-//            Chunk neighbor = chunkStorage.getChunkForVoxel(x + 32*neighborCoords[0], y + 32*neighborCoords[1], z + 32*neighborCoords[2], chunk.getDepth());
-//            if( neighbor!=null ) {
-//                neighbor.setNeighborsPopulated(false);
-//                System.out.println(" releasing chunk "+neighbor);
-//            }
-//        }
-//        chunk.setPopulated(false);
-//        chunk.setNeighborsPopulated(false);
-//        System.out.println("Releasing chunk "+chunk);
+        for (int[] neighborCoords : MC_NEIGHBORS) {
+            Chunk neighbor = chunkStorage.getChunkForVoxel(x + 32*neighborCoords[0], y + 32*neighborCoords[1], z + 32*neighborCoords[2], chunk.getDepth());
+            if( neighbor!=null ) {
+                neighbor.setNeighborsPopulated(false);
+            }
+        }
+        chunk.setPopulated(false);
+        chunk.setNeighborsPopulated(false);
     }
 }

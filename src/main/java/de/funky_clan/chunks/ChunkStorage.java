@@ -34,8 +34,6 @@ public class ChunkStorage {
     private OpenLongObjectHashMap chunks = new OpenLongObjectHashMap();
     private FastPriorityQueue<Job> processQueue = new FastPriorityQueue<Job>();
     private static final Object lock = new Object();
-    @Inject
-    private Injector injector;
 
     public void setPopulator(NeigborPopulator populator) {
         this.populator = populator;
@@ -97,7 +95,6 @@ public class ChunkStorage {
         Chunk chunk = get(morton);
         if( chunk==null ) {
             chunk = new Chunk(cx, cy, cz, depth);
-            injector.injectMembers(chunk);
             add(chunk);
         }
         return chunk;

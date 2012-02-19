@@ -177,7 +177,7 @@ public class BlockDevice {
         logger.info("Write Chunk {}", chunk);
         ByteBuffer map = chunk.getMap();
         ByteArrayOutputStream temp = new ByteArrayOutputStream();
-        DeflaterOutputStream out = new DeflaterOutputStream(temp);
+        DeflaterOutputStream out = new DeflaterOutputStream(temp, new Deflater(Deflater.BEST_SPEED));
         out.write(map.array());
         out.finish();
         out.flush();

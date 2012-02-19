@@ -21,7 +21,7 @@ import org.lwjgl.util.mapped.MappedObjectTransformer;
  * @author synopia
  */
 public class Main implements Application  {
-    private final static int RADIUS = 400;
+    private final static int RADIUS = 4000;
 
     @Inject
     private VoxelEngine engine;
