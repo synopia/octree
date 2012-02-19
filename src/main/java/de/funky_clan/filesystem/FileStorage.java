@@ -1,6 +1,7 @@
 package de.funky_clan.filesystem;
 
 import cern.colt.map.OpenLongObjectHashMap;
+import com.google.inject.Singleton;
 import de.funky_clan.chunks.Chunk;
 import de.funky_clan.chunks.ChunkPopulator;
 import de.funky_clan.chunks.OctreeChunkNode;
@@ -13,7 +14,8 @@ import java.nio.channels.FileChannel;
 /**
  * @author synopia
  */
-public class FileStorage implements ChunkPopulator  {
+@Singleton
+public class FileStorage {
     private static class Entry {
         public long     morton;
         public int      state;
@@ -40,6 +42,56 @@ public class FileStorage implements ChunkPopulator  {
         loadIndex();
     }
 
+    public void allocate(Chunk chunk) {
+/*
+        if( !chunk.isAllocated() ) {
+            Entry entry = find(chunk.getMorton());
+            if( entry==null ) {
+                entry = allocate( chunk.getMorton() );
+                chunk.allocate(getByteBuffer(entry));
+            } else {
+                chunk.allocate(getByteBuffer(entry));
+                chunk.setPopulated(entry.state>0);
+            }
+
+        }
+*/
+    }
+
+    public void store(Chunk chunk ) {
+/*
+        if( chunk==null || !chunk.isAllocated() ) {
+            throw new IllegalArgumentException("Trying to store unallocated chunk "+chunk );
+        }
+*/
+/*
+        Entry entry = find(chunk.getMorton());
+        if( entry!=null ) {
+            if( !chunk.isPopulated() ) {
+                if( chunk.isPartialyPopulated() ) {
+                    entry.state = 0;
+                }
+            } else {
+                entry.state = 1;
+            }
+            ((MappedByteBuffer)entry.byteBuffer).force();
+            addToIndex(entry.morton, entry);
+        }
+*/
+    }
+
+    protected Entry allocate( long code ) {
+        Entry entry  = new Entry();
+        entry.morton = code;
+        entry.size   = OctreeChunkNode.CHUNK_SIZE * OctreeChunkNode.CHUNK_SIZE * OctreeChunkNode.CHUNK_SIZE * 2;
+        entry.position = nextPos;
+
+        addToIndex(code, entry);
+
+        nextPos += entry.size;
+        return entry;
+    }
+
     protected ByteBuffer getByteBuffer( Entry entry ) {
         ByteBuffer map = entry.byteBuffer;
         if( map==null ) {
@@ -56,18 +108,6 @@ public class FileStorage implements ChunkPopulator  {
 
     protected Entry find( long code ) {
         return (Entry) index.get(code);
-    }
-
-    protected Entry allocate( long code ) {
-        Entry entry  = new Entry();
-        entry.morton = code;
-        entry.size   = OctreeChunkNode.CHUNK_SIZE * OctreeChunkNode.CHUNK_SIZE * OctreeChunkNode.CHUNK_SIZE * 2;
-        entry.position = nextPos;
-
-        addToIndex(code, entry);
-
-        nextPos += entry.size;
-        return entry;
     }
 
     private void loadIndex() {
@@ -96,30 +136,6 @@ public class FileStorage implements ChunkPopulator  {
             indexFile.writeInt(entry.size);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void doPopulate(Chunk chunk) {
-        allocate(chunk);
-    }
-
-    @Override
-    public void doPopulateForNeighbor(Chunk chunk) {
-        allocate(chunk);
-    }
-
-    private void allocate(Chunk chunk) {
-        if( !chunk.isAllocated() ) {
-            Entry entry = find(chunk.getMorton());
-            if( entry==null ) {
-                entry = allocate( chunk.getMorton() );
-                chunk.allocate(getByteBuffer(entry));
-            } else {
-                chunk.allocate(getByteBuffer(entry));
-                chunk.setPopulated(entry.state>0);
-            }
-
         }
     }
 }

@@ -42,7 +42,6 @@ public class NeigborPopulator {
 
             if (neighbor != null && !neighbor.isPopulated() && !neighbor.isPartialyPopulated() ) {
                 populator.doPopulateForNeighbor(neighbor);
-                neighbor.setPartialyPopulated();
 //                System.out.println(" Populating neighbor "+neighbor);
             } else {
 //                System.out.println(" Already populated "+neighbor);
@@ -56,16 +55,15 @@ public class NeigborPopulator {
         int x = chunk.getX();
         int y = chunk.getY();
         int z = chunk.getZ();
-        for (int[] neighborCoords : MC_NEIGHBORS) {
-            Chunk neighbor = chunkStorage.getChunkForVoxel(x + 32*neighborCoords[0], y + 32*neighborCoords[1], z + 32*neighborCoords[2], chunk.getDepth());
-            if( neighbor!=null ) {
-                neighbor.setNeighborsPopulated(false);
-                System.out.println(" releasing chunk "+neighbor);
-            }
-        }
-        chunk.setPopulated(false);
-        chunk.setNeighborsPopulated(false);
-        chunk.setAllocated(false);
+//        for (int[] neighborCoords : MC_NEIGHBORS) {
+//            Chunk neighbor = chunkStorage.getChunkForVoxel(x + 32*neighborCoords[0], y + 32*neighborCoords[1], z + 32*neighborCoords[2], chunk.getDepth());
+//            if( neighbor!=null ) {
+//                neighbor.setNeighborsPopulated(false);
+//                System.out.println(" releasing chunk "+neighbor);
+//            }
+//        }
+//        chunk.setPopulated(false);
+//        chunk.setNeighborsPopulated(false);
 //        System.out.println("Releasing chunk "+chunk);
     }
-}                   //x=416, y=736, z=416
+}

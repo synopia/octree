@@ -3,6 +3,7 @@ package de.funky_clan.chunks;
 import de.funky_clan.octree.Morton;
 import de.funky_clan.octree.WritableRaster;
 import de.funky_clan.octree.data.OctreeNode;
+import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
@@ -13,7 +14,6 @@ import java.util.BitSet;
  * @author synopia
  */
 public class Chunk implements WritableRaster {
-    public  static final int ALLOCATED           = 1;
     public  static final int QUEUED              = 2;
     public  static final int NEIGHBORS_POPULATED = 3;
     public  static final int POPULATED           = 4;
@@ -47,11 +47,8 @@ public class Chunk implements WritableRaster {
         this.depth = depth;
         morton = Morton.mortonCode(x, y, z, depth);
         visible = true;
-    }
+        map     = ByteBuffer.allocate(2*SIZE*SIZE*SIZE);
 
-    public void allocate(ByteBuffer map) {
-        this.map = map;
-        state[ALLOCATED] = true;
     }
 
     @Override
@@ -90,10 +87,6 @@ public class Chunk implements WritableRaster {
         if( isSingleColored() ) {
 //            map = null;
         } else {
-            if (map!=null && map instanceof MappedByteBuffer) {
-                MappedByteBuffer mapped = (MappedByteBuffer) map;
-                mapped.force();
-            }
         }
     }
     
@@ -182,17 +175,6 @@ public class Chunk implements WritableRaster {
         state[QUEUED] = true;
     }
 
-    public boolean isAllocated() {
-        return state[ALLOCATED];
-    }
-
-    public void setAllocated(boolean allocated) {
-        state[ALLOCATED] = allocated;
-        if( !allocated ) {
-            map = null;
-        }
-    }
-
     @Override
     public String toString() {
         return "Chunk{" +
@@ -201,7 +183,6 @@ public class Chunk implements WritableRaster {
                 ", z=" + z +
                 ", depth=" + depth +
                 ", morton=" + morton +
-                ", isAllocated=" + isAllocated() +
                 ", isPartiallyPopulated=" + isPartialyPopulated() +
                 ", isPopulated=" + isPopulated() +
                 ", isNeighborPopulated=" + isNeighborsPopulated() +

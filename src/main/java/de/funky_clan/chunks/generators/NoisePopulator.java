@@ -106,6 +106,7 @@ public class NoisePopulator implements ChunkPopulator {
                 }
             }
         }
+        chunk.setPartialyPopulated();
     }
 
     private void populateBlock(Chunk chunk, int minX, int minY, int minZ, float scale, int x, int y, int z) {

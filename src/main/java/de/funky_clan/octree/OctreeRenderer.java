@@ -20,9 +20,7 @@ import java.util.List;
  * @author synopia
  */
 public class OctreeRenderer {
-
-    public static final int MAX_CHUNK_RENDERERS = 100000;
-    public static final String CHUNKS_TEXT = "Chunks:%s rendering=%d (new=%d, visible=%d, skipped=%d)";
+    public static final String CHUNKS_TEXT = "Chunks:%s rendering=%d (new=%d, visible=%d, skipped=%d) total=%d";
 
     private OpenLongObjectHashMap chunkEntries = new OpenLongObjectHashMap();
     private ObjectArrayList       oldChunks = new ObjectArrayList();
@@ -32,7 +30,7 @@ public class OctreeRenderer {
     private List<ChunkRenderer> freeRenderes = new ArrayList<ChunkRenderer>();
     @Inject
     private Provider<ChunkRenderer> rendererProvider;
-
+    private int totalRenderers;
     private int currentState = 0;
     private int skipped;
 
@@ -123,7 +121,7 @@ public class OctreeRenderer {
                         if( chunk.isNeighborsPopulated() ) {
                             newChunks.add(entry);
                         } else {
-                            chunkStorage.populate(chunk);
+                            chunkStorage.populate(chunk, entry.getDistanceToEye());
                         }
                     } else {
                         if( entry.isInFrustum() ) {
@@ -184,6 +182,7 @@ public class OctreeRenderer {
 
     private ChunkRenderer findFreeChunkRenderer() {
         if( freeRenderes.size()==0 ) {
+            totalRenderers++;
             return rendererProvider.get();
         }
         return freeRenderes.remove(0);
@@ -195,7 +194,7 @@ public class OctreeRenderer {
         for (int i = 0; i < 5; i++) {
             res+=i+"="+Chunk.COUNT[i]+" ";
         }
-        result.add(String.format(CHUNKS_TEXT, res, chunkEntries.size(), newChunks.size(), visibleChunks.size(), skipped));
+        result.add(String.format(CHUNKS_TEXT, res, chunkEntries.size(), newChunks.size(), visibleChunks.size(), skipped, totalRenderers));
         return result;
     }
 }

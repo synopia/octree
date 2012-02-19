@@ -30,6 +30,10 @@ public class Main implements Application  {
     private VoxelEngine engine;
     @Inject
     private Octree      octree;
+
+    @Inject
+    private ChainedPopulator populator;
+
     private Texture     texture;
 
     private boolean sphere;
@@ -63,7 +67,7 @@ public class Main implements Application  {
             throw new RuntimeException(e);
         }
         engine.setOctree(octree);
-        engine.setPopulator(new NeigborPopulator(engine.getStorage(), new ChainedPopulator(fileStorage, populator)));
+        engine.setPopulator(new NeigborPopulator(engine.getStorage(), populator));
 
         engine.setFpsControl(true);
         engine.setShowInfo(true);
@@ -101,6 +105,7 @@ public class Main implements Application  {
         Injector injector = Guice.createInjector(new CoreGlModule(), new AbstractModule() {
             @Override
             protected void configure() {
+//                bind(ChunkRenderer.class).to(MarchingCubeRenderer.class);
                 bind(ChunkRenderer.class).to(DefaultChunkRenderer.class);
                 bind(OctreeNode.class).to(OctreeChunkNode.class);
             }

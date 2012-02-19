@@ -1,14 +1,11 @@
 package de.funky_clan.chunks;
 
 import cern.colt.map.OpenLongObjectHashMap;
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import de.funky_clan.octree.Morton;
+import de.funky_clan.octree.data.FastPriorityQueue;
 import de.funky_clan.octree.data.OctreeNode;
 
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
-import java.nio.ByteBuffer;
 import java.util.concurrent.*;
 
 /**
@@ -16,9 +13,26 @@ import java.util.concurrent.*;
  */
 @Singleton
 public class ChunkStorage {
+    public static class Job implements Comparable<Job> {
+        public Chunk chunk;
+        public float dist;
+
+        public Job(Chunk chunk, float dist) {
+            this.chunk = chunk;
+            this.dist = dist;
+        }
+
+        @Override
+        public int compareTo(Job o) {
+            return dist<o.dist ? -1 : (dist>o.dist ? 1 : 0);
+        }
+    }
+
     private NeigborPopulator populator;
     private OpenLongObjectHashMap chunks = new OpenLongObjectHashMap();
-    private BlockingQueue<Chunk> queue = new ArrayBlockingQueue<Chunk>(1000);
+    private BlockingQueue<Job> requestQueue = new ArrayBlockingQueue<Job>(1000);
+    private FastPriorityQueue<Job> processQueue = new FastPriorityQueue<Job>();
+    private static final Object lock = new Object();
 
     public void setPopulator(NeigborPopulator populator) {
         this.populator = populator;
@@ -29,8 +43,16 @@ public class ChunkStorage {
             public void run() {
                 while (true) {
                     try {
-                        doPopulation();
-                        Thread.sleep(10);
+                        Job job = null;
+                        synchronized (lock) {
+                            if( !processQueue.isEmpty() ) {
+                                job = processQueue.poll();
+                            }
+                        }
+                        if( job!=null ) {
+                            doPopulation(job);
+                        }
+                        Thread.sleep(1);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -40,23 +62,24 @@ public class ChunkStorage {
         pool.execute(runner);
     }
 
-    public void populate( Chunk chunk ) {
+    public void populate( Chunk chunk, float dist ) {
         if( populator==null ) {
             return;
         }
 
-        if( !chunk.isQueued() ) {
-            queue.offer(chunk);
-            chunk.setQueued();
+        synchronized (lock) {
+            if( !chunk.isQueued() ) {
+                Job job = new Job(chunk, dist);
+                processQueue.add(job);
+                chunk.setQueued();
+            }
         }
     }
 
-    protected void doPopulation() throws InterruptedException {
-        while (!queue.isEmpty()  ) {
-            Chunk chunk = queue.take();
-            if( chunk!=null ) {
-                populator.populateChunk(chunk);
-            }
+    protected void doPopulation(Job job ) throws InterruptedException {
+        Chunk chunk = job.chunk;
+        if( chunk!=null ) {
+            populator.populateChunk(chunk);
         }
     }
 
@@ -84,17 +107,17 @@ public class ChunkStorage {
     @SuppressWarnings("unchecked")
     public Chunk get( long morton ) {
         return (Chunk) chunks.get(morton);
-     }
-     public void add( Chunk node ) {
-         long morton = node.getMorton();
-         chunks.put(morton, node );
+    }
+    public void add( Chunk node ) {
+        long morton = node.getMorton();
+        chunks.put(morton, node );
     }
 
     public int size() {
         return chunks.size();
     }
     public int populateSize() {
-        return 1000-queue.remainingCapacity();
+        return processQueue.size();
     }
 
 }
