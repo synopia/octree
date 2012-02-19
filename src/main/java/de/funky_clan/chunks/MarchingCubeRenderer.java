@@ -27,11 +27,6 @@ public class MarchingCubeRenderer extends ChunkRenderer {
     }
     private Cube cube = new Cube();
 
-    public MarchingCubeRenderer(BufferedRenderer renderer, ChunkStorage storage) {
-        super(renderer, storage);
-
-    }
-
     @Override
     protected boolean renderBlock(int x, int y, int z) {
         float d = chunk.getSize()/ OctreeNode.CHUNK_SIZE;

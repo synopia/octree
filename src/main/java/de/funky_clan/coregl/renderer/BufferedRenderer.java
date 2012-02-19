@@ -1,10 +1,13 @@
 package de.funky_clan.coregl.renderer;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import de.funky_clan.coregl.geom.Vertex;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
+import javax.inject.Provider;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -13,10 +16,13 @@ import java.util.List;
 /**
  * @author synopia
  */
+@Singleton
 public class BufferedRenderer {
     public static final int NUMBER_OF_BUFFERS = 8;
     public static final String TRIANGLES_TEXT = "Triangles: %d";
 
+    @Inject
+    private Provider<VBOBuffer2> vboBuffer2Provider;
     protected VBOBuffer2[] buffers;
     protected int bufferIndex = 0;
 
@@ -36,7 +42,7 @@ public class BufferedRenderer {
 
     protected int trianglesTotal;
 
-    public BufferedRenderer( int texCoordFormat, int colorFormat, int normalFormat) {
+    public void init( int texCoordFormat, int colorFormat, int normalFormat) {
         vboIds = BufferUtils.createIntBuffer(1);
         this.texCoordFormat = texCoordFormat;
         this.colorFormat    = colorFormat;
@@ -63,7 +69,7 @@ public class BufferedRenderer {
     }
 
     protected VBOBuffer2 createVBOBuffer() {
-        return new VBOBuffer2(this);
+        return vboBuffer2Provider.get();
     }
 
     public void addVertex(float x, float y, float z, float tx, float ty, int color, float nx, float ny, float nz) {

@@ -15,10 +15,6 @@ public class OctreeNode extends OctreeElement {
     @SuppressWarnings("unchecked")
     protected Reference<OctreeNode>[] children = new Reference[8];
 
-    public OctreeNode(Octree octree, int x, int y, int z, int depth) {
-        super(octree, x, y, z, depth);
-    }
-    
     private int getCode( int x, int y, int z ) {
         int relX = x-this.x;
         int relY = y-this.y;

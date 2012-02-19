@@ -1,5 +1,6 @@
 package de.funky_clan.coregl.renderer;
 
+import com.google.inject.Inject;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -20,6 +21,7 @@ public final class VBOBuffer2 {
     private MappedVertex buffer;
     private int maxVertices;
 
+    @Inject
     public VBOBuffer2(BufferedRenderer renderer) {
         this.renderer = renderer;
         this.byteBuffer = createBuffer();

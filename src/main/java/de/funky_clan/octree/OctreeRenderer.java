@@ -4,6 +4,7 @@ import cern.colt.function.LongObjectProcedure;
 import cern.colt.function.ObjectProcedure;
 import cern.colt.list.ObjectArrayList;
 import cern.colt.map.OpenLongObjectHashMap;
+import com.google.inject.Inject;
 import de.funky_clan.chunks.*;
 import de.funky_clan.coregl.Camera;
 import de.funky_clan.coregl.geom.Sphere;
@@ -11,6 +12,7 @@ import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.octree.data.*;
 import org.lwjgl.Sys;
 
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,26 +30,18 @@ public class OctreeRenderer {
     private FastPriorityQueue<Entry> newChunks = new FastPriorityQueue<Entry>();
 
     private List<ChunkRenderer> freeRenderes = new ArrayList<ChunkRenderer>();
+    @Inject
+    private Provider<ChunkRenderer> rendererProvider;
 
     private int currentState = 0;
-    private BufferedRenderer renderer;
     private int skipped;
 
+    @Inject
     private Camera camera;
+    @Inject
     private Sphere boundingSphere;
-    private Octree tree;
+    @Inject
     private ChunkStorage chunkStorage;
-
-    public OctreeRenderer(Octree octree, BufferedRenderer renderer, ChunkStorage storage) {
-        this.chunkStorage = storage;
-        this.tree         = octree;
-        this.renderer     = renderer;
-
-        for (int i = 0; i < MAX_CHUNK_RENDERERS; i++) {
-            freeRenderes.add(new MarchingCubeRenderer(renderer, chunkStorage));
-//            freeRenderes.add(new DefaultChunkRenderer(renderer, chunkStorage));
-        }
-    }
 
     public void render( OctreeNode node, Camera camera, long frameStartTime ) {
         skipped = 0;
@@ -189,6 +183,9 @@ public class OctreeRenderer {
     }
 
     private ChunkRenderer findFreeChunkRenderer() {
+        if( freeRenderes.size()==0 ) {
+            return rendererProvider.get();
+        }
         return freeRenderes.remove(0);
     }
 

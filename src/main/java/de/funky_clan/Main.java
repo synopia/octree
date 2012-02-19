@@ -1,18 +1,19 @@
 package de.funky_clan;
 
-import de.funky_clan.chunks.ChainedPopulator;
-import de.funky_clan.chunks.ChunkPopulator;
-import de.funky_clan.chunks.NeigborPopulator;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import de.funky_clan.chunks.*;
 import de.funky_clan.chunks.generators.NoisePopulator;
-import de.funky_clan.coregl.Application;
-import de.funky_clan.coregl.ApplicationController;
-import de.funky_clan.coregl.Camera;
-import de.funky_clan.coregl.Texture;
+import de.funky_clan.coregl.*;
 import de.funky_clan.coregl.renderer.MappedVertex;
 import de.funky_clan.filesystem.FileStorage;
 import de.funky_clan.octree.Morton;
 import de.funky_clan.octree.VoxelEngine;
 import de.funky_clan.chunks.generators.SpherePopulator;
+import de.funky_clan.octree.data.Octree;
+import de.funky_clan.octree.data.OctreeNode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.mapped.MappedObjectClassLoader;
 import org.lwjgl.util.mapped.MappedObjectTransformer;
@@ -25,13 +26,16 @@ import java.io.FileNotFoundException;
 public class Main implements Application  {
     private final static int RADIUS = 400;
 
+    @Inject
     private VoxelEngine engine;
+    @Inject
+    private Octree      octree;
     private Texture     texture;
 
     private boolean sphere;
     private boolean noise  = true;
 
-    public Main( String[] args ) {
+    public void processArgs( String[] args ) {
         for (String arg : args) {
             if (arg.equalsIgnoreCase("--sphere") || arg.equalsIgnoreCase("-s")) {
                 noise = false;
@@ -45,7 +49,6 @@ public class Main implements Application  {
 
     @Override
     public void init(ApplicationController ctrl) {
-        engine = new VoxelEngine(Morton.MORTON_BITS-5);
         ChunkPopulator populator = null;
         if( sphere ) {
             populator = new SpherePopulator(RADIUS, RADIUS, RADIUS, RADIUS - 1);
@@ -59,11 +62,12 @@ public class Main implements Application  {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+        engine.setOctree(octree);
         engine.setPopulator(new NeigborPopulator(engine.getStorage(), new ChainedPopulator(fileStorage, populator)));
 
         engine.setFpsControl(true);
         engine.setShowInfo(true);
-        engine.init(ctrl);
+        engine.init();
         texture = ctrl.getTexture("minecraft/terrain.png");
 
         engine.getLighting().createLight(0,0,0, .4f, .4f, .4f, .4f, .4f, .4f, 1f,0.01F,0.00001f);
@@ -94,9 +98,19 @@ public class Main implements Application  {
         if(MappedObjectClassLoader.fork(Main.class, args)) {
             return;
         }
-        ApplicationController ctrl = new ApplicationController();
+        Injector injector = Guice.createInjector(new CoreGlModule(), new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(ChunkRenderer.class).to(DefaultChunkRenderer.class);
+                bind(OctreeNode.class).to(OctreeChunkNode.class);
+            }
+        });
+        ApplicationController ctrl = injector.getInstance(ApplicationController.class);
         ctrl.createDisplay("Octree", 800, 600, false);
         ctrl.setSyncFps(60);
-        ctrl.start( new Main(args) );
+        Main app = injector.getInstance(Main.class);
+        app.processArgs(args);
+
+        ctrl.start(app);
     }
 }

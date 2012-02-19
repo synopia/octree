@@ -1,5 +1,6 @@
 package de.funky_clan.coregl;
 
+import com.google.inject.Singleton;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -12,6 +13,7 @@ import java.util.List;
 /**
  * @author synopia
  */
+@Singleton
 public class Lighting {
     private List<LightSource> lightSources = new ArrayList<LightSource>();
     private LightSource off;

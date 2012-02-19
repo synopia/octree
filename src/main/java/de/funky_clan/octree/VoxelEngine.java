@@ -1,9 +1,8 @@
 package de.funky_clan.octree;
 
+import com.google.inject.Inject;
 import de.funky_clan.chunks.NeigborPopulator;
-import de.funky_clan.chunks.ChunkOctree;
 import de.funky_clan.chunks.ChunkStorage;
-import de.funky_clan.coregl.ApplicationController;
 import de.funky_clan.coregl.BaseEngine;
 import de.funky_clan.octree.data.Octree;
 import de.funky_clan.octree.data.OctreeNode;
@@ -18,23 +17,20 @@ public class VoxelEngine extends BaseEngine {
     public static final String OCTREE_CHUNKS_TEXT = "Octree Chunks: %d, to be populated: %d";
     public static final String POSITION_TEXT = "Position: %2f %2f %2f";
     public static final String MEM_TEXT = "Mem: %d/%d kB";
+
+    @Inject
     private Octree root;
+    @Inject
     private ChunkStorage storage;
+    @Inject
     private OctreeRenderer octreeRenderer;
 
-    public VoxelEngine(int depth) {
-        storage = new ChunkStorage();
-        root = new ChunkOctree(storage, 0,0,0, depth);
+    public void setOctree( Octree root ) {
+        this.root = root;
     }
 
     public void setPopulator( NeigborPopulator populator ) {
         storage.setPopulator(populator);
-    }
-
-    @Override
-    public void init(ApplicationController ctrl) {
-        super.init(ctrl);
-        octreeRenderer = new OctreeRenderer(root, getRenderer(), storage);
     }
 
     @Override

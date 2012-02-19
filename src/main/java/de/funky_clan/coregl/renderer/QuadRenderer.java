@@ -1,16 +1,16 @@
 package de.funky_clan.coregl.renderer;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import de.funky_clan.coregl.geom.Quad;
 
 /**
  * @author synopia
  */
+@Singleton
 public class QuadRenderer {
+    @Inject
     private BufferedRenderer renderer;
-
-    public QuadRenderer(BufferedRenderer renderer) {
-        this.renderer = renderer;
-    }
 
     public void renderQuad(Quad quad) {
         renderer.ensureSpace(6);

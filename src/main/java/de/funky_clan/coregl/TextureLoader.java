@@ -1,5 +1,6 @@
 package de.funky_clan.coregl;
 
+import com.google.inject.Singleton;
 import org.lwjgl.opengl.GL11;
 
 import javax.imageio.ImageIO;
@@ -28,6 +29,7 @@ import java.util.Hashtable;
  * @author Kevin Glass
  * @author Brian Matzon
  */
+@Singleton
 public class TextureLoader {
     /** The table of textures that have been loaded in this loader */
     private HashMap table = new HashMap();

@@ -1,5 +1,6 @@
 package de.funky_clan.coregl;
 
+import com.google.inject.Inject;
 import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.coregl.renderer.FontRenderer;
 import org.lwjgl.Sys;
@@ -15,13 +16,19 @@ import java.util.ArrayList;
  */
 public abstract class BaseEngine {
     public static final String FPS_TEST = "FPS: %d";
+    @Inject
     protected Camera camera;
+    @Inject
     protected FontRenderer fontRenderer;
+    @Inject
     protected BufferedRenderer renderer;
+    @Inject
     protected Lighting lighting;
+    @Inject
+    private ApplicationController ctrl;
+
     protected long frameStartTime;
 
-    private ApplicationController ctrl;
     private boolean fpsControl;
     private boolean showInfo;
     private long lastFps;
@@ -30,12 +37,8 @@ public abstract class BaseEngine {
     private boolean profileMode;
     private String profilingText;
 
-    public void init(ApplicationController ctrl) {
-        this.ctrl = ctrl;
-        camera = new Camera(10,10,10);
-        fontRenderer     = new FontRenderer(ctrl);
-        renderer = new BufferedRenderer( GL11.GL_FLOAT, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
-        lighting = new Lighting();
+    public void init() {
+        renderer.init(GL11.GL_FLOAT, GL11.GL_UNSIGNED_BYTE, GL11.GL_FLOAT);
         GL11.glEnable(GL11.GL_LIGHTING);
         setProfileMode(false);
     }

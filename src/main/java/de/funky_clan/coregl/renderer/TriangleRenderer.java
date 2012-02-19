@@ -1,16 +1,16 @@
 package de.funky_clan.coregl.renderer;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import de.funky_clan.coregl.geom.Triangle;
 
 /**
  * @author synopia
  */
+@Singleton
 public class TriangleRenderer {
+    @Inject
     private BufferedRenderer renderer;
-
-    public TriangleRenderer(BufferedRenderer renderer) {
-        this.renderer = renderer;
-    }
 
     public void renderTriangle(Triangle tri) {
         renderer.ensureSpace(3);

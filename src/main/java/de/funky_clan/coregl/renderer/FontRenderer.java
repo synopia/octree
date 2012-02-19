@@ -1,5 +1,7 @@
 package de.funky_clan.coregl.renderer;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import de.funky_clan.coregl.ApplicationController;
 import de.funky_clan.coregl.Texture;
 import org.lwjgl.opengl.GL11;
@@ -7,10 +9,12 @@ import org.lwjgl.opengl.GL11;
 /**
  * @author synopia
  */
+@Singleton
 public class FontRenderer {
     private Texture fontTexture;
     private int fontListBase;
 
+    @Inject
     public FontRenderer( ApplicationController ctrl ) {
         fontTexture = ctrl.getTexture( "font.png" );
         int fontSizeX = 8;

@@ -1,8 +1,12 @@
 package de.funky_clan.coregl.renderer;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 /**
  * @author synopia
  */
+@Singleton
 public class CubeRenderer {
     private final static float[][][][] FACES = new float[][][][] {
             // FRONT
@@ -18,13 +22,10 @@ public class CubeRenderer {
             // LEFT
             { { { 0, 0, 0}, { 0, 0, 1}, { 0, 1, 1}, { 0, 1, 0} }, { {1,1}, {0,1}, {0,0}, {1,0} }, { {-1, 0, 0} } },
     };
+    @Inject
     private QuadRenderer quadRenderer;
+    @Inject
     private BufferedRenderer renderer;
-
-    public CubeRenderer(BufferedRenderer renderer) {
-        this.renderer = renderer;
-        quadRenderer = new QuadRenderer(renderer);
-    }
 
     public void renderCube(float x, float y, float z, float size, int color) {
         renderer.setTranslation(x, y, z);

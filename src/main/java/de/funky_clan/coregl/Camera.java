@@ -3,6 +3,8 @@ package de.funky_clan.coregl;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import de.funky_clan.coregl.geom.Frustum;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -11,6 +13,7 @@ import org.lwjgl.util.vector.Vector3f;
 /**
 
  */
+@Singleton
 public final class Camera {
     private FloatBuffer transformMatrix;
     private float[] transform;
@@ -19,17 +22,17 @@ public final class Camera {
 
     private Frustum frustum;
 
-    public Camera(float x, float y, float z) {
-
+    @Inject
+    public Camera() {
         transform     = new float[16];
         transformRot  = new float[16];
         transform[0]  =  1.0f;
         transform[5]  =  1.0f;
         transform[10] = -1.0f;
         transform[15] =  1.0f;
-        transform[12] =  x;
-        transform[13] =  y;
-        transform[14] =  z;
+        transform[12] =  0;
+        transform[13] =  0;
+        transform[14] =  0;
 
         transformMatrix = BufferUtils.createFloatBuffer(16);
         viewMatrix      = BufferUtils.createFloatBuffer(16);

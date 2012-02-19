@@ -1,5 +1,6 @@
 package de.funky_clan.chunks;
 
+import com.google.inject.Inject;
 import de.funky_clan.octree.data.Octree;
 import de.funky_clan.octree.data.OctreeNode;
 
@@ -11,12 +12,8 @@ import java.lang.ref.WeakReference;
  */
 public class OctreeChunkNode extends OctreeNode {
     private Reference<Chunk> chunk;
+    @Inject
     private ChunkStorage storage;
-
-    public OctreeChunkNode(Octree octree, ChunkStorage chunkStorage, int x, int y, int z, int depth) {
-        super(octree, x, y, z, depth);
-        this.storage = chunkStorage;
-    }
 
     @Override
     public void setPixel(int x, int y, int z, int color) {        

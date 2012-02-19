@@ -1,6 +1,8 @@
 package de.funky_clan.chunks;
 
 import cern.colt.map.OpenLongObjectHashMap;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import de.funky_clan.octree.Morton;
 import de.funky_clan.octree.data.OctreeNode;
 
@@ -12,6 +14,7 @@ import java.util.concurrent.*;
 /**
  * @author synopia
  */
+@Singleton
 public class ChunkStorage {
     private NeigborPopulator populator;
     private OpenLongObjectHashMap chunks = new OpenLongObjectHashMap();

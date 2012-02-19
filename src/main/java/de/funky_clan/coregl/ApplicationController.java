@@ -1,5 +1,7 @@
 package de.funky_clan.coregl;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
@@ -11,19 +13,20 @@ import org.lwjgl.util.glu.GLU;
 import java.io.IOException;
 
 /**
- * @author paul.fritsche@objectfab.de
+ * @author synopia
  */
+@Singleton
 public class ApplicationController {
     private int         width;
     private int         height;
     private Application application = null;
+    @Inject
     private TextureLoader textureLoader;
     private int syncFps;
 
     public void createDisplay( String title, int width, int height, boolean fullscreen ) {
         this.width  = width;
         this.height = height;
-        textureLoader = new TextureLoader();
 
         try {
             int currentBpp = Display.getDisplayMode().getBitsPerPixel();

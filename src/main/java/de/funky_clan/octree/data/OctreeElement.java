@@ -17,7 +17,7 @@ public abstract class OctreeElement implements WritableRaster {
     protected OctreeNode parent;
     protected Octree octree;
 
-    public OctreeElement(Octree octree, int x, int y, int z, int depth) {
+    public void init(Octree octree, int x, int y, int z, int depth) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -25,7 +25,6 @@ public abstract class OctreeElement implements WritableRaster {
         this.size = 1<<(depth+OctreeNode.CHUNK_BITS);
         this.octree = octree;
 
-        this.octree = octree;
         buildBoundingSphere();
     }
 

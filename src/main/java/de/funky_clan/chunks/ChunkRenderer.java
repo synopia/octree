@@ -1,5 +1,6 @@
 package de.funky_clan.chunks;
 
+import com.google.inject.Inject;
 import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.octree.data.OctreeNode;
 import org.lwjgl.opengl.GL11;
@@ -13,17 +14,18 @@ public abstract class ChunkRenderer {
     protected static int[][] NEIGHBORS = new int[][]{
             {0,0,1}, {0,0,-1}, {0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}
     };
+    @Inject
     protected BufferedRenderer renderer;
     protected int glListId;
     protected boolean dirty;
     protected Chunk chunk;
     protected ByteBuffer map;
+    @Inject
     protected ChunkStorage storage;
 
-    public ChunkRenderer(BufferedRenderer renderer, ChunkStorage storage) {
+    @Inject
+    public ChunkRenderer() {
         glListId = GL11.glGenLists(1);
-        this.renderer = renderer;
-        this.storage = storage;
         dirty    = true;
     }
 

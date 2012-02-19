@@ -1,5 +1,6 @@
 package de.funky_clan.chunks;
 
+import com.google.inject.Inject;
 import de.funky_clan.coregl.renderer.BufferedRenderer;
 import de.funky_clan.coregl.renderer.CubeRenderer;
 import de.funky_clan.octree.data.OctreeNode;
@@ -10,12 +11,8 @@ import org.lwjgl.opengl.GL11;
  * @author synopia
  */
 public class DefaultChunkRenderer extends ChunkRenderer {
+    @Inject
     private CubeRenderer cubeRenderer;
-
-    public DefaultChunkRenderer(BufferedRenderer renderer, ChunkStorage storage) {
-        super(renderer, storage);
-        cubeRenderer = new CubeRenderer(renderer);
-    }
 
     @Override
     protected boolean renderBlock( int x, int y, int z ) {
