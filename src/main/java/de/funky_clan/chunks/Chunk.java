@@ -1,5 +1,7 @@
 package de.funky_clan.chunks;
 
+import com.google.inject.Inject;
+import de.funky_clan.filesystem.BlockDevice;
 import de.funky_clan.octree.Morton;
 import de.funky_clan.octree.WritableRaster;
 import de.funky_clan.octree.data.OctreeNode;
@@ -24,6 +26,10 @@ public class Chunk implements WritableRaster {
 
     public static int[] COUNT = new int[64];
     public static final int SIZE = OctreeNode.CHUNK_SIZE;
+
+    @Inject
+    private BlockDevice blockDevice;
+
     private ByteBuffer map;
     private Integer color;
 
@@ -84,6 +90,7 @@ public class Chunk implements WritableRaster {
     }
 
     public void finishPopulation() {
+
         if( isSingleColored() ) {
 //            map = null;
         } else {

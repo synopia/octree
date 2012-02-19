@@ -1,6 +1,8 @@
 package de.funky_clan.chunks;
 
 import cern.colt.map.OpenLongObjectHashMap;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import de.funky_clan.octree.Morton;
 import de.funky_clan.octree.data.FastPriorityQueue;
@@ -30,9 +32,10 @@ public class ChunkStorage {
 
     private NeigborPopulator populator;
     private OpenLongObjectHashMap chunks = new OpenLongObjectHashMap();
-    private BlockingQueue<Job> requestQueue = new ArrayBlockingQueue<Job>(1000);
     private FastPriorityQueue<Job> processQueue = new FastPriorityQueue<Job>();
     private static final Object lock = new Object();
+    @Inject
+    private Injector injector;
 
     public void setPopulator(NeigborPopulator populator) {
         this.populator = populator;
@@ -94,6 +97,7 @@ public class ChunkStorage {
         Chunk chunk = get(morton);
         if( chunk==null ) {
             chunk = new Chunk(cx, cy, cz, depth);
+            injector.injectMembers(chunk);
             add(chunk);
         }
         return chunk;

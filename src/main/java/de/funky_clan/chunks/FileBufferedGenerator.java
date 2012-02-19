@@ -1,34 +1,33 @@
 package de.funky_clan.chunks;
 
 import com.google.inject.Inject;
-import de.funky_clan.filesystem.FileStorage;
+import de.funky_clan.filesystem.BlockDevice;
 
 /**
  * @author synopia
  */
-public class ChainedPopulator implements ChunkPopulator {
+public class FileBufferedGenerator implements Generator {
     @Inject
-    private FileStorage fileStorage;
-    @Inject
-    private ChainedPopulator generator;
+    private BlockDevice blockDevice;
+
+    private Generator generator;
+
+    public void setGenerator(Generator generator) {
+        this.generator = generator;
+    }
 
     @Override
     public void doPopulate(Chunk chunk) {
-        fileStorage.allocate(chunk);
-
-        if( !chunk.isPopulated() ) {
+        if( !blockDevice.read(chunk) ) {
             generator.doPopulate(chunk);
-            fileStorage.store(chunk);
+            blockDevice.write(chunk);
         }
     }
 
     @Override
     public void doPopulateForNeighbor(Chunk chunk) {
-        fileStorage.allocate(chunk);
-
         if( !chunk.isPopulated() && !chunk.isPartialyPopulated() ) {
             generator.doPopulateForNeighbor(chunk);
-            fileStorage.store(chunk);
         }
     }
 }

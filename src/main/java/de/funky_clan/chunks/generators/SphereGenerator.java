@@ -1,41 +1,87 @@
 package de.funky_clan.chunks.generators;
 
+import de.funky_clan.chunks.Generator;
 import de.funky_clan.chunks.Chunk;
-import de.funky_clan.chunks.ChunkStorage;
-import de.funky_clan.octree.data.Octree;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.funky_clan.octree.data.OctreeNode;
 
 /**
  * @author synopia
  */
-public class SphereGenerator {
-    private final Logger logger = LoggerFactory.getLogger(SphereGenerator.class);
-    private SpherePopulator populator;
+public class SphereGenerator implements Generator {
+    private int x;
+    private int y;
+    private int z;
+    private int radius;
+    private float radiusSq;
 
-    public void generate( ChunkStorage storage, int mx, int my, int mz, int radius ) {
-        logger.info("Start generating a sphere with radius {} cubes...", radius);
-        populator = new SpherePopulator(mx, my, mz, radius);
+    public SphereGenerator(int x, int y, int z, int radius) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.radius = radius;
+        radiusSq = radius*radius;
+    }
 
-        int minX = (mx - radius)>>5;
-        int minY = (my - radius)>>5;
-        int minZ = (mz - radius)>>5;
-        int maxX = (mx + radius)>>5;
-        int maxY = (my + radius)>>5;
-        int maxZ = (mz + radius)>>5;
+    @Override
+    public void doPopulate(Chunk chunk) {
+        if( chunk.isPopulated() ) {
+            return;
+        }
+        int size = chunk.getSize();
+        int minX = chunk.getX();
+        int minY = chunk.getY();
+        int minZ = chunk.getZ();
+        int maxX = minX + size;
+        int maxY = minY + size;
+        int maxZ = minZ + size;
+        
+        float dists[] = new float[]{
+                dist(minX, minY, minZ),
+                dist(minX, minY, minZ+size),
+                dist(minX, minY+size, minZ),
+                dist(minX, minY+size, minZ+size),
+                dist(minX+size, minY, minZ),
+                dist(minX+size, minY, minZ+size),
+                dist(minX+size, minY+size, minZ),
+                dist(minX+size, minY+size, minZ+size)
+        };
+        int in = 0;
+        int out= 0;
+        for (int i = 0; i < dists.length; i++) {
+            if( dists[i]<=radiusSq ) {
+                in ++;
+            } else {
+                out ++;
+            }            
+        }
+        if( in>0  ) {
+            float scale = (float) size / OctreeNode.CHUNK_SIZE;
+            for (int x = 0; x < OctreeNode.CHUNK_SIZE; x++) {
+                for (int y = 0; y < OctreeNode.CHUNK_SIZE; y++) {
+                    for (int z = 0; z < OctreeNode.CHUNK_SIZE; z++) {
+                        float rx = minX + (float) x * scale;
+                        float ry = minY + (float) y * scale;
+                        float rz = minZ + (float) z * scale;
+                        float dist = dist( rx, ry, rz );
 
-        int totalCubes = 0;
-
-        long start = System.nanoTime();
-        for (int z = minZ; z <= maxZ; z++) {
-            for (int y = minY; y <= maxY; y++) {
-                for (int x = minX; x <= maxX; x++) {
-                    Chunk chunk = storage.getChunkForVoxel(x << 5, y << 5, z << 5, 0);
-                    populator.doPopulate(chunk);
+                        if( radiusSq>=dist ) {
+                            chunk.setPixel(x, y, z, 1);
+                        } else {
+                            chunk.setPixel(x, y, z, 0);
+                        }
+                    }
                 }
             }
         }
-        float time = (System.nanoTime() - start) / 1000000.f;
-        logger.info("...done. {} cubes total, took {} ms", totalCubes, time);
+        chunk.setPopulated(true);
+    }
+
+    @Override
+    public void doPopulateForNeighbor(Chunk chunk) {
+        doPopulate(chunk);
+    }
+
+    private float dist(float x, float y, float z) {
+        return (this.x -x)*(this.x -x) + (this.y -y)*(this.y -y) + (this.z -z)*(this.z -z);
     }
 }

@@ -1,9 +1,5 @@
 package de.funky_clan.chunks;
 
-import de.funky_clan.octree.data.Octree;
-
-import java.nio.ByteBuffer;
-
 /**
  * @author synopia
  */
@@ -16,9 +12,9 @@ public class NeigborPopulator {
         };
 
     protected ChunkStorage chunkStorage;
-    private ChunkPopulator populator;
+    private Generator populator;
 
-    public NeigborPopulator(ChunkStorage chunkStorage, ChunkPopulator populator ) {
+    public NeigborPopulator(ChunkStorage chunkStorage, Generator populator ) {
         this.chunkStorage = chunkStorage;
         this.populator    = populator;
     }

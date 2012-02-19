@@ -6,7 +6,7 @@ import de.funky_clan.chunks.Chunk;
 /**
  * @author synopia
  */
-public interface ChunkPopulator {
+public interface Generator {
     void doPopulate( Chunk chunk );
     void doPopulateForNeighbor( Chunk chunk );
 }

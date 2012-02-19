@@ -1,9 +1,7 @@
 package de.funky_clan.minecraft;
 
-import de.funky_clan.chunks.ChunkPopulator;
-import de.funky_clan.chunks.NeigborPopulator;
+import de.funky_clan.chunks.Generator;
 import de.funky_clan.chunks.Chunk;
-import de.funky_clan.chunks.ChunkStorage;
 import de.funky_clan.octree.data.OctreeNode;
 import org.jnbt.ByteArrayTag;
 import org.jnbt.CompoundTag;
@@ -16,7 +14,7 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class MinecraftPopulator implements ChunkPopulator {
+public class MinecraftPopulator implements Generator {
     private File file;
     public static final int SIZE_X = 1 << 4;
     public static final int SIZE_Y = 1 << 7;

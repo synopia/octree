@@ -1,8 +1,6 @@
 package de.funky_clan.chunks.generators;
 
-import de.funky_clan.chunks.ChunkPopulator;
-import de.funky_clan.chunks.ChunkStorage;
-import de.funky_clan.chunks.NeigborPopulator;
+import de.funky_clan.chunks.Generator;
 import de.funky_clan.noise.Fractal;
 import de.funky_clan.noise.FractalBrownianMotion;
 import de.funky_clan.chunks.Chunk;
@@ -11,7 +9,7 @@ import de.funky_clan.octree.data.OctreeNode;
 /**
  * @author synopia
  */
-public class NoisePopulator implements ChunkPopulator {
+public class NoiseGenerator implements Generator {
     public static final double SPREAD = 0.1;
     private int x;
     private int y;
@@ -22,7 +20,7 @@ public class NoisePopulator implements ChunkPopulator {
     private double outerRadiusSq;
     private Fractal fractal;
 
-    public NoisePopulator(int x, int y, int z, int radius) {
+    public NoiseGenerator(int x, int y, int z, int radius) {
         this.x = x;
         this.y = y;
         this.z = z;

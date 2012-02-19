@@ -5,20 +5,17 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import de.funky_clan.chunks.*;
-import de.funky_clan.chunks.generators.NoisePopulator;
+import de.funky_clan.chunks.generators.NoiseGenerator;
+import de.funky_clan.chunks.generators.SphereGenerator;
 import de.funky_clan.coregl.*;
 import de.funky_clan.coregl.renderer.MappedVertex;
-import de.funky_clan.filesystem.FileStorage;
-import de.funky_clan.octree.Morton;
+import de.funky_clan.filesystem.BlockDevice;
 import de.funky_clan.octree.VoxelEngine;
-import de.funky_clan.chunks.generators.SpherePopulator;
 import de.funky_clan.octree.data.Octree;
 import de.funky_clan.octree.data.OctreeNode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.mapped.MappedObjectClassLoader;
 import org.lwjgl.util.mapped.MappedObjectTransformer;
-
-import java.io.FileNotFoundException;
 
 /**
  * @author synopia
@@ -32,7 +29,10 @@ public class Main implements Application  {
     private Octree      octree;
 
     @Inject
-    private ChainedPopulator populator;
+    private FileBufferedGenerator fileBufferedGenerator;
+
+    @Inject
+    private BlockDevice blockDevice;
 
     private Texture     texture;
 
@@ -53,21 +53,17 @@ public class Main implements Application  {
 
     @Override
     public void init(ApplicationController ctrl) {
-        ChunkPopulator populator = null;
+        blockDevice.start();
+        Generator populator = null;
         if( sphere ) {
-            populator = new SpherePopulator(RADIUS, RADIUS, RADIUS, RADIUS - 1);
+            populator = new SphereGenerator(RADIUS, RADIUS, RADIUS, RADIUS - 1);
         }
         if( noise ) {
-            populator = new NoisePopulator(RADIUS,RADIUS,RADIUS,RADIUS-1);
+            populator = new NoiseGenerator(RADIUS,RADIUS,RADIUS,RADIUS-1);
         }
-        FileStorage fileStorage = null;
-        try {
-            fileStorage = new FileStorage();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        fileBufferedGenerator.setGenerator(populator);
         engine.setOctree(octree);
-        engine.setPopulator(new NeigborPopulator(engine.getStorage(), populator));
+        engine.setPopulator(new NeigborPopulator(engine.getStorage(), fileBufferedGenerator));
 
         engine.setFpsControl(true);
         engine.setShowInfo(true);
@@ -97,6 +93,10 @@ public class Main implements Application  {
         engine.render();
     }
 
+    public void stop() {
+        blockDevice.stop();
+    }
+
     public static void main(String[] args) {
         MappedObjectTransformer.register(MappedVertex.class);
         if(MappedObjectClassLoader.fork(Main.class, args)) {
@@ -117,5 +117,7 @@ public class Main implements Application  {
         app.processArgs(args);
 
         ctrl.start(app);
+
+        app.stop();
     }
 }
